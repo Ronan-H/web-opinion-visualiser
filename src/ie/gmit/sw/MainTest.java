@@ -6,6 +6,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainTest {
     public static void main(String[] args) throws IOException {
@@ -21,6 +23,9 @@ public class MainTest {
         }
         */
 
-        new PageNode("https://www.aoifesclowndoctors.ie/").findChildren();
+        PageNode node = new PageNode("https://www.aoifesclowndoctors.ie/");
+        String query = "clown";
+        int score = node.getRelevanceScore(query);
+        System.out.printf("%nRelevance for query \"%s\": %d%n", query, score);
     }
 }
