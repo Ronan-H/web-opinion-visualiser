@@ -9,6 +9,7 @@ import java.io.IOException;
 
 public class MainTest {
     public static void main(String[] args) throws IOException {
+        /*
         String query = "GMIT Software";
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
@@ -18,5 +19,8 @@ public class MainTest {
             System.out.println("Title:\t" + title.text());
             System.out.println("Text:\t" + r.getElementsByClass("result__snippet").first().wholeText());
         }
+        */
+
+        new PageNode("https://www.aoifesclowndoctors.ie/").findChildren();
     }
 }
