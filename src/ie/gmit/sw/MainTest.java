@@ -23,9 +23,11 @@ public class MainTest {
         }
         */
 
+        int searchDepth = 1;
         PageNode node = new PageNode("https://www.aoifesclowndoctors.ie/");
+        node.findChildren(searchDepth);
         String query = "clown";
-        int score = node.getRelevanceScore(query);
+        int score = node.getRelevanceScore(query, searchDepth);
         System.out.printf("%nRelevance for query \"%s\": %d%n", query, score);
     }
 }
