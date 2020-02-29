@@ -7,7 +7,9 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class MainTest {
     public static void main(String[] args) throws IOException {
@@ -23,9 +25,11 @@ public class MainTest {
         }
         */
 
-        int searchDepth = 1;
+        int searchDepth = 2;
         PageNode node = new PageNode("https://www.aoifesclowndoctors.ie/");
-        node.findChildren(searchDepth);
+        Set<String> visited = new HashSet<>();
+
+        node.findChildren(searchDepth, visited);
         String query = "clown";
         int score = node.getRelevanceScore(query, searchDepth);
         System.out.printf("%nRelevance for query \"%s\": %d%n", query, score);

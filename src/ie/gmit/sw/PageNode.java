@@ -8,7 +8,7 @@ import org.jsoup.select.Elements;
 import org.jsoup.select.NodeVisitor;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PageNode {
@@ -18,11 +18,15 @@ public class PageNode {
 
     public PageNode(String url) {
         this.url = url;
+        children = new PageNode[0];
 
         try {
             System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).get();
+            Thread.sleep(500);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -35,26 +39,34 @@ public class PageNode {
         return children;
     }
 
-    public void findChildren(int searchDepth) throws IOException {
+    public void findChildren(int searchDepth, Set<String> visited) throws IOException {
+        if (searchDepth == 0) {
+            return;
+        }
+
+        visited.add(getUrl());
         System.out.println("Finding children for url " + url);
 
-        children = pageDoc.select("a")
+        String[] unvisitedLinks = pageDoc.select("a")
                 .stream()
                 .map(e -> e.absUrl("href"))
-                .map(PageNode::new)
-                .toArray(PageNode[]::new);
+                .map(String::toLowerCase)
+                .filter(u -> u.startsWith("http"))
+                .filter(u -> !visited.contains(u))
+                .filter(u -> !URLBlacklist.getInstance().isUrlBlacklisted(u))
+                .toArray(String[]::new);
 
-        if (searchDepth >= 0) {
-            for (PageNode child : children) {
-                child.findChildren(searchDepth - 1);
+        List<PageNode> childrenList = new ArrayList<>();
+        for (String link : unvisitedLinks) {
+            if (!visited.contains(link)) {
+                PageNode child = new PageNode(link);
+                visited.add(child.getUrl());
+                childrenList.add(child);
+                child.findChildren(searchDepth - 1, visited);
             }
         }
 
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        children = childrenList.toArray(new PageNode[0]);
     }
 
     public int getRelevanceScore(String query, int searchDepth) {
