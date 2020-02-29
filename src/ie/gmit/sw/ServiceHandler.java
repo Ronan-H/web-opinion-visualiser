@@ -47,7 +47,7 @@ public class ServiceHandler extends HttpServlet {
 		ServletContext ctx = getServletContext(); //Get a handle on the application context
 		
 		//Reads the value from the <context-param> in web.xml
-		ignoreWords = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("IGNORE_WORDS_FILE_LOCATION"); 
+		ignoreWords = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("IGNORE_WORDS_FILE_LOCATION");
 		f = new File(ignoreWords); //A file wrapper around the ignore words...
 	}
 
