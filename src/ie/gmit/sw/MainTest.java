@@ -1,14 +1,8 @@
 package ie.gmit.sw;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class MainTest {
@@ -28,10 +22,12 @@ public class MainTest {
         int searchDepth = 2;
         PageNode node = new PageNode("https://www.aoifesclowndoctors.ie/");
         Set<String> visited = new HashSet<>();
-
         node.findChildren(searchDepth, visited);
-        String query = "clown";
-        int score = node.getRelevanceScore(query, searchDepth);
+
+        System.out.println("======================================================================");
+
+        String query = "fun";
+        int score = node.getRelevanceScore(query);
         System.out.printf("%nRelevance for query \"%s\": %d%n", query, score);
     }
 }

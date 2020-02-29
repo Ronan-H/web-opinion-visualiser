@@ -69,7 +69,7 @@ public class PageNode {
         children = childrenList.toArray(new PageNode[0]);
     }
 
-    public int getRelevanceScore(String query, int searchDepth) {
+    public int getRelevanceScore(String query) {
         System.out.println("Getting relevance score for url " + url);
 
         TagWeights tagWeights = TagWeights.getInstance();
@@ -90,16 +90,8 @@ public class PageNode {
             }
         }
 
-        if (searchDepth >= 0) {
-            for (PageNode child : children) {
-                scoreTotal += child.getRelevanceScore(query, searchDepth - 1);
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        for (PageNode child : children) {
+            scoreTotal += child.getRelevanceScore(query);
         }
 
         return scoreTotal;
