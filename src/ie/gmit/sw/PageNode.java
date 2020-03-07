@@ -96,12 +96,6 @@ public class PageNode {
             }
         }
 
-        /* RECURSIVE SCORING
-        for (PageNode child : children) {
-            scoreTotal += child.getRelevanceScore(query);
-        }
-        */
-
         return scoreTotal;
     }
 }
