@@ -19,14 +19,17 @@ public class MainTest {
         }
         */
 
-        int searchDepth = 2;
-        PageNode node = new PageNode("https://www.aoifesclowndoctors.ie/");
+        int searchDepth = 10;
+        PageNode node = new PageNode("https://projecteuler.net/");
         Set<String> visited = new HashSet<>();
-        node.findChildren(searchDepth, visited);
+        String query = "problems";
+        int rootHeuristic = node.getRelevanceScore(query);
+        System.out.println("rootHeuristic = " + rootHeuristic);
+        int minHeuristic = (int) (rootHeuristic * 0.7f);
+        node.findChildren(query, searchDepth, minHeuristic, visited);
 
         System.out.println("======================================================================");
 
-        String query = "fun";
         int score = node.getRelevanceScore(query);
         System.out.printf("%nRelevance for query \"%s\": %d%n", query, score);
     }

@@ -39,8 +39,14 @@ public class PageNode {
         return children;
     }
 
-    public void findChildren(int searchDepth, Set<String> visited) throws IOException {
+    public void findChildren(String query, int searchDepth, int minHeuristic, Set<String> visited) throws IOException {
         if (searchDepth == 0) {
+            System.out.println("Bailing out, max search depth exceeded");
+            return;
+        }
+
+        if (getRelevanceScore(query) < minHeuristic) {
+            System.out.println("Bailing out, surpassed minimum heuristic limit");
             return;
         }
 
@@ -62,7 +68,7 @@ public class PageNode {
                 PageNode child = new PageNode(link);
                 visited.add(child.getUrl());
                 childrenList.add(child);
-                child.findChildren(searchDepth - 1, visited);
+                child.findChildren(query, searchDepth - 1, minHeuristic, visited);
             }
         }
 
@@ -90,9 +96,11 @@ public class PageNode {
             }
         }
 
+        /* RECURSIVE SCORING
         for (PageNode child : children) {
             scoreTotal += child.getRelevanceScore(query);
         }
+        */
 
         return scoreTotal;
     }
