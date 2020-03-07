@@ -1,6 +1,7 @@
 package ie.gmit.sw;
 
 
+import ie.gmit.sw.ai.cloud.WordFrequency;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,6 +43,10 @@ public class MainTest {
             }
         }
 
+        WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt");
+        Map<String, Integer> wordScores = new HashMap<>();
+        WordProximityScorer scorer = new WordProximityScorer(wordScores, query, ignorer);
+
         int pageVisits = 0;
         int minRelevancy = Math.min((int) (highestRootRelevance * 0.8), 10);
 
@@ -62,8 +67,16 @@ public class MainTest {
                 urlPool.addAll(next.getUnvisitedLinks(visited));
             }
             else {
-                System.out.println("Page not relevant, skipping: " + next.getUrl());System.out.println();
+                System.out.println("Page not relevant, ignoring links: " + next.getUrl());
             }
+
+            next.addWordScores(scorer, query);
+        }
+
+        WordFrequency[] frequencies = new WordFrequency[wordScores.size()];
+        int wordIndex = 0;
+        for (String word : wordScores.keySet()) {
+            frequencies[wordIndex++] = new WordFrequency(word, wordScores.get(word));
         }
     }
 }

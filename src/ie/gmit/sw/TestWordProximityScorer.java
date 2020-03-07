@@ -1,5 +1,6 @@
 package ie.gmit.sw;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TestWordProximityScorer {
@@ -7,8 +8,9 @@ public class TestWordProximityScorer {
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt");
         String text = "the syntax of java is similar to c and c++";
         String query = "java";
-        WordProximityScorer scorer = new WordProximityScorer(text, query, ignorer);
-        Map<String, Integer> scores = scorer.getWordScores();
+        Map<String, Integer> scores = new HashMap<>();
+        WordProximityScorer scorer = new WordProximityScorer(scores, query, ignorer);
+        scorer.addWordScores(text);
 
         for (String word : scores.keySet()) {
             int score = scores.get(word);

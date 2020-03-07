@@ -55,12 +55,29 @@ public class PageNode {
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
                 if (elemText.contains(query)) {
-                    //System.out.printf("Found query in %s tag on page %s, score added: %d%n", scoringTag, url, tagScore);
                     scoreTotal += tagScore;
                 }
             }
         }
 
         return scoreTotal;
+    }
+
+    public void addWordScores(WordProximityScorer scorer, String query) {
+        TagWeights tagWeights = TagWeights.getInstance();
+        Elements elems;
+        String elemText;
+        int tagScore;
+
+        for (String scoringTag : tagWeights.getScoringTags()) {
+            tagScore = tagWeights.getScoreFor(scoringTag);
+            elems = pageDoc.select(scoringTag);
+            for (Element elem : elems) {
+                elemText = elem.text().toLowerCase();
+                if (elemText.contains(query)) {
+                    scorer.addWordScores(elemText);
+                }
+            }
+        }
     }
 }
