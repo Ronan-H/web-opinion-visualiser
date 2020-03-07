@@ -14,6 +14,9 @@ public class LogarithmicSpiralPlacer {
 	private int width = 1600; //Image width. The bigger the canvas, the easier it is to place a word.
 	private int height = 1000; //Image height	
 	private int turn = 29; //The weight of the turn in the spiral
+	private float hue = 0;
+	private float hueInc = 0.1f;
+
 
 	public LogarithmicSpiralPlacer(int w, int h) {
 		this.width = w;
@@ -46,7 +49,7 @@ public class LogarithmicSpiralPlacer {
 		int k = 1; //Step to move along spiral
 		
 		Font font = new Font("Tahoma", 0, wf.getFontSize()); //Create a font with a size proportional to the word frequency
-		g.setColor(new Color(rand.nextInt(0xFFFFFF))); //Set the colour of the graphics "brush"
+		g.setColor(new Color(Color.HSBtoRGB(rand.nextFloat(), 1, 1))); //Set the colour of the graphics "brush"
 		g.setFont(font); //Set the font of the graphics "brush"
 		
 		//Get the "size" of the word string as a rectangle

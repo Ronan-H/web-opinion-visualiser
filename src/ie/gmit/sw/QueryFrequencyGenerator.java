@@ -12,8 +12,8 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
-        String query = "software";
-        int maxPageVisits = 25;
+        String query = "ireland";
+        int maxPageVisits = 40;
         int maxResults = 3;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
@@ -43,12 +43,13 @@ public class QueryFrequencyGenerator {
             }
         }
 
-        WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt");
+        WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         Map<String, Integer> wordScores = new HashMap<>();
         WordProximityScorer scorer = new WordProximityScorer(wordScores, query, ignorer);
 
         int pageVisits = 0;
-        int minRelevancy = Math.min((int) (highestRootRelevance * 0.8), 10);
+        //int minRelevancy = Math.min((int) (highestRootRelevance * 0.8), 10);
+        int minRelevancy = 5;
 
         while ((!queue.isEmpty() || !urlPool.isEmpty()) && pageVisits < maxPageVisits) {
             if (queue.isEmpty()) {

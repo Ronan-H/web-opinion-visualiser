@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class WordIgnorer {
     private Set<String> ignoredSet;
+    private String query;
+    private Pattern wordPattern;
 
-    public WordIgnorer(String ignoredPath) {
+    public WordIgnorer(String ignoredPath, String query) {
+        this.query = query;
         ignoredSet = new HashSet<>();
 
         try {
@@ -24,6 +28,8 @@ public class WordIgnorer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        wordPattern = Pattern.compile("[a-z]+(-[a-z])*");
     }
 
     public WordIgnorer() {
@@ -33,7 +39,7 @@ public class WordIgnorer {
     public String[] getUsefulWords(String[] input) {
         List<String> usefulWords = new ArrayList<>(input.length);
         for (String word : input) {
-            if (!ignoredSet.contains(word)) {
+            if (!ignoredSet.contains(word) && wordPattern.matcher(word).matches() && !word.equals(query)) {
                 usefulWords.add(word);
             }
         }

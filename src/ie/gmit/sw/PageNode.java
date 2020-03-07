@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class PageNode {
     private String url;
     private Document pageDoc;
+    private boolean errored;
 
     public PageNode(String url) {
         this.url = url;
@@ -21,7 +22,7 @@ public class PageNode {
             pageDoc = Jsoup.connect(url).get();
             Thread.sleep(500);
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            errored = true;
         }
     }
 
@@ -30,6 +31,8 @@ public class PageNode {
     }
 
     public Collection<String> getUnvisitedLinks(Set<String> visited) {
+        if (errored) return new ArrayList<>();
+
         return pageDoc.select("a")
                 .stream()
                 .map(e -> e.absUrl("href"))
@@ -41,6 +44,8 @@ public class PageNode {
     }
 
     public int getRelevanceScore(String query) {
+        if (errored) return -1;
+
         System.out.println("Getting relevance score for url " + url);
 
         TagWeights tagWeights = TagWeights.getInstance();
@@ -64,6 +69,8 @@ public class PageNode {
     }
 
     public void addWordScores(WordProximityScorer scorer, String query) {
+        if (errored) return;
+
         TagWeights tagWeights = TagWeights.getInstance();
         Elements elems;
         String elemText;
@@ -75,7 +82,7 @@ public class PageNode {
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
                 if (elemText.contains(query)) {
-                    scorer.addWordScores(elemText);
+                    scorer.addWordScores(elemText, 1);
                 }
             }
         }

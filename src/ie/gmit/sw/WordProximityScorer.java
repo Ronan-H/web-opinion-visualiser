@@ -3,7 +3,7 @@ package ie.gmit.sw;
 import java.util.Map;
 
 public class WordProximityScorer {
-    private static final int[] scoring = {10, 5, 3, 2, 1};
+    private static final int[] scoring = {15, 5, 3, 2, 2, 1};
     private Map<String, Integer> wordScores;
     private String query;
     private WordIgnorer wordIgnorer;
@@ -15,6 +15,10 @@ public class WordProximityScorer {
     }
 
     public void addWordScores(String text) {
+        addWordScores(text, 1);
+    }
+
+    public void addWordScores(String text, int weighting) {
         int queryPos = text.indexOf(query);
         String beforeText = text.substring(0, queryPos).trim();
         String[] beforeParts = (beforeText.equals("") ? new String[0] : beforeText.split(" "));
@@ -29,7 +33,7 @@ public class WordProximityScorer {
             if (!wordScores.containsKey(word)) {
                 wordScores.put(word, 0);
             }
-            wordScores.put(word, wordScores.get(word) + scoring[i]);
+            wordScores.put(word, (wordScores.get(word) + scoring[i]) * weighting);
         }
 
         for (int i = 0; i < Math.min(afterParts.length, scoring.length); i++) {
@@ -37,7 +41,7 @@ public class WordProximityScorer {
             if (!wordScores.containsKey(word)) {
                 wordScores.put(word, 0);
             }
-            wordScores.put(word, wordScores.get(word) + scoring[i]);
+            wordScores.put(word, (wordScores.get(word) + scoring[i]) * weighting);
         }
     }
 }

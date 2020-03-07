@@ -3,7 +3,7 @@ package ie.gmit.sw.ai.cloud;
 import java.util.Arrays;
 
 public class WeightedFont {
-	private static final double MAX_FONT_SIZE = 72.00d;
+	private static final double MAX_FONT_SIZE = 60.00d;
 	private static final double MIN_FONT_SIZE = 8.00d;
 	
 	public WordFrequency[] getFontSizes(WordFrequency[] words) {

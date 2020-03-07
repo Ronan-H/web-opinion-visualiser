@@ -5,9 +5,10 @@ import java.util.Map;
 
 public class TestWordProximityScorer {
     public static void main(String[] args) {
-        WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt");
         String text = "the syntax of java is similar to c and c++";
         String query = "java";
+
+        WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         Map<String, Integer> scores = new HashMap<>();
         WordProximityScorer scorer = new WordProximityScorer(scores, query, ignorer);
         scorer.addWordScores(text);
