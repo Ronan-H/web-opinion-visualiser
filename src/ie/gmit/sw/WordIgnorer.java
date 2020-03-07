@@ -26,6 +26,10 @@ public class WordIgnorer {
         }
     }
 
+    public WordIgnorer() {
+        ignoredSet = new HashSet<>();
+    }
+
     public String[] getUsefulWords(String[] input) {
         List<String> usefulWords = new ArrayList<>(input.length);
         for (String word : input) {
