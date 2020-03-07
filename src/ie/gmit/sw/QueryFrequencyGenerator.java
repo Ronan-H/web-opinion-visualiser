@@ -10,8 +10,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 
-public class MainTest {
-    public static void main(String[] args) throws IOException {
+public class QueryFrequencyGenerator {
+    public WordFrequency[] generateWordFrequencies() throws IOException {
         String query = "software";
         int maxPageVisits = 25;
         int maxResults = 3;
@@ -78,5 +78,7 @@ public class MainTest {
         for (String word : wordScores.keySet()) {
             frequencies[wordIndex++] = new WordFrequency(word, wordScores.get(word));
         }
+
+        return frequencies;
     }
 }
