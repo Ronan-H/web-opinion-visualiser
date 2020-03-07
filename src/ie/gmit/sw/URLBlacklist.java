@@ -16,7 +16,8 @@ public class URLBlacklist {
         blacklist = new String[]
         {
                 "facebook.com",
-                "youtube.com"
+                "youtube.com",
+                "wiki"
         };
     }
 

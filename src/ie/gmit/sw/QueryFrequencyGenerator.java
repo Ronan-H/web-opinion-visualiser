@@ -12,9 +12,9 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
-        String query = "ireland";
-        int maxPageVisits = 40;
-        int maxResults = 3;
+        String query = "fishing";
+        int maxPageVisits = 30;
+        int maxResults = 4;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
