@@ -39,7 +39,10 @@ public class WordIgnorer {
     public String[] getUsefulWords(String[] input) {
         List<String> usefulWords = new ArrayList<>(input.length);
         for (String word : input) {
-            if (!ignoredSet.contains(word) && wordPattern.matcher(word).matches() && !word.equals(query)) {
+            if (word.length() <= 12
+                && !word.equals(query)
+                && !ignoredSet.contains(word)
+                && wordPattern.matcher(word).matches()) {
                 usefulWords.add(word);
             }
         }

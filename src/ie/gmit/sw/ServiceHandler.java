@@ -49,6 +49,7 @@ public class ServiceHandler extends HttpServlet {
 		//Reads the value from the <context-param> in web.xml
 		ignoreWords = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("IGNORE_WORDS_FILE_LOCATION");
 		f = new File(ignoreWords); //A file wrapper around the ignore words...
+		// TODO make use of this ^
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -81,7 +82,7 @@ public class ServiceHandler extends HttpServlet {
 
 		//Spira Mirabilis
 		LogarithmicSpiralPlacer placer = new LogarithmicSpiralPlacer(800, 600);
-		int maxWords = 25;
+		int maxWords = 35;
 		for (int i = 0; i < Math.min(words.length, maxWords); i++) {
 			placer.place(words[i]); //Place each word on the canvas starting with the largest
 		}

@@ -12,10 +12,9 @@ public class LogarithmicSpiralPlacer {
 	private java.util.List<Rectangle> placed = new ArrayList<>(); //The list of placed words
 	private CollisionDetector detector = new CollisionDetector(); //Detects overlapping words
 	private int width = 1600; //Image width. The bigger the canvas, the easier it is to place a word.
-	private int height = 1000; //Image height	
-	private int turn = 29; //The weight of the turn in the spiral
-	private float hue = 0;
-	private float hueInc = 0.1f;
+	private int height = 1400; //Image height
+	private Rectangle imageRect;
+	private int turn = 15; //The weight of the turn in the spiral
 
 
 	public LogarithmicSpiralPlacer(int w, int h) {
@@ -25,6 +24,7 @@ public class LogarithmicSpiralPlacer {
 		g = img.getGraphics();
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, width, height);
+		imageRect = new Rectangle(width, height);
 	}
 	
 	/*
@@ -44,22 +44,22 @@ public class LogarithmicSpiralPlacer {
 	 *
 	 */
 	public void place(WordFrequency wf) {
-		int i = width / 2; //Get the horizontal centre
-		int j = height / 2; //Get the vertical centre
-		int k = 1; //Step to move along spiral
-		
 		Font font = new Font("Tahoma", 0, wf.getFontSize()); //Create a font with a size proportional to the word frequency
 		g.setColor(new Color(Color.HSBtoRGB(rand.nextFloat(), 1, 1))); //Set the colour of the graphics "brush"
 		g.setFont(font); //Set the font of the graphics "brush"
 		
 		//Get the "size" of the word string as a rectangle
-		Rectangle2D bounds = this.g.getFontMetrics(font).getStringBounds(wf.getWord(), g); 
-		
+		Rectangle2D bounds = this.g.getFontMetrics(font).getStringBounds(wf.getWord(), g);
+
+		int i = width / 2 - (int)(bounds.getWidth() / 2); //Get the horizontal centre
+		int j = height / 2; //Get the vertical centre
+		int k = 1; //Step to move along spiral
+
 		//Start with the word placed at the centre of the spiral
-		Rectangle word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.8d), (int) bounds.getWidth(), (int) bounds.getHeight()); 
+		Rectangle word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.8d), (int) bounds.getWidth(), (int) bounds.getHeight());
 		
 		//If the word collides with any existing words, move it along the spiral
-		while (detector.collides(word, placed)) { 
+		while (detector.collides(imageRect, word, placed)) {
 			int l = k * turn % 360;
 			double d = k * 0.1d;
 			int x = (int) Math.round(i + d * Math.cos(l * Math.PI / 180.0d));

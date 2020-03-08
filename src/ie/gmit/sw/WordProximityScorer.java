@@ -3,7 +3,7 @@ package ie.gmit.sw;
 import java.util.Map;
 
 public class WordProximityScorer {
-    private static final int[] scoring = {25, 10, 5, 3, 2, 1};
+    private static final int[] scoring = {25, 10, 3, 1};
     private Map<String, Integer> wordScores;
     private String query;
     private WordIgnorer wordIgnorer;

@@ -12,51 +12,41 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
-        String query = "fishing";
-        int maxPageVisits = 30;
-        int maxResults = 4;
+        String query = "android";
+        int maxPageLoads = 25;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
-
-        int usingNumResults = Math.min(maxResults, res.size());
 
         Set<String> visited = new HashSet<>();
         Comparator<PageNode> relevanceComparator = new RelevanceComparator(query);
         PriorityQueue<PageNode> queue = new PriorityQueue<>(10, relevanceComparator);
         Deque<String> urlPool = new ArrayDeque<>();
-        int highestRootRelevance = -1;
 
-        for (int i = 0; i < usingNumResults; i++){
-            Element r = res.get(i);
+        for (Element r : res){
             Element title = r.getElementsByClass("links_main").first().getElementsByTag("a").first();
             String url = title.attr("href");
             System.out.println("URL:\t" + url);
             System.out.println("Title:\t" + title.text());
             System.out.println("Text:\t" + r.getElementsByClass("result__snippet").first().wholeText());
 
-            PageNode node = new PageNode(url);
-            queue.add(node);
-            int nodeRelevance = node.getRelevanceScore(query);
-            if (nodeRelevance > highestRootRelevance) {
-                highestRootRelevance = nodeRelevance;
-            }
+            urlPool.add(url);
         }
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         Map<String, Integer> wordScores = new HashMap<>();
         WordProximityScorer scorer = new WordProximityScorer(wordScores, query, ignorer);
 
-        int pageVisits = 0;
+        int pageLoads = 0;
         //int minRelevancy = Math.min((int) (highestRootRelevance * 0.8), 10);
         int minRelevancy = 5;
 
-        while ((!queue.isEmpty() || !urlPool.isEmpty()) && pageVisits < maxPageVisits) {
+        while ((!queue.isEmpty() || !urlPool.isEmpty()) && pageLoads < maxPageLoads) {
             if (queue.isEmpty()) {
                 PageNode next = new PageNode(urlPool.poll());
                 System.out.println("Loading page: " + next.getUrl());
                 queue.add(next);
-                pageVisits++;
+                pageLoads++;
             }
 
             PageNode next = queue.poll();
