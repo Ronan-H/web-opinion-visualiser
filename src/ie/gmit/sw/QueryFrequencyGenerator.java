@@ -12,7 +12,7 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
-        String query = "android";
+        String query = "fishing";
         int maxPageLoads = 25;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
@@ -38,8 +38,7 @@ public class QueryFrequencyGenerator {
         WordProximityScorer scorer = new WordProximityScorer(wordScores, query, ignorer);
 
         int pageLoads = 0;
-        //int minRelevancy = Math.min((int) (highestRootRelevance * 0.8), 10);
-        int minRelevancy = 5;
+        double minRelevancy = 0.5;
 
         while ((!queue.isEmpty() || !urlPool.isEmpty()) && pageLoads < maxPageLoads) {
             if (queue.isEmpty()) {
@@ -50,10 +49,11 @@ public class QueryFrequencyGenerator {
             }
 
             PageNode next = queue.poll();
+            double nextRelevancy = next.getRelevanceScore(query);
 
-            if (next.getRelevanceScore(query) >= minRelevancy) {
+            if (nextRelevancy >= minRelevancy) {
                 System.out.println("Adding links from: " + next.getUrl());
-                System.out.println("\tRelevance: " + next.getRelevanceScore(query));
+                System.out.println("\tRelevance: " + nextRelevancy);
                 visited.add(next.getUrl());
                 urlPool.addAll(next.getUnvisitedLinks(visited));
             }

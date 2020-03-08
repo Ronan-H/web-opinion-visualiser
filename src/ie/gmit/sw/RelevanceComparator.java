@@ -11,6 +11,6 @@ public class RelevanceComparator implements Comparator<PageNode> {
 
     @Override
     public int compare(PageNode nodeA, PageNode nodeB) {
-        return -Integer.compare(nodeA.getRelevanceScore(query), nodeB.getRelevanceScore(query));
+        return -Double.compare(nodeA.getRelevanceScore(query), nodeB.getRelevanceScore(query));
     }
 }

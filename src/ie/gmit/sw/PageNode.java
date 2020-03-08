@@ -20,7 +20,7 @@ public class PageNode {
         try {
             System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).get();
-            Thread.sleep(500);
+            Thread.sleep(750);
         } catch (IOException | InterruptedException e) {
             errored = true;
         }
@@ -43,29 +43,35 @@ public class PageNode {
                 .collect(Collectors.toList());
     }
 
-    public int getRelevanceScore(String query) {
+    public double getRelevanceScore(String query) {
         if (errored) return -1;
 
         System.out.println("Getting relevance score for url " + url);
 
         TagWeights tagWeights = TagWeights.getInstance();
         int scoreTotal = 0;
+        int totalOccurences = 0;
         Elements elems;
         String elemText;
         int tagScore;
+        int totalTextLength = 0;
 
         for (String scoringTag : tagWeights.getScoringTags()) {
             tagScore = tagWeights.getScoreFor(scoringTag);
             elems = pageDoc.select(scoringTag);
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
+                totalTextLength += elemText.length();
                 if (elemText.contains(query)) {
-                    scoreTotal += tagScore;
+                    // counting occurrences of a substring in a string: https://stackoverflow.com/a/770069
+                    int numOccurances = elemText.split(query, -1).length - 1;
+                    scoreTotal += tagScore * numOccurances;
+                    totalOccurences += numOccurances;
                 }
             }
         }
 
-        return scoreTotal;
+        return scoreTotal * ((double) (totalOccurences * query.length()) / totalTextLength);
     }
 
     public void addWordScores(WordProximityScorer scorer, String query) {

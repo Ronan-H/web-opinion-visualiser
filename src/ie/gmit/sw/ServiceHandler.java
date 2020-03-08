@@ -85,6 +85,7 @@ public class ServiceHandler extends HttpServlet {
 		int maxWords = 35;
 		for (int i = 0; i < Math.min(words.length, maxWords); i++) {
 			placer.place(words[i]); //Place each word on the canvas starting with the largest
+			System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
 		}
 
 		BufferedImage cloud = placer.getImage(); //Get a handle on the word cloud graphic
