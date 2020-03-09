@@ -14,17 +14,17 @@ public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies(String query) throws IOException {
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
-        int maxPageLoads = 50;
+        int maxPageLoads = 30;
 
         Random random = new Random();
 
-        Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
-        Elements res = doc.getElementById("links").getElementsByClass("results_links");
-
+        Deque<String> urlPool = new ArrayDeque<>();
         Set<String> visited = new HashSet<>();
         Comparator<PageNode> relevanceComparator = new RelevanceComparator(query);
         PriorityQueue<PageNode> queue = new PriorityQueue<>(maxPageLoads, relevanceComparator);
-        Deque<String> urlPool = new ArrayDeque<>();
+
+        Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
+        Elements res = doc.getElementById("links").getElementsByClass("results_links");
 
         for (Element r : res){
             Element title = r.getElementsByClass("links_main").first().getElementsByTag("a").first();
@@ -47,7 +47,7 @@ public class QueryFrequencyGenerator {
             if (queue.isEmpty()) {
                 String nextUrl = urlPool.poll();
                 System.out.printf("Loading page: %s%n%n", nextUrl);
-                node = new PageNode(urlPool.poll());
+                node = new PageNode(nextUrl);
                 queue.add(node);
                 pageLoads++;
             }

@@ -14,7 +14,7 @@ public class LogarithmicSpiralPlacer {
 	private int width; //Image width. The bigger the canvas, the easier it is to place a word.
 	private int height; //Image height
 	private Rectangle imageRect;
-	private int turn = 15; //The weight of the turn in the spiral
+	private int turn = 10; //The weight of the turn in the spiral
 
 
 	public LogarithmicSpiralPlacer(int w, int h) {
@@ -52,7 +52,6 @@ public class LogarithmicSpiralPlacer {
 	 */
 	public void place(WordFrequency wf) {
 		Font font = new Font("Tahoma", 0, wf.getFontSize()); //Create a font with a size proportional to the word frequency
-		g.setColor(new Color(Color.HSBtoRGB(rand.nextFloat(), 1, 1))); //Set the colour of the graphics "brush"
 		g.setFont(font); //Set the font of the graphics "brush"
 		
 		//Get the "size" of the word string as a rectangle
@@ -61,28 +60,34 @@ public class LogarithmicSpiralPlacer {
 		int i = width / 2 - (int)(bounds.getWidth() / 2); //Get the horizontal centre
 		int j = height / 2; //Get the vertical centre
 		int k = 1; //Step to move along spiral
+		double d = 0; //Distance from the centre
+		int l = 0;
 
 		//Start with the word placed at the centre of the spiral
 		Rectangle word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.8d), (int) bounds.getWidth(), (int) bounds.getHeight());
 		
 		//If the word collides with any existing words, move it along the spiral
 		while (detector.collides(imageRect, word, placed)) {
-			int l = k * turn % 360;
-			double d = k * 0.1d;
+			l = k * turn % 360;
+			d = k * 0.05d;
 			int x = (int) Math.round(i + d * Math.cos(l * Math.PI / 180.0d));
 			int y = (int) Math.round(j + d * Math.sin(l * Math.PI / 180.0d));
 			i = x;
 			j = y;
-			word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.5d), (int) bounds.getWidth(), (int) bounds.getHeight());
 
 			if (Math.abs(x) > width * 2) {
 				// failed to place this worth within the bounds of the image
 				return;
 			}
 
+			word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.8d), (int) bounds.getWidth(), (int) bounds.getHeight());
 			k++;
 		}
-		 
+
+		// rainbow colours
+		float hue =  l / 360f % 1f;
+		float val = Math.min(Math.max(1.2f - (float) (d / (width / 8d)), 0.4f), 1f);
+		g.setColor(new Color(Color.HSBtoRGB(hue, 1, val))); //Set the colour of the graphics "brush"
 		g.drawString(wf.getWord(), i, j);//Draw the word on the graphics canvas 
 		placed.add(word); //Add the word to the list of placed words
 	}
