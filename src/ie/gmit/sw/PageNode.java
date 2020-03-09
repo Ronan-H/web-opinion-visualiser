@@ -13,6 +13,8 @@ public class PageNode {
     private String url;
     private Document pageDoc;
     private boolean errored;
+    private double relevanceScore;
+    private boolean relevanceComputed;
 
     public PageNode(String url) {
         this.url = url;
@@ -20,7 +22,7 @@ public class PageNode {
         try {
             System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).get();
-            Thread.sleep(750);
+            Thread.sleep(300);
         } catch (IOException | InterruptedException e) {
             errored = true;
         }
@@ -45,6 +47,7 @@ public class PageNode {
 
     public double getRelevanceScore(String query) {
         if (errored) return -1;
+        if (relevanceComputed) return relevanceScore;
 
         System.out.println("Getting relevance score for url " + url);
 
@@ -71,7 +74,15 @@ public class PageNode {
             }
         }
 
-        return scoreTotal * ((double) (totalOccurences * query.length()) / totalTextLength);
+        if (totalTextLength > 0) {
+            relevanceScore = scoreTotal * ((double) (totalOccurences * query.length()) / totalTextLength);
+        }
+        else {
+            relevanceScore = -1;
+        }
+
+        relevanceComputed = true;
+        return relevanceScore;
     }
 
     public void addWordScores(String query, WordProximityScorer scorer, WordIgnorer ignorer) {

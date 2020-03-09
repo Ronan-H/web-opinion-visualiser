@@ -12,7 +12,9 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies(String query) throws IOException {
-        int maxPageLoads = 20;
+        int maxPageLoads = 30;
+
+        Random random = new Random();
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
@@ -27,7 +29,7 @@ public class QueryFrequencyGenerator {
             String url = title.attr("href");
             System.out.println("URL:\t" + url);
             System.out.println("Title:\t" + title.text());
-            System.out.println("Text:\t" + r.getElementsByClass("result__snippet").first().wholeText());
+            System.out.printf("Text:   %s%n%n", r.getElementsByClass("result__snippet").first().wholeText());
 
             urlPool.add(url);
         }
@@ -37,32 +39,45 @@ public class QueryFrequencyGenerator {
         WordProximityScorer scorer = new WordProximityScorer(wordScores, query);
 
         int pageLoads = 0;
-        double minRelevancy = 0.5;
+        PageNode node;
 
         while ((!queue.isEmpty() || !urlPool.isEmpty()) && pageLoads < maxPageLoads) {
             if (queue.isEmpty()) {
-                PageNode next = new PageNode(urlPool.poll());
-                System.out.println("Loading page: " + next.getUrl());
-                queue.add(next);
+                String nextUrl = urlPool.poll();
+                System.out.printf("Loading page: %s%n%n", nextUrl);
+                node = new PageNode(urlPool.poll());
+                queue.add(node);
                 pageLoads++;
             }
 
-            PageNode next = queue.poll();
-            double nextRelevancy = next.getRelevanceScore(query);
+            node = queue.poll();
+            System.out.println("Polling page from the queue: " + node.getUrl());
+            double nodeRelevancy = node.getRelevanceScore(query);
+            System.out.printf("Relevance: %.2f%n", nodeRelevancy);
+            visited.add(node.getUrl());
 
-            if (nextRelevancy >= minRelevancy) {
-                System.out.println("Adding links from: " + next.getUrl());
-                System.out.println("\tRelevance: " + nextRelevancy);
-                visited.add(next.getUrl());
-                List<String> nextLinks = next.getUnvisitedLinks(visited);
-                Collections.shuffle(nextLinks);
-                urlPool.addAll(nextLinks);
-            }
-            else {
-                System.out.println("Page not relevant, ignoring links: " + next.getUrl());
+            if (nodeRelevancy > 0.5) {
+                List<String> nextLinks = node.getUnvisitedLinks(visited);
+
+                // add a few random links from this page to the URL pool
+                int numLinksAdd = (int)Math.ceil(nodeRelevancy / 3);
+                //if (numLinksAdd < 2) numLinksAdd = 2;
+                if (numLinksAdd > 5) numLinksAdd = 5;
+
+                System.out.printf("Adding %d child URLs...%n", numLinksAdd);
+
+                for (int i = 0; i < numLinksAdd && nextLinks.size() > 0; i++) {
+                    urlPool.add(nextLinks.remove(random.nextInt(nextLinks.size())));
+                }
             }
 
-            next.addWordScores(query, scorer, ignorer);
+            // prune urlPool
+            while (urlPool.size() > 250) {
+                urlPool.pop();
+            }
+
+            System.out.println("Adding word scores...\n");
+            node.addWordScores(query, scorer, ignorer);
         }
 
         WordFrequency[] frequencies = new WordFrequency[wordScores.size()];
