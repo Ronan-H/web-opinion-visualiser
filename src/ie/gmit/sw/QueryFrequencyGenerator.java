@@ -12,7 +12,7 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
-        String query = "fishing";
+        String query = "galway";
         int maxPageLoads = 25;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
@@ -35,7 +35,7 @@ public class QueryFrequencyGenerator {
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         Map<String, Integer> wordScores = new HashMap<>();
-        WordProximityScorer scorer = new WordProximityScorer(wordScores, query, ignorer);
+        WordProximityScorer scorer = new WordProximityScorer(wordScores, query);
 
         int pageLoads = 0;
         double minRelevancy = 0.5;
@@ -61,7 +61,7 @@ public class QueryFrequencyGenerator {
                 System.out.println("Page not relevant, ignoring links: " + next.getUrl());
             }
 
-            next.addWordScores(scorer, query);
+            next.addWordScores(query, scorer, ignorer);
         }
 
         WordFrequency[] frequencies = new WordFrequency[wordScores.size()];

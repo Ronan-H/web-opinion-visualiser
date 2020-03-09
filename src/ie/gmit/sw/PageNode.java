@@ -74,7 +74,7 @@ public class PageNode {
         return scoreTotal * ((double) (totalOccurences * query.length()) / totalTextLength);
     }
 
-    public void addWordScores(WordProximityScorer scorer, String query) {
+    public void addWordScores(String query, WordProximityScorer scorer, WordIgnorer ignorer) {
         if (errored) return;
 
         TagWeights tagWeights = TagWeights.getInstance();
@@ -88,7 +88,7 @@ public class PageNode {
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
                 if (elemText.contains(query)) {
-                    scorer.addWordScores(elemText, 1);
+                    scorer.addWordScores(elemText, 1, ignorer);
                 }
             }
         }

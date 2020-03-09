@@ -82,7 +82,7 @@ public class ServiceHandler extends HttpServlet {
 
 		//Spira Mirabilis
 		LogarithmicSpiralPlacer placer = new LogarithmicSpiralPlacer(800, 600);
-		int maxWords = 35;
+		int maxWords = 30;
 		for (int i = 0; i < Math.min(words.length, maxWords); i++) {
 			placer.place(words[i]); //Place each word on the canvas starting with the largest
 			System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
