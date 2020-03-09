@@ -12,8 +12,8 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
-        String query = "galway";
-        int maxPageLoads = 25;
+        String query = "software";
+        int maxPageLoads = 15;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
