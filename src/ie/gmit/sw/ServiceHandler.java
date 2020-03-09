@@ -58,7 +58,7 @@ public class ServiceHandler extends HttpServlet {
 		
 		//Initialise some request varuables with the submitted form info. These are local to this method and thread safe...
 		String option = req.getParameter("cmbOptions"); //Change options to whatever you think adds value to your assignment...
-		String s = req.getParameter("query");
+		String query = req.getParameter("query");
 
 		out.print("<html><head><title>Artificial Intelligence Assignment</title>");		
 		out.print("<link rel=\"stylesheet\" href=\"includes/style.css\">");
@@ -76,16 +76,14 @@ public class ServiceHandler extends HttpServlet {
 			
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
 		
-		WordFrequency[] words = new WeightedFont().getFontSizes(getWordFrequencyKeyValue());
+		WordFrequency[] words = new WeightedFont().getFontSizes(getWordFrequencyKeyValue(query));
 		Arrays.sort(words, Comparator.comparing(WordFrequency::getFrequency, Comparator.reverseOrder()));
-		//Arrays.stream(words).forEach(System.out::println);
 
 		//Spira Mirabilis
 		LogarithmicSpiralPlacer placer = new LogarithmicSpiralPlacer(800, 600);
 		int maxWords = 30;
 		for (int i = 0; i < Math.min(words.length, maxWords); i++) {
 			placer.place(words[i]); //Place each word on the canvas starting with the largest
-			System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
 		}
 
 		BufferedImage cloud = placer.getImage(); //Get a handle on the word cloud graphic
@@ -103,8 +101,8 @@ public class ServiceHandler extends HttpServlet {
 		doGet(req, resp);
  	}
 
-	private WordFrequency[] getWordFrequencyKeyValue() throws IOException {
-		return new QueryFrequencyGenerator().generateWordFrequencies();
+	private WordFrequency[] getWordFrequencyKeyValue(String query) throws IOException {
+		return new QueryFrequencyGenerator().generateWordFrequencies(query);
 	}
 	
 	private String encodeToString(BufferedImage image) {
