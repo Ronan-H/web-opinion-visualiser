@@ -13,7 +13,7 @@ import java.util.*;
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies() throws IOException {
         String query = "software";
-        int maxPageLoads = 15;
+        int maxPageLoads = 20;
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
