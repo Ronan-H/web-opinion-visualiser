@@ -7,12 +7,12 @@ import java.util.*;
 
 public class LogarithmicSpiralPlacer {
 	private Random rand = new Random(); //Random int generator for colours	
-	private Graphics g = null; //The "canvas" to draw the word cloud on
-	private BufferedImage img = null; //Rasterises the "canvas" to a PNG
+	private Graphics2D g; //The "canvas" to draw the word cloud on
+	private BufferedImage img; //Rasterises the "canvas" to a PNG
 	private java.util.List<Rectangle> placed = new ArrayList<>(); //The list of placed words
 	private CollisionDetector detector = new CollisionDetector(); //Detects overlapping words
-	private int width = 1600; //Image width. The bigger the canvas, the easier it is to place a word.
-	private int height = 1400; //Image height
+	private int width; //Image width. The bigger the canvas, the easier it is to place a word.
+	private int height; //Image height
 	private Rectangle imageRect;
 	private int turn = 15; //The weight of the turn in the spiral
 
@@ -21,10 +21,17 @@ public class LogarithmicSpiralPlacer {
 		this.width = w;
 		this.height = h;
 		img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-		g = img.getGraphics();
+		g = (Graphics2D) img.getGraphics();
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, width, height);
 		imageRect = new Rectangle(width, height);
+
+//		g.setRenderingHint(
+//				RenderingHints.KEY_TEXT_ANTIALIASING,
+//				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		g.setRenderingHint(
+//				RenderingHints.KEY_RENDERING,
+//				RenderingHints.VALUE_RENDER_QUALITY);
 	}
 	
 	/*

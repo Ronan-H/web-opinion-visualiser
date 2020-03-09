@@ -80,8 +80,8 @@ public class ServiceHandler extends HttpServlet {
 		Arrays.sort(words, Comparator.comparing(WordFrequency::getFrequency, Comparator.reverseOrder()));
 
 		//Spira Mirabilis
-		LogarithmicSpiralPlacer placer = new LogarithmicSpiralPlacer(800, 600);
-		int maxWords = 100;
+		LogarithmicSpiralPlacer placer = new LogarithmicSpiralPlacer(850, 700);
+		int maxWords = 80;
 		for (int i = 0; i < Math.min(words.length, maxWords); i++) {
 			placer.place(words[i]); //Place each word on the canvas starting with the largest
 		}

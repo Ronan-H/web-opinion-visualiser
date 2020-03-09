@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class WeightedFont {
 	private static final double MAX_FONT_SIZE = 50.00d;
-	private static final double MIN_FONT_SIZE = 10.00d;
+	private static final double MIN_FONT_SIZE = 12.00d;
 	
 	public WordFrequency[] getFontSizes(WordFrequency[] words) {
 		//Get the max and min frequencies and scale these to a natural log scale to smooth out the range  
@@ -20,7 +20,7 @@ public class WeightedFont {
 	
 	//Compute the initial font size for the word 
 	public double getScaledFontSize(double value, double min, double max){
-		double scaled = (MAX_FONT_SIZE * (value - min))/(max-min);
-		return (scaled > MIN_FONT_SIZE) ? scaled : MIN_FONT_SIZE;
+		double normalized = (value - min) / (max - min);
+		return MIN_FONT_SIZE + ((MAX_FONT_SIZE - MIN_FONT_SIZE) * normalized);
 	}
 }
