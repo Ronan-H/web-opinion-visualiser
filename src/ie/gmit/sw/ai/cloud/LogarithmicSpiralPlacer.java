@@ -66,7 +66,13 @@ public class LogarithmicSpiralPlacer {
 			int y = (int) Math.round(j + d * Math.sin(l * Math.PI / 180.0d));
 			i = x;
 			j = y;
-			word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.8d), (int) bounds.getWidth(), (int) bounds.getHeight());
+			word = new Rectangle(i, j - (int) (bounds.getHeight() * 0.5d), (int) bounds.getWidth(), (int) bounds.getHeight());
+
+			if (Math.abs(x) > width * 2) {
+				// failed to place this worth within the bounds of the image
+				return;
+			}
+
 			k++;
 		}
 		 

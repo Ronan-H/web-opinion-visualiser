@@ -14,7 +14,7 @@ public class TestWordProximityScorer {
         scorer.addWordScores(text, ignorer);
 
         for (String word : scores.keySet()) {
-            int score = scores.get(word);
+            long score = scores.get(word);
             System.out.printf("%s: %d%n", word, score);
         }
     }

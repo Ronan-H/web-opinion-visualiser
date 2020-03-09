@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,9 +20,13 @@ public class PageNode {
 
         try {
             System.out.println("Connecting to URL: " + url);
-            pageDoc = Jsoup.connect(url).get();
-            Thread.sleep(300);
-        } catch (IOException | InterruptedException e) {
+            pageDoc = Jsoup.connect(url).timeout(3 * 1000).get();
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            errored = true;
+        }
+
+        if (pageDoc == null) {
             errored = true;
         }
     }
@@ -99,7 +102,7 @@ public class PageNode {
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
                 if (elemText.contains(query)) {
-                    scorer.addWordScores(elemText, 1, ignorer);
+                    scorer.addWordScores(elemText, ignorer, (int)Math.ceil(tagScore / 2.0));
                 }
             }
         }

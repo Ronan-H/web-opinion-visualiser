@@ -12,7 +12,9 @@ import java.util.*;
 
 public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies(String query) throws IOException {
-        int maxPageLoads = 30;
+        System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
+
+        int maxPageLoads = 50;
 
         Random random = new Random();
 
@@ -21,7 +23,7 @@ public class QueryFrequencyGenerator {
 
         Set<String> visited = new HashSet<>();
         Comparator<PageNode> relevanceComparator = new RelevanceComparator(query);
-        PriorityQueue<PageNode> queue = new PriorityQueue<>(10, relevanceComparator);
+        PriorityQueue<PageNode> queue = new PriorityQueue<>(maxPageLoads, relevanceComparator);
         Deque<String> urlPool = new ArrayDeque<>();
 
         for (Element r : res){
@@ -85,6 +87,8 @@ public class QueryFrequencyGenerator {
         for (String word : wordScores.keySet()) {
             frequencies[wordIndex++] = new WordFrequency(word, wordScores.get(word));
         }
+
+        System.out.println("Finished crawling.");
 
         return frequencies;
     }

@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public class TestQueryFrequencyGenerator {
     public static void main(String[] args) throws IOException {
-        String query = "fishing";
+        String query = "coronavirus";
 
         QueryFrequencyGenerator frequencyGenerator = new QueryFrequencyGenerator();
         WordFrequency[] frequencies = frequencyGenerator.generateWordFrequencies(query);

@@ -6,7 +6,7 @@ import java.util.Deque;
 import java.util.Map;
 
 public class WordProximityScorer {
-    private static final Integer[] beforeScoring = {15, 5, 1};
+    private static final Integer[] beforeScoring = {15, 5, 3, 1};
     private static final Integer[] afterScoring = {20, 10, 8, 6, 5, 3, 2, 1};
     private Map<String, Integer> wordScores;
     private String query;
@@ -17,10 +17,10 @@ public class WordProximityScorer {
     }
 
     public void addWordScores(String text, WordIgnorer ignorer) {
-        addWordScores(text, 1, ignorer);
+        addWordScores(text, ignorer, 1);
     }
 
-    public void addWordScores(String text, int weighting, WordIgnorer ignorer) {
+    public void addWordScores(String text, WordIgnorer ignorer, int weighting) {
         int queryPos = text.indexOf(query);
         String beforeText = text.substring(0, queryPos).trim();
         String[] beforeParts = (beforeText.equals("") ? new String[0] : beforeText.split(" "));
@@ -36,7 +36,7 @@ public class WordProximityScorer {
             if (!wordScores.containsKey(word)) {
                 wordScores.put(word, 0);
             }
-            wordScores.put(word, (wordScores.get(word) + scoreQueue.poll()) * weighting);
+            wordScores.put(word, wordScores.get(word) + (scoreQueue.poll() * weighting));
         }
 
         scoreQueue = new ArrayDeque<>(Arrays.asList(afterScoring));
@@ -48,7 +48,7 @@ public class WordProximityScorer {
             if (!wordScores.containsKey(word)) {
                 wordScores.put(word, 0);
             }
-            wordScores.put(word, (wordScores.get(word) + scoreQueue.poll()) * weighting);
+            wordScores.put(word, wordScores.get(word) + (scoreQueue.poll() * weighting));
         }
     }
 }

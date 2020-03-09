@@ -28,11 +28,11 @@ public class TagWeights {
         WEIGHTS.put("h6", 3);
         WEIGHTS.put("h5", 4);
         WEIGHTS.put("h4", 5);
-        WEIGHTS.put("h3", 7);
-        WEIGHTS.put("h2", 10);
-        WEIGHTS.put("h1", 15);
+        WEIGHTS.put("h3", 6);
+        WEIGHTS.put("h2", 7);
+        WEIGHTS.put("h1", 10);
 
-        WEIGHTS.put("title", 25);
+        WEIGHTS.put("title", 15);
 
         SCORING_TAGS = WEIGHTS.keySet().toArray(new String[0]);
     }
