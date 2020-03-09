@@ -30,7 +30,7 @@ public class PageNode {
         return url;
     }
 
-    public Collection<String> getUnvisitedLinks(Set<String> visited) {
+    public List<String> getUnvisitedLinks(Set<String> visited) {
         if (errored) return new ArrayList<>();
 
         return pageDoc.select("a")

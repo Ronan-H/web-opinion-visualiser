@@ -54,7 +54,9 @@ public class QueryFrequencyGenerator {
                 System.out.println("Adding links from: " + next.getUrl());
                 System.out.println("\tRelevance: " + nextRelevancy);
                 visited.add(next.getUrl());
-                urlPool.addAll(next.getUnvisitedLinks(visited));
+                List<String> nextLinks = next.getUnvisitedLinks(visited);
+                Collections.shuffle(nextLinks);
+                urlPool.addAll(nextLinks);
             }
             else {
                 System.out.println("Page not relevant, ignoring links: " + next.getUrl());
