@@ -31,7 +31,6 @@ public class QueryFrequencyGenerator {
             String url = title.attr("href");
             System.out.println("URL:\t" + url);
             System.out.println("Title:\t" + title.text());
-            System.out.printf("Text:   %s%n%n", r.getElementsByClass("result__snippet").first().wholeText());
 
             urlPool.add(url);
         }
