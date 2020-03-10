@@ -32,12 +32,13 @@ public class QueryCrawler {
 
         for (Element r : res){
             Element title = r.getElementsByClass("links_main").first().getElementsByTag("a").first();
-            String url = title.attr("href");
+            String url = title.attr("href").toLowerCase();
             System.out.println("URL:\t" + url);
             System.out.println("Title:\t" + title.text());
 
             urlPool.add(url);
         }
+
 
         //urlPool.add("https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_outbreak");
 
@@ -61,7 +62,7 @@ public class QueryCrawler {
             System.out.println("Polling page from the queue: " + node.getUrl());
             double nodeRelevancy = node.getRelevanceScore(query);
             System.out.printf("Relevance: %.2f%n", nodeRelevancy);
-            visited.add(node.getUrl());
+            visited.add(node.getRootUrl());
 
             if (nodeRelevancy > 0.5) {
                 List<String> nextLinks = node.getUnvisitedLinks(visited);

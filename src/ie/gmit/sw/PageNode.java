@@ -6,17 +6,19 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PageNode {
     private String url;
+    private String rootUrl;
     private Document pageDoc;
     private boolean errored;
     private double relevanceScore;
     private boolean relevanceComputed;
+    private static final String[] IGNORE_ENDS = {".jpg", ".jpeg", ".png", ".gif", ".mp3", ".mp4", ".pdf"};
 
     public PageNode(String url) {
         this.url = url;
+        this.rootUrl = getURLRoot(url);
 
         try {
             System.out.println("Connecting to URL: " + url);
@@ -31,13 +33,47 @@ public class PageNode {
         }
     }
 
+    private static String getURLRoot(String url) {
+        String[] urlParts = url.split("#");
+        return (urlParts.length == 0 ? url : urlParts[0]);
+    }
+
     public String getUrl() {
         return url;
     }
 
-    public List<String> getUnvisitedLinks(Set<String> visited) {
-        if (errored) return new ArrayList<>();
+    public String getRootUrl() {
+        return rootUrl;
+    }
 
+    public List<String> getUnvisitedLinks(Set<String> visited) {
+        List<String> unvisited = new ArrayList<>();
+        if (errored) {
+            return unvisited;
+        }
+
+        Elements links = pageDoc.select("a");
+        linkLoop:
+        for (Element link : links) {
+            String href = link.absUrl("href").toLowerCase();
+            String root = getURLRoot(href);
+
+            if (href.startsWith("http") // http/https link
+            && !visited.contains(root) // unvisited
+            && !URLBlacklist.getInstance().isUrlBlacklisted(href)) { // not blacklisted
+                // doesn't end with a common media file extension
+                for (String end : IGNORE_ENDS) {
+                    if (href.endsWith(end)) {
+                        continue linkLoop;
+                    }
+                }
+
+                unvisited.add(href);
+            }
+        }
+
+        return unvisited;
+/*
         return pageDoc.select("a")
                 .stream()
                 .map(e -> e.absUrl("href"))
@@ -46,6 +82,7 @@ public class PageNode {
                 .filter(u -> !visited.contains(u))
                 .filter(u -> !URLBlacklist.getInstance().isUrlBlacklisted(u))
                 .collect(Collectors.toList());
+*/
     }
 
     public double getRelevanceScore(String query) {
