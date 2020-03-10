@@ -79,3 +79,6 @@ servlet-api.jar
 # Submission files
 G00342393.zip
 wcloud.war
+
+# ignore word cloud image output
+clouds/

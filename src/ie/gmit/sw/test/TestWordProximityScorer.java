@@ -1,4 +1,6 @@
-package ie.gmit.sw;
+package ie.gmit.sw.test;
+
+import ie.gmit.sw.*;
 
 import java.util.HashMap;
 import java.util.Map;

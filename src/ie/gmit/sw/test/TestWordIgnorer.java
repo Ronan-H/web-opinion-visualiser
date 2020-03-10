@@ -1,4 +1,6 @@
-package ie.gmit.sw;
+package ie.gmit.sw.test;
+
+import ie.gmit.sw.*;
 
 public class TestWordIgnorer {
     public static void main(String[] args) {

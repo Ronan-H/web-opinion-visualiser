@@ -1,7 +1,6 @@
 package ie.gmit.sw;
 
 
-import ie.gmit.sw.ai.cloud.WordFrequency;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,11 +9,15 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 
-public class QueryFrequencyGenerator {
-    public WordFrequency[] generateWordFrequencies(String query) throws IOException {
-        System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
+public class QueryCrawler {
+    private int maxPageLoads;
 
-        int maxPageLoads = 5;
+    public QueryCrawler(int maxPageLoads) {
+        this.maxPageLoads = maxPageLoads;
+    }
+
+    public Map<String, Integer> getCrawlScores(String query) throws IOException {
+        System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
         Random random = new Random();
 
@@ -22,6 +25,7 @@ public class QueryFrequencyGenerator {
         Set<String> visited = new HashSet<>();
         Comparator<PageNode> relevanceComparator = new RelevanceComparator(query);
         PriorityQueue<PageNode> queue = new PriorityQueue<>(maxPageLoads, relevanceComparator);
+
 
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
@@ -34,6 +38,8 @@ public class QueryFrequencyGenerator {
 
             urlPool.add(url);
         }
+
+        //urlPool.add("https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_outbreak");
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         Map<String, Integer> wordScores = new HashMap<>();
@@ -81,14 +87,8 @@ public class QueryFrequencyGenerator {
             node.addWordScores(query, scorer, ignorer);
         }
 
-        WordFrequency[] frequencies = new WordFrequency[wordScores.size()];
-        int wordIndex = 0;
-        for (String word : wordScores.keySet()) {
-            frequencies[wordIndex++] = new WordFrequency(word, wordScores.get(word));
-        }
-
         System.out.println("Finished crawling.");
 
-        return frequencies;
+        return wordScores;
     }
 }

@@ -9,11 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.Comparator;
 
-import ie.gmit.sw.ai.cloud.LogarithmicSpiralPlacer;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
 
@@ -75,9 +72,11 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<b>jsoup-1.12.1.jar</b> have already been added to the project.");	
 			
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
-		
-		WordFrequency[] words = new WeightedFont().getFontSizes(getWordFrequencyKeyValue(query.toLowerCase()));
-		BufferedImage cloud = new WordCloudGenerator(words, 850, 700, 65).generateWordCloud();
+
+		WordFrequency[] words = new WeightedFont().getFontSizes(
+								new MapToFrequencyArray(
+								new QueryCrawler(20).getCrawlScores(query)).convert(65));
+		BufferedImage cloud = new WordCloudGenerator(words, 850, 700).generateWordCloud();
 
 		out.print("<img src=\"data:image/png;base64," + encodeToString(cloud) + "\" alt=\"Word Cloud\">");
 		
@@ -92,10 +91,6 @@ public class ServiceHandler extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doGet(req, resp);
  	}
-
-	private WordFrequency[] getWordFrequencyKeyValue(String query) throws IOException {
-		return new QueryFrequencyGenerator().generateWordFrequencies(query);
-	}
 	
 	private String encodeToString(BufferedImage image) {
 	    String s = null;

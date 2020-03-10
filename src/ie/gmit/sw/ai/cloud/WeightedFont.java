@@ -3,13 +3,13 @@ package ie.gmit.sw.ai.cloud;
 import java.util.Arrays;
 
 public class WeightedFont {
-	private static final double MAX_FONT_SIZE = 45.00d;
+	private static final double MAX_FONT_SIZE = 37.00d;
 	private static final double MIN_FONT_SIZE = 20.00d;
 	
 	public WordFrequency[] getFontSizes(WordFrequency[] words) {
 		//Get the max and min frequencies and scale these to a natural log scale to smooth out the range  
-		double max = Math.sqrt(Arrays.stream(words).mapToDouble(n -> n.getFrequency()).max().getAsDouble());
-		double min = Math.sqrt(Arrays.stream(words).mapToDouble(n -> n.getFrequency()).min().getAsDouble());
+		double max = Math.sqrt(words[0].getFrequency());
+		double min = Math.sqrt(words[words.length - 1].getFrequency());
 
 		for (WordFrequency wf : words) {
 			//Use a log scale and word frequency to compute the font size for the word
