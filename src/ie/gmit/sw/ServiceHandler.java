@@ -77,16 +77,8 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
 		
 		WordFrequency[] words = new WeightedFont().getFontSizes(getWordFrequencyKeyValue(query.toLowerCase()));
-		Arrays.sort(words, Comparator.comparing(WordFrequency::getFrequency, Comparator.reverseOrder()));
+		BufferedImage cloud = new WordCloudGenerator(words, 850, 700, 65).generateWordCloud();
 
-		//Spira Mirabilis
-		LogarithmicSpiralPlacer placer = new LogarithmicSpiralPlacer(850, 700);
-		int maxWords = 65;
-		for (int i = 0; i < Math.min(words.length, maxWords); i++) {
-			placer.place(words[i]); //Place each word on the canvas starting with the largest
-		}
-
-		BufferedImage cloud = placer.getImage(); //Get a handle on the word cloud graphic
 		out.print("<img src=\"data:image/png;base64," + encodeToString(cloud) + "\" alt=\"Word Cloud\">");
 		
 		

@@ -14,7 +14,7 @@ public class QueryFrequencyGenerator {
     public WordFrequency[] generateWordFrequencies(String query) throws IOException {
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
-        int maxPageLoads = 30;
+        int maxPageLoads = 5;
 
         Random random = new Random();
 
