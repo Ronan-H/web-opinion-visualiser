@@ -6,8 +6,8 @@ import java.util.Deque;
 import java.util.Map;
 
 public class WordProximityScorer {
-    private static final Integer[] beforeScoring = {15, 5, 3, 1};
-    private static final Integer[] afterScoring = {20, 10, 8, 6, 5, 3, 2, 1};
+    private static final Integer[] beforeScoring = {2, 1, 1, 1, 1};
+    private static final Integer[] afterScoring = {3, 2, 2, 1, 1, 1, 1, 1};
     private Map<String, Integer> wordScores;
     private String query;
 

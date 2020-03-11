@@ -10,11 +10,11 @@ import java.io.IOException;
 
 public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
-        String query = "ronaldo";
+        String query = "fishing";
 
         WordFrequency[] words = new WeightedFont().getFontSizes(
                                 new MapToFrequencyArray(
-                                new QueryCrawler(50).getCrawlScores(query)).convert(100));
+                                new QueryCrawler(25).getCrawlScores(query)).convert(90));
 
         for (int i = words.length - 1; i >= 0; i--) {
             System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
