@@ -2,7 +2,6 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.*;
 import ie.gmit.sw.ai.cloud.*;
-import ie.gmit.sw.crawler.HeuristicBFSCrawler;
 import ie.gmit.sw.crawler.RandomCrawler;
 
 import javax.imageio.ImageIO;

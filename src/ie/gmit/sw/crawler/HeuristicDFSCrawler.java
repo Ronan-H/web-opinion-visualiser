@@ -1,14 +1,14 @@
 package ie.gmit.sw.crawler;
 
 import ie.gmit.sw.PageNode;
-import ie.gmit.sw.RandomComparator;
+import ie.gmit.sw.RelevanceComparator;
 
+import java.util.ArrayDeque;
 import java.util.List;
-import java.util.PriorityQueue;
 
-public class RandomCrawler extends QueryCrawler {
-    public RandomCrawler(String query, int maxPageLoads) {
-        super(query, maxPageLoads, new RandomComparator<>(), new PriorityQueue<>(new RandomComparator<>()));
+public class HeuristicDFSCrawler extends QueryCrawler {
+    public HeuristicDFSCrawler(String query, int maxPageLoads) {
+        super(query, maxPageLoads, new RelevanceComparator(query), new ArrayDeque<>());
     }
 
     @Override
