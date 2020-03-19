@@ -1,23 +1,13 @@
 package ie.gmit.sw.crawler;
 
-
 import ie.gmit.sw.PageNode;
-import ie.gmit.sw.RelevanceComparator;
+import ie.gmit.sw.RandomComparator;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
-public class BFSQueryCrawler extends QueryCrawler {
-    private PriorityQueue<PageNode> queue;
-
-    public BFSQueryCrawler(String query, int maxPageLoads) {
-        super(query, maxPageLoads);
-    }
-
-    @Override
-    public Map<String, Integer> getCrawlScores() throws IOException {
-        queue = new PriorityQueue<>(maxPageLoads, new RelevanceComparator(query));
-        return super.getCrawlScores();
+public class RandomCrawler extends QueryCrawler {
+    public RandomCrawler(String query, int maxPageLoads) {
+        super(query, maxPageLoads, new RandomComparator());
     }
 
     @Override
@@ -28,11 +18,7 @@ public class BFSQueryCrawler extends QueryCrawler {
 
         PageNode node;
         if (queue.isEmpty()) {
-            String nextUrl = urlPool.poll();
-            System.out.printf("Loading page: %s%n%n", nextUrl);
-            node = new PageNode(nextUrl);
-            queue.add(node);
-            pageLoads++;
+            queueNextPage();
         }
 
         node = queue.poll();

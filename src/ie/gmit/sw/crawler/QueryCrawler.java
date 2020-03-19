@@ -1,5 +1,6 @@
 package ie.gmit.sw.crawler;
 
+import ie.gmit.sw.PageNode;
 import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
 
@@ -15,11 +16,13 @@ public abstract class QueryCrawler {
     protected Set<String> visited;
     protected WordIgnorer ignorer;
     protected WordProximityScorer scorer;
+    protected PriorityQueue<PageNode> queue;
 
-    public QueryCrawler(String query, int maxPageLoads) {
+    public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
 
+        queue = new PriorityQueue<>(pageComparator);
         pageLoads = 0;
         random = new Random();
     }
@@ -40,6 +43,13 @@ public abstract class QueryCrawler {
         System.out.println("Finished crawling.");
 
         return scorer.getWordScores();
+    }
+
+    protected void queueNextPage() {
+        String nextUrl = urlPool.poll();
+        System.out.printf("Loading page: %s%n%n", nextUrl);
+        queue.add(new PageNode(nextUrl));
+        pageLoads++;
     }
 
     public abstract boolean crawlNextPage();

@@ -2,7 +2,8 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.*;
 import ie.gmit.sw.ai.cloud.*;
-import ie.gmit.sw.crawler.BFSQueryCrawler;
+import ie.gmit.sw.crawler.HeuristicBFSCrawler;
+import ie.gmit.sw.crawler.RandomCrawler;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,7 +16,7 @@ public class TestQueryCrawler {
 
         WordFrequency[] words = new WeightedFont().getFontSizes(
                                 new MapToFrequencyArray(
-                                new BFSQueryCrawler(query, 10).getCrawlScores()).convert(90));
+                                new RandomCrawler(query, 25).getCrawlScores()).convert(90));
 
         for (int i = words.length - 1; i >= 0; i--) {
             System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
