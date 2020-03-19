@@ -13,6 +13,7 @@ import java.util.Base64;
 
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
+import ie.gmit.sw.crawler.BFSQueryCrawler;
 
 /*
  * -------------------------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ public class ServiceHandler extends HttpServlet {
 
 		WordFrequency[] words = new WeightedFont().getFontSizes(
 								new MapToFrequencyArray(
-								new QueryCrawler(20).getCrawlScores(query)).convert(65));
+								new BFSQueryCrawler(20).getCrawlScores(query)).convert(65));
 		BufferedImage cloud = new WordCloudGenerator(words, 850, 700).generateWordCloud();
 
 		out.print("<img src=\"data:image/png;base64," + encodeToString(cloud) + "\" alt=\"Word Cloud\">");

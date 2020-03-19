@@ -1,6 +1,10 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
 
+import ie.gmit.sw.PageNode;
+import ie.gmit.sw.RelevanceComparator;
+import ie.gmit.sw.WordIgnorer;
+import ie.gmit.sw.WordProximityScorer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,10 +13,11 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 
-public class QueryCrawler {
+public class BFSQueryCrawler extends QueryCrawler {
     private int maxPageLoads;
+    private PriorityQueue<PageNode> queue;
 
-    public QueryCrawler(int maxPageLoads) {
+    public BFSQueryCrawler(int maxPageLoads) {
         this.maxPageLoads = maxPageLoads;
     }
 
@@ -24,30 +29,27 @@ public class QueryCrawler {
         Deque<String> urlPool = new ArrayDeque<>();
         Set<String> visited = new HashSet<>();
         Comparator<PageNode> relevanceComparator = new RelevanceComparator(query);
-        PriorityQueue<PageNode> queue = new PriorityQueue<>(maxPageLoads, relevanceComparator);
-
-
-        Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
-        Elements res = doc.getElementById("links").getElementsByClass("results_links");
-
-        for (Element r : res){
-            Element title = r.getElementsByClass("links_main").first().getElementsByTag("a").first();
-            String url = title.attr("href").toLowerCase();
-            System.out.println("URL:\t" + url);
-            System.out.println("Title:\t" + title.text());
-
-            urlPool.add(url);
-        }
-
 
         //urlPool.add("https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_outbreak");
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
-        Map<String, Integer> wordScores = new HashMap<>();
-        WordProximityScorer scorer = new WordProximityScorer(wordScores, query);
+        WordProximityScorer scorer = new WordProximityScorer(query);
 
         int pageLoads = 0;
         PageNode node;
+
+
+
+        System.out.println("Finished crawling.");
+
+        return scorer.getWordScores();
+    }
+
+    @Override
+    public boolean crawlNextPage() {
+        if ((!queue.isEmpty() || !urlPool.isEmpty()) && pageLoads < maxPageLoads) {
+            return false;
+        }
 
         while ((!queue.isEmpty() || !urlPool.isEmpty()) && pageLoads < maxPageLoads) {
             if (queue.isEmpty()) {
@@ -88,8 +90,6 @@ public class QueryCrawler {
             node.addWordScores(query, scorer, ignorer);
         }
 
-        System.out.println("Finished crawling.");
-
-        return wordScores;
+        return true;
     }
 }
