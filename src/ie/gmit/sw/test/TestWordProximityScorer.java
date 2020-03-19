@@ -12,7 +12,7 @@ public class TestWordProximityScorer {
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         Map<String, Integer> scores = new HashMap<>();
-        WordProximityScorer scorer = new WordProximityScorer(scores, query);
+        WordProximityScorer scorer = new WordProximityScorer(query);
         scorer.addWordScores(text, ignorer);
 
         for (String word : scores.keySet()) {

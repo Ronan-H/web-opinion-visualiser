@@ -1,9 +1,6 @@
 package ie.gmit.sw;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Map;
+import java.util.*;
 
 public class WordProximityScorer {
     private static final Integer[] beforeScoring = {2, 1, 1, 1, 1};
@@ -11,9 +8,14 @@ public class WordProximityScorer {
     private Map<String, Integer> wordScores;
     private String query;
 
-    public WordProximityScorer(Map<String, Integer> wordScores, String query) {
-        this.wordScores = wordScores;
+    public WordProximityScorer(String query) {
         this.query = query;
+
+        this.wordScores = new HashMap<>();
+    }
+
+    public Map<String, Integer> getWordScores() {
+        return wordScores;
     }
 
     public void addWordScores(String text, WordIgnorer ignorer) {
