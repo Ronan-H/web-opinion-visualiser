@@ -3,7 +3,7 @@ package ie.gmit.sw;
 import java.util.Comparator;
 import java.util.Random;
 
-public class RandomComparator implements Comparator<PageNode> {
+public class RandomComparator implements Comparator {
     private Random random;
 
     public RandomComparator() {
@@ -11,7 +11,7 @@ public class RandomComparator implements Comparator<PageNode> {
     }
 
     @Override
-    public int compare(PageNode nodeA, PageNode nodeB) {
+    public int compare(Object a, Object b) {
         return random.nextBoolean() ? 1 : -1;
     }
 }

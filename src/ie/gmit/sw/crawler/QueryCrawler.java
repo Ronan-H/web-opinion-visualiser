@@ -8,19 +8,20 @@ import java.io.IOException;
 import java.util.*;
 
 public abstract class QueryCrawler {
-    protected String query;
-    protected int maxPageLoads;
-    protected int pageLoads;
-    protected Deque<String> urlPool;
-    protected Random random;
-    protected Set<String> visited;
-    protected WordIgnorer ignorer;
-    protected WordProximityScorer scorer;
-    protected PriorityQueue<PageNode> queue;
+    String query;
+    int maxPageLoads;
+    int pageLoads;
+    Queue<String> urlPool;
+    Random random;
+    Set<String> visited;
+    WordIgnorer ignorer;
+    WordProximityScorer scorer;
+    PriorityQueue<PageNode> queue;
 
-    public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator) {
+    public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator, Queue<String> urlPool) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
+        this.urlPool = urlPool;
 
         queue = new PriorityQueue<>(pageComparator);
         pageLoads = 0;
@@ -32,7 +33,7 @@ public abstract class QueryCrawler {
 
         visited = new HashSet<>();
         List<String> resultUrls = Arrays.asList(new SearchEngineScraper().getResultLinks(query));
-        urlPool = new ArrayDeque<>(resultUrls);
+        urlPool.addAll(resultUrls);
         //urlPool.add("https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_outbreak");
 
         ignorer = new WordIgnorer("./res/ignorewords.txt", query);

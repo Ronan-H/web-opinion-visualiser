@@ -8,7 +8,7 @@ import java.util.*;
 
 public class HeuristicBFSCrawler extends QueryCrawler {
     public HeuristicBFSCrawler(String query, int maxPageLoads) {
-        super(query, maxPageLoads, new RelevanceComparator(query));
+        super(query, maxPageLoads, new RelevanceComparator(query), new ArrayDeque<>());
     }
 
     @Override
@@ -38,14 +38,9 @@ public class HeuristicBFSCrawler extends QueryCrawler {
 
             System.out.printf("Adding %d child URLs...%n", numLinksAdd);
 
-            for (int i = 0; i < numLinksAdd && nextLinks.size() > 0; i++) {
+            for (int i = 0; i < numLinksAdd && nextLinks.size() > 0 && urlPool.size() < 250; i++) {
                 urlPool.add(nextLinks.remove(random.nextInt(nextLinks.size())));
             }
-        }
-
-        // prune urlPool
-        while (urlPool.size() > 250) {
-            urlPool.pop();
         }
 
         System.out.println("Adding word scores...\n");
