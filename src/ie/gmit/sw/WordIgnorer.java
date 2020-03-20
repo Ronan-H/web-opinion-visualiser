@@ -50,7 +50,8 @@ public class WordIgnorer {
     public boolean isIgnored(String word) {
         return word.length() > 12
                 || word.length() < 3
-                || word.equals(query)
+                || word.contains(query)
+                || query.contains(word)
                 || ignoredSet.contains(word)
                 || !wordPattern.matcher(word).matches();
     }

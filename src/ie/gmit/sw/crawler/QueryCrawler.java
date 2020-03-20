@@ -53,7 +53,7 @@ public abstract class QueryCrawler {
 
             // add a few random links from this page to the URL pool
             int numLinksAdd = (int)Math.ceil(nodeRelevancy / 3);
-            if (numLinksAdd > 3) numLinksAdd = 3;
+            if (numLinksAdd > 2) numLinksAdd = 2;
 
             System.out.printf("Adding %d child URLs...%n", numLinksAdd);
 
