@@ -8,7 +8,7 @@ import java.util.PriorityQueue;
 
 public class RandomCrawler extends QueryCrawler {
     public RandomCrawler(String query, int maxPageLoads) {
-        super(query, maxPageLoads, new RandomComparator<>(), new PriorityQueue<>(new RandomComparator<>()));
+        super(query, maxPageLoads, new RandomComparator<>(), new PriorityQueue<String>(new RandomComparator<>()));
     }
 
     @Override

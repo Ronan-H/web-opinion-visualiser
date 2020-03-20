@@ -8,6 +8,10 @@ import org.jsoup.select.Elements;
 import java.util.*;
 
 public class PageNode {
+    private static int idCounter = 0;
+
+    private int id;
+    private boolean isLoaded;
     private String url;
     private String rootUrl;
     private Document pageDoc;
@@ -18,8 +22,12 @@ public class PageNode {
 
     public PageNode(String url) {
         this.url = url;
-        this.rootUrl = getURLRoot(url);
 
+        this.rootUrl = getURLRoot(url);
+        id = idCounter++;
+    }
+
+    public void load() {
         try {
             System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).timeout(3 * 1000).get();
@@ -31,19 +39,8 @@ public class PageNode {
         if (pageDoc == null) {
             errored = true;
         }
-    }
 
-    private static String getURLRoot(String url) {
-        String[] urlParts = url.split("#");
-        return (urlParts.length == 0 ? url : urlParts[0]);
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getRootUrl() {
-        return rootUrl;
+        isLoaded = true;
     }
 
     public List<String> getUnvisitedLinks(Set<String> visited) {
@@ -143,5 +140,26 @@ public class PageNode {
                 }
             }
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    private static String getURLRoot(String url) {
+        String[] urlParts = url.split("#");
+        return (urlParts.length == 0 ? url : urlParts[0]);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getRootUrl() {
+        return rootUrl;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
     }
 }
