@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
 import java.util.Comparator;
 import java.util.Random;

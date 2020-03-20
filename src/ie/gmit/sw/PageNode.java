@@ -14,24 +14,31 @@ public class PageNode {
     private boolean isLoaded;
     private String url;
     private String rootUrl;
+    private PageNode parent;
     private Document pageDoc;
     private boolean errored;
     private double relevanceScore;
     private boolean relevanceComputed;
     private static final String[] IGNORE_ENDS = {".jpg", ".jpeg", ".png", ".gif", ".mp3", ".mp4", ".pdf"};
 
-    public PageNode(String url) {
+    public PageNode(String url, PageNode parent) {
         this.url = url;
+        this.parent = parent;
 
         this.rootUrl = getURLRoot(url);
         id = idCounter++;
     }
 
+    public PageNode(String url) {
+        this(url, null);
+    }
+
+
     public void load() {
         try {
             System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).timeout(3 * 1000).get();
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (Exception e) {
             errored = true;
         }
@@ -161,5 +168,9 @@ public class PageNode {
 
     public boolean isLoaded() {
         return isLoaded;
+    }
+
+    public PageNode getParent() {
+        return parent;
     }
 }
