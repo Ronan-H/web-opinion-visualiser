@@ -12,14 +12,22 @@ import java.io.IOException;
 
 public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
-        String query = "chess";
+        String query = "fishing";
 
+        QueryCrawler crawler = new HeuristicBFSCrawler(query, 30);
         WordFrequency[] words = new WeightedFont().getFontSizes(
                                 new MapToFrequencyArray(
-                                new HeuristicBFSCrawler(query, 100).getCrawlScores()).convert(90));
+                                crawler.getCrawlScores()).convert(90));
 
+        System.out.println("-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {
             System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
+        }
+
+        System.out.println("-- Domain frequencies --");
+        WordFrequency[] domainFreqs = new MapToFrequencyArray(crawler.getDomainVisits()).convert(25);
+        for (int i = domainFreqs.length - 1; i >= 0; i--) {
+            System.out.printf("Domain %d: %15s - Freq: %d%n", i, domainFreqs[i].getWord(), domainFreqs[i].getFrequency());
         }
 
         String filePath = String.format("./clouds/%s.png", query);

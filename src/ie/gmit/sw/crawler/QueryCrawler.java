@@ -5,18 +5,22 @@ import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class QueryCrawler {
-    String query;
-    int maxPageLoads;
-    int pageLoads;
-    Random random;
-    Set<String> visited;
-    WordIgnorer ignorer;
-    WordProximityScorer scorer;
-    PriorityQueue<PageNode> queue;
+    private String query;
+    private int maxPageLoads;
+    private int pageLoads;
+    private Random random;
+    private Set<String> visited;
+    private WordIgnorer ignorer;
+    private WordProximityScorer scorer;
+    private PriorityQueue<PageNode> queue;
+    private Map<String, Integer> domainVisits;
+
 
     public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator) {
         this.query = query;
@@ -25,6 +29,7 @@ public abstract class QueryCrawler {
         queue = new PriorityQueue<>(pageComparator);
         pageLoads = 0;
         random = new Random();
+        domainVisits = new HashMap<>();
     }
 
     private PageNode loadNextPage() {
@@ -32,6 +37,13 @@ public abstract class QueryCrawler {
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
         nextPage.load();
         pageLoads++;
+
+        // increment domain name visit count
+        String domainName = getDomainName(nextPage.getUrl());
+        if (!domainVisits.containsKey(domainName)) {
+            domainVisits.put(domainName, 0);
+        }
+        domainVisits.put(domainName, domainVisits.get(domainName) + 1);
         return nextPage;
     }
 
@@ -87,5 +99,22 @@ public abstract class QueryCrawler {
         System.out.println("Finished crawling.");
 
         return scorer.getWordScores();
+    }
+
+    // taken from https://stackoverflow.com/a/9608008
+    public static String getDomainName(String url) {
+        try {
+            URI uri = new URI(url);
+            String domain = uri.getHost();
+            return domain.startsWith("www.") ? domain.substring(4) : domain;
+        }
+        catch (URISyntaxException e) {
+            return "invalid";
+        }
+
+    }
+
+    public Map<String, Integer> getDomainVisits() {
+        return domainVisits;
     }
 }
