@@ -12,12 +12,12 @@ import java.io.IOException;
 
 public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
-        String query = "fishing";
+        String query = "coronavirus";
 
-        QueryCrawler crawler = new HeuristicBFSCrawler(query, 30);
+        QueryCrawler crawler = new HeuristicBFSCrawler(query, 50);
         WordFrequency[] words = new WeightedFont().getFontSizes(
                                 new MapToFrequencyArray(
-                                crawler.getCrawlScores()).convert(90));
+                                crawler.getCrawlScores()).convert(75));
 
         System.out.println("-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {

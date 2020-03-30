@@ -9,6 +9,9 @@ public class WordFrequency {
 		this.word = word;
 		this.frequency = frequency;
 	}
+	private String toTitleCase(String s) {
+		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
 
 	public String getWord() {
 		return this.word;

@@ -42,7 +42,7 @@ public class SpiralPlacer {
 	}
 
 	private void place(WordFrequency wf) {
-		Font font = new Font("Tahoma", 0, wf.getFontSize()); //Create a font with a size proportional to the word frequency
+		Font font = new Font("Verdana", Font.PLAIN, wf.getFontSize()); //Create a font with a size proportional to the word frequency
 		g.setFont(font); //Set the font of the graphics "brush"
 		
 		//Get the "size" of the word string as a rectangle
