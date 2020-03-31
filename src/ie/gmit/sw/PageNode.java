@@ -15,6 +15,7 @@ public class PageNode {
     private String url;
     private String rootUrl;
     private PageNode parent;
+    private int depth;
     private Document pageDoc;
     private boolean errored;
     private double relevanceScore;
@@ -24,7 +25,7 @@ public class PageNode {
     public PageNode(String url, PageNode parent) {
         this.url = url;
         this.parent = parent;
-
+        this.depth = parent == null ? 0 : parent.getDepth() + 1;
         this.rootUrl = getURLRoot(url);
         id = idCounter++;
     }
@@ -172,5 +173,9 @@ public class PageNode {
 
     public PageNode getParent() {
         return parent;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }

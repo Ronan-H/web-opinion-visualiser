@@ -1,5 +1,6 @@
 package ie.gmit.sw.crawler;
 
+import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
@@ -19,7 +20,7 @@ public abstract class QueryCrawler {
     private WordIgnorer ignorer;
     private WordProximityScorer scorer;
     private PriorityQueue<PageNode> queue;
-    private Map<String, Integer> domainVisits;
+    private DomainFrequency domainFrequency;
 
 
     public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator) {
@@ -29,21 +30,18 @@ public abstract class QueryCrawler {
         queue = new PriorityQueue<>(pageComparator);
         pageLoads = 0;
         random = new Random();
-        domainVisits = new HashMap<>();
+        domainFrequency = new DomainFrequency();
     }
 
     private PageNode loadNextPage() {
         PageNode nextPage = queue.poll();
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
+        System.out.printf("Relative domain visit frequency: %.3f%n", domainFrequency.getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
         pageLoads++;
 
         // increment domain name visit count
-        String domainName = getDomainName(nextPage.getUrl());
-        if (!domainVisits.containsKey(domainName)) {
-            domainVisits.put(domainName, 0);
-        }
-        domainVisits.put(domainName, domainVisits.get(domainName) + 1);
+        domainFrequency.recordVisit(nextPage.getUrl());
         return nextPage;
     }
 
@@ -101,20 +99,7 @@ public abstract class QueryCrawler {
         return scorer.getWordScores();
     }
 
-    // taken from https://stackoverflow.com/a/9608008
-    public static String getDomainName(String url) {
-        try {
-            URI uri = new URI(url);
-            String domain = uri.getHost();
-            return domain.startsWith("www.") ? domain.substring(4) : domain;
-        }
-        catch (URISyntaxException e) {
-            return "invalid";
-        }
-
-    }
-
-    public Map<String, Integer> getDomainVisits() {
-        return domainVisits;
+    public DomainFrequency getDomainFrequencies() {
+        return domainFrequency;
     }
 }

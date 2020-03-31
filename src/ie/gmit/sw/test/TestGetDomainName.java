@@ -1,11 +1,9 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.crawler.QueryCrawler;
-
-import java.net.URISyntaxException;
+import ie.gmit.sw.DomainFrequency;
 
 public class TestGetDomainName {
-    public static void main(String[] args) throws URISyntaxException {
+    public static void main(String[] args) {
         String[] testUrls = {
                 "https://www.google.ie/",
                 "http://www.google.ie",
@@ -18,7 +16,7 @@ public class TestGetDomainName {
 
         String domain;
         for (String testUrl : testUrls) {
-            domain = QueryCrawler.getDomainName(testUrl);
+            domain = DomainFrequency.getDomainName(testUrl);
             System.out.printf("%s => %s%n", testUrl, domain);
         }
     }
