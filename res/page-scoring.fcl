@@ -1,10 +1,10 @@
 // lock definition
-FUNCTION_BLOCK page-scoring
+FUNCTION_BLOCK page_scoring
 
 // define input variables
 VAR_INPUT
     relevance : REAL;
-    domain-usage : REAL;
+    domain_usage : REAL;
     depth : REAL;
 END_VAR
 
@@ -15,28 +15,28 @@ END_VAR
 
 // fuzzify input variable 'relevance'
 FUZZIFY relevance
-    TERM irrelevant := (0, 1) (4, 0);
-    TERM minor := (1, 0) (4,1) (6,1) (9,0);
-    TERM significant := (6, 0) (9, 1);
+    TERM irrelevant := (0, 1) (1, 0);
+    TERM minor := trape 0.5 1.5 3.5 5.5;
+    TERM significant := (3, 0) (10, 1);
 END_FUZZIFY
 
-// fuzzify input variable 'domain-usage'
-FUZZIFY domain-usage
-    TERM low := (0, 1) (1, 1) (3,0);
-    TERM overused := (7,0) (9,1);
+// fuzzify input variable 'domain_usage'
+FUZZIFY domain_usage
+    TERM low := (0, 1) (4, 0);
+    TERM overused := (1, 0) (5, 1);
 END_FUZZIFY
 
 // fuzzify input variable 'depth'
 FUZZIFY depth
-    TERM shallow := (0, 1) (1, 1) (3,0);
-    TERM deep := (7,0) (9,1);
+    TERM shallow := (0, 1) (2, 1) (3, 0);
+    TERM deep := (1.5, 0) (5, 1);
 END_FUZZIFY
 
 // defuzzify
 DEFUZZIFY score
-    TERM poor := (0,0) (5,1) (10,0);
-    TERM reasonable := (10,0) (15,1) (20,0);
-    TERM excellent := (20,0) (25,1) (30,0);
+    TERM poor := gauss 2 2;
+    TERM reasonable := gauss 9 2;
+    TERM excellent := gauss 16 2;
     // Use 'Center Of Gravity' defuzzification method
     METHOD : COG;
     // Default value is 0 (if no rule activates defuzzifier)
@@ -52,17 +52,16 @@ RULEBLOCK No1
     // Use 'max' accumulation method
     ACCU : MAX;
 
-    RULE 1 : IF domain-usage IS overused OR depth IS deep
+    RULE 1 : IF relevance IS irrelevant OR domain_usage IS overused OR depth IS deep
                 THEN score IS poor;
 
-    RULE 2 : IF relevance IS irrelevant
-                THEN score is poor;
+    RULE 2 : IF (relevance IS minor OR relevance IS significant) AND domain_usage IS NOT overused
+                THEN score IS reasonable;
 
-    RULE 3 : IF relevance IS significant
+    RULE 3 : IF relevance IS significant AND domain_usage IS low AND depth IS shallow
                 THEN score IS excellent;
 
-    RULE 4 : IF relevance IS minor AND domain-usage IS low AND depth IS shallow OR depth IS deep
-                THEN score IS reasonable;
+
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
