@@ -6,8 +6,6 @@ import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +29,9 @@ public abstract class QueryCrawler {
         pageLoads = 0;
         random = new Random();
         domainFrequency = new DomainFrequency();
+
+        // TODO find a way to do this properly
+        ((FuzzyScoreComparator) pageComparator).setDomainFrequencies(domainFrequency);
     }
 
     private PageNode loadNextPage() {
@@ -59,18 +60,22 @@ public abstract class QueryCrawler {
         System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
 
-        if (nodeRelevancy > 1.0) {
+        if (nodeRelevancy > 0.5) {
             List<String> nextLinks = node.getUnvisitedLinks(visited);
 
             // add a few random links from this page to the URL pool
             int numLinksAdd = (int)Math.ceil(nodeRelevancy / 3);
-            if (numLinksAdd > 2) numLinksAdd = 2;
+            if (numLinksAdd > 5) numLinksAdd = 5;
 
             System.out.printf("Adding %d child URLs...%n", numLinksAdd);
 
             for (int i = 0; i < numLinksAdd && nextLinks.size() > 0 && queue.size() < 250; i++) {
                 queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
             }
+
+            queue.iterator().forEachRemaining(n ->
+                    System.out.println("URL: " + n.getUrl())
+            );
         }
 
         System.out.println("Adding word scores...\n");
