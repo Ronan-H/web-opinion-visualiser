@@ -20,6 +20,9 @@ public abstract class QueryCrawler {
     private PriorityQueue<PageNode> queue;
     private DomainFrequency domainFrequency;
 
+    // TODO find a way to do this properly
+    private FuzzyScoreComparator fuzzyScoreComparator;
+
 
     public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator) {
         this.query = query;
@@ -31,7 +34,8 @@ public abstract class QueryCrawler {
         domainFrequency = new DomainFrequency();
 
         // TODO find a way to do this properly
-        ((FuzzyScoreComparator) pageComparator).setDomainFrequencies(domainFrequency);
+        fuzzyScoreComparator = (FuzzyScoreComparator) pageComparator;
+        fuzzyScoreComparator.setDomainFrequencies(domainFrequency);
     }
 
     private PageNode loadNextPage() {
@@ -59,13 +63,15 @@ public abstract class QueryCrawler {
         System.out.printf("Relevance: %.2f%n", nodeRelevancy);
         System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
+        double fuzzyScore = fuzzyScoreComparator.getScoreForPage(node);
+        System.out.printf("Fuzzy score: %.2f%n", fuzzyScore);
 
-        if (nodeRelevancy > 0.5) {
+        if (fuzzyScore > 5.5) {
             List<String> nextLinks = node.getUnvisitedLinks(visited);
 
             // add a few random links from this page to the URL pool
-            int numLinksAdd = (int)Math.ceil(nodeRelevancy / 3);
-            if (numLinksAdd > 5) numLinksAdd = 5;
+            int numLinksAdd = (int)Math.ceil(fuzzyScore / 7);
+            //if (numLinksAdd > 5) numLinksAdd = 5;
 
             System.out.printf("Adding %d child URLs...%n", numLinksAdd);
 

@@ -50,7 +50,12 @@ public class FuzzyScoreComparator implements Comparator<PageNode> {
         return -Double.compare(aScore, bScore);
     }
 
-    private double getScoreForPage(PageNode node) {
+    public double getScoreForPage(PageNode node) {
+        if (node.getParent() == null) {
+            // root node; assume search results are highly relevant
+            return 28;
+        }
+
         // Set inputs
         fis.setVariable("relevance", node.getParent().getRelevanceScore(query));
         fis.setVariable("domain_usage", frequencies.getRelativeDomainFrequency(node.getUrl()));
