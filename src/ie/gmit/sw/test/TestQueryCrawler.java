@@ -14,7 +14,7 @@ public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
         String query = "coronavirus";
 
-        QueryCrawler crawler = new HeuristicBFSCrawler(query, 100);
+        QueryCrawler crawler = new HeuristicBFSCrawler(query, 50);
         WordFrequency[] words = new WeightedFont().getFontSizes(
                                 new MapToFrequencyArray(
                                 crawler.getCrawlScores()).convert(80));

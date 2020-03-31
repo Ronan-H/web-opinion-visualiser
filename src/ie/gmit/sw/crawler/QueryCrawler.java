@@ -72,10 +72,6 @@ public abstract class QueryCrawler {
             for (int i = 0; i < numLinksAdd && nextLinks.size() > 0 && queue.size() < 250; i++) {
                 queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
             }
-
-            queue.iterator().forEachRemaining(n ->
-                    System.out.println("URL: " + n.getUrl())
-            );
         }
 
         System.out.println("Adding word scores...\n");

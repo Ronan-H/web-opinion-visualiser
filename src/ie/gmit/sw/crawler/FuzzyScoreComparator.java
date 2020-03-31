@@ -47,7 +47,7 @@ public class FuzzyScoreComparator implements Comparator<PageNode> {
         double aScore = getScoreForPage(a);
         double bScore = getScoreForPage(b);
 
-        return Double.compare(aScore, bScore);
+        return -Double.compare(aScore, bScore);
     }
 
     private double getScoreForPage(PageNode node) {

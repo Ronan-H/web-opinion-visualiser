@@ -4,7 +4,7 @@ import java.util.*;
 
 public class WordProximityScorer {
     private static final Integer[] beforeScoring = {2, 2, 1, 1, 1, 1};
-    private static final Integer[] afterScoring = {2, 2, 1, 1, 1, 1};
+    private static final Integer[] afterScoring = {2, 2, 1, 1, 1, 1, 1, 1};
     private Map<String, Integer> wordScores;
     private String query;
 

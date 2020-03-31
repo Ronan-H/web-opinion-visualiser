@@ -38,8 +38,8 @@ public class PageNode {
     public void load() {
         try {
             System.out.println("Connecting to URL: " + url);
-            pageDoc = Jsoup.connect(url).timeout(3 * 1000).get();
-            Thread.sleep(1000);
+            pageDoc = Jsoup.connect(url).timeout(2 * 1000).get();
+            Thread.sleep(500);
         } catch (Exception e) {
             errored = true;
         }

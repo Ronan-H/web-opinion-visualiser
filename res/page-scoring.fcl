@@ -34,9 +34,9 @@ END_FUZZIFY
 
 // defuzzify
 DEFUZZIFY score
-    TERM poor := gauss 2 2;
-    TERM reasonable := gauss 9 2;
-    TERM excellent := gauss 16 2;
+    TERM poor := (0, 0) (5, 1) (10, 0);
+    TERM reasonable := (15, 0) (20, 1) (25, 0);
+    TERM excellent := (30, 0) (35, 1) (40, 0);
     // Use 'Center Of Gravity' defuzzification method
     METHOD : COG;
     // Default value is 0 (if no rule activates defuzzifier)
@@ -55,7 +55,7 @@ RULEBLOCK No1
     RULE 1 : IF relevance IS irrelevant OR domain_usage IS overused OR depth IS deep
                 THEN score IS poor;
 
-    RULE 2 : IF (relevance IS minor OR relevance IS significant) AND domain_usage IS NOT overused
+    RULE 2 : IF relevance IS minor AND domain_usage IS NOT overused
                 THEN score IS reasonable;
 
     RULE 3 : IF relevance IS significant AND domain_usage IS low AND depth IS shallow
