@@ -56,6 +56,7 @@ public abstract class QueryCrawler {
         System.out.println("Polling page from the queue: " + node.getUrl());
         double nodeRelevancy = node.getRelevanceScore(query);
         System.out.printf("Relevance: %.2f%n", nodeRelevancy);
+        System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
 
         if (nodeRelevancy > 1.0) {

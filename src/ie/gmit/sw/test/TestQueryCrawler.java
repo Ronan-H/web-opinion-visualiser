@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
-        String query = "eve online";
+        String query = "coronavirus";
 
         QueryCrawler crawler = new HeuristicBFSCrawler(query, 25);
         WordFrequency[] words = new WeightedFont().getFontSizes(
