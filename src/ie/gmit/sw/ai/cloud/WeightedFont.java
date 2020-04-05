@@ -1,17 +1,17 @@
 package ie.gmit.sw.ai.cloud;
 
 public class WeightedFont {
-	private static final double MAX_FONT_SIZE = 45.00d;
-	private static final double MIN_FONT_SIZE = 20.00d;
+	private static final double MAX_FONT_SIZE = 50.00d;
+	private static final double MIN_FONT_SIZE = 25.00d;
 	
 	public WordFrequency[] getFontSizes(WordFrequency[] words) {
 		//Get the max and min frequencies and scale these to a natural log scale to smooth out the range  
-		double max = Math.sqrt(words[0].getFrequency());
-		double min = Math.sqrt(words[words.length - 1].getFrequency());
+		double max = Math.log(words[0].getFrequency());
+		double min = Math.log(words[words.length - 1].getFrequency());
 
 		for (WordFrequency wf : words) {
 			//Use a log scale and word frequency to compute the font size for the word
-			wf.setFontSize((int)getScaledFontSize(Math.sqrt(wf.getFrequency()), min, max));
+			wf.setFontSize((int)getScaledFontSize(Math.log(wf.getFrequency()), min, max));
 		}
 		return words;
 	}

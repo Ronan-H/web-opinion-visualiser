@@ -12,12 +12,19 @@ import java.io.IOException;
 
 public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
-        String query = "coronavirus";
+        String query = "trump";
 
-        QueryCrawler crawler = new HeuristicBFSCrawler(query, 150);
+        QueryCrawler crawler = new HeuristicBFSCrawler(query, 100);
         WordFrequency[] words = new WeightedFont().getFontSizes(
                                 new MapToFrequencyArray(
-                                crawler.getCrawlScores()).convert(80));
+                                crawler.getCrawlScores()).convert(60));
+
+        // normalize in some way?
+        /*
+        for (int i = 0; i < words.length; i++) {
+            words[i].setFrequency(words[i].getFrequency() * (words.length - i));
+        }
+        */
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {

@@ -17,7 +17,9 @@ public class URLBlacklist {
         {
                 "facebook.com",
                 "youtube.com",
-                "linkedin.com"
+                "linkedin.com",
+                "tripadvisor",
+                "booking.com"
         };
     }
 
