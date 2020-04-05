@@ -8,18 +8,19 @@ import ie.gmit.sw.WordProximityScorer;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class QueryCrawler implements Runnable{
     private String query;
     private int maxPageLoads;
-    private int pageLoads;
     private Random random;
     private Set<String> visited;
     private WordIgnorer ignorer;
     private WordProximityScorer scorer;
     private PriorityBlockingQueue<PageNode> queue;
     private DomainFrequency domainFrequency;
+    private AtomicInteger pageLoads;
 
     // TODO find a way to do this properly
     private FuzzyScoreComparator fuzzyScoreComparator;
@@ -31,18 +32,19 @@ public class QueryCrawler implements Runnable{
                         WordIgnorer ignorer,
                         DomainFrequency domainFrequency,
                         Set<String> visited,
-                        FuzzyScoreComparator fuzzyScoreComparator) {
+                        FuzzyScoreComparator fuzzyScoreComparator,
+                        AtomicInteger pageLoads) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
         this.queue = queue;
         this.ignorer = ignorer;
         this.domainFrequency = domainFrequency;
         this.visited = visited;
+        this.pageLoads = pageLoads;
         // TODO find a way to do this properly
         this.fuzzyScoreComparator = fuzzyScoreComparator;
 
         scorer = new WordProximityScorer(query);
-        pageLoads = 0;
         random = new Random();
     }
 
@@ -56,7 +58,7 @@ public class QueryCrawler implements Runnable{
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
         System.out.printf("Relative domain visit frequency: %.3f%n", domainFrequency.getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
-        pageLoads++;
+        pageLoads.incrementAndGet();
 
         // increment domain name visit count
         domainFrequency.recordVisit(nextPage.getUrl());
@@ -64,7 +66,14 @@ public class QueryCrawler implements Runnable{
     }
 
     public boolean crawlNextPage() {
-        if (queue.isEmpty() || pageLoads >= maxPageLoads) {
+        if (queue.isEmpty() || pageLoads.get() >= maxPageLoads) {
+            if (queue.isEmpty()) {
+                System.out.println("Crawler stopping: queue is empty");
+            }
+            else {
+                System.out.println("Crawler stopping: max page loads hit");
+            }
+
             return false;
         }
 

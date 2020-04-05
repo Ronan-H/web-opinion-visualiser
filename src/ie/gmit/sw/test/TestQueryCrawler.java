@@ -11,13 +11,15 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TestQueryCrawler {
     public static void main(String[] args) throws IOException {
-        String query = "coronavirus";
-        int numThreads = 12;
+        String query = "dead by daylight";
+        int numThreads = 25;
 
+        AtomicInteger pageLoads = new AtomicInteger(0);
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         DomainFrequency domainFrequency = new DomainFrequency();
         PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, new FuzzyScoreComparator(query, domainFrequency));
@@ -30,22 +32,24 @@ public class TestQueryCrawler {
         queue.addAll(resultPages);
 
         QueryCrawler[] crawlers = new QueryCrawler[numThreads];
+        Thread[] threads = new Thread[numThreads];
 
         // create crawlers
         for (int i = 0; i < crawlers.length; i++) {
-            crawlers[i] = new QueryCrawler(query, 100, queue, ignorer, domainFrequency, visited, new FuzzyScoreComparator(query, domainFrequency));
+            crawlers[i] = new QueryCrawler(query, 500, queue, ignorer, domainFrequency, visited, new FuzzyScoreComparator(query, domainFrequency), pageLoads);
         }
 
         // start crawlers on new threads
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
         for (int i = 0; i < crawlers.length; i++) {
-            new Thread(crawlers[i]).start();
+            threads[i] = new Thread(crawlers[i]);
+            threads[i].start();
         }
 
         // wait for all crawlers to finish
         for (int i = 0; i < crawlers.length; i++) {
             try {
-                new Thread(crawlers[i]).join();
+                threads[i].join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
