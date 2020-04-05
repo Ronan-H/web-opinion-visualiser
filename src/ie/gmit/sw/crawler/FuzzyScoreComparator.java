@@ -12,8 +12,10 @@ public class FuzzyScoreComparator implements Comparator<PageNode> {
     private DomainFrequency frequencies;
     private LIFOComparator lifoComparator;
 
-    public FuzzyScoreComparator(String query) {
+    public FuzzyScoreComparator(String query, DomainFrequency domainFrequency) {
         this.query = query;
+        frequencies = domainFrequency;
+
         // Load from 'FCL' file
         String fileName = "./res/page-scoring.fcl";
         fis = FIS.load(fileName,false);
