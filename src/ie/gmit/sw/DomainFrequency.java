@@ -14,7 +14,7 @@ public class DomainFrequency {
         totalVisits = 0;
     }
 
-    public void recordVisit(String url) {
+    public synchronized void recordVisit(String url) {
         String domain = getDomainName(url);
         if (!domainVisits.containsKey(domain)) {
             domainVisits.put(domain, 0);
@@ -23,7 +23,7 @@ public class DomainFrequency {
         totalVisits++;
     }
 
-    public double getRelativeDomainFrequency(String url) {
+    public synchronized double getRelativeDomainFrequency(String url) {
         String domain = getDomainName(url);
 
         if (!domainVisits.containsKey(domain)) {

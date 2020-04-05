@@ -39,7 +39,6 @@ public class PageNode {
         try {
             System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).timeout(2 * 1000).get();
-            Thread.sleep(250);
         } catch (Exception e) {
             errored = true;
         }

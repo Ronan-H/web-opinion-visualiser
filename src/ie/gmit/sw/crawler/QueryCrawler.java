@@ -4,38 +4,50 @@ import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
+import ie.gmit.sw.comparator.FuzzyComparator;
+import ie.gmit.sw.comparator.PageNodeEvaluator;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class QueryCrawler {
+public class QueryCrawler implements Runnable{
     private String query;
     private int maxPageLoads;
-    private int pageLoads;
     private Random random;
     private Set<String> visited;
     private WordIgnorer ignorer;
     private WordProximityScorer scorer;
-    private PriorityQueue<PageNode> queue;
+    private PriorityBlockingQueue<PageNode> queue;
     private DomainFrequency domainFrequency;
+    private PageNodeEvaluator pageNodeEvaluator;
+    private AtomicInteger pageLoads;
 
-    // TODO find a way to do this properly
-    private FuzzyScoreComparator fuzzyScoreComparator;
 
-
-    public QueryCrawler(String query, int maxPageLoads, Comparator<PageNode> pageComparator) {
+    public QueryCrawler(String query,
+                        int maxPageLoads,
+                        PriorityBlockingQueue<PageNode> queue,
+                        WordIgnorer ignorer,
+                        DomainFrequency domainFrequency,
+                        Set<String> visited,
+                        PageNodeEvaluator pageNodeEvaluator,
+                        AtomicInteger pageLoads) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
+        this.queue = queue;
+        this.ignorer = ignorer;
+        this.domainFrequency = domainFrequency;
+        this.visited = visited;
+        this.pageNodeEvaluator = pageNodeEvaluator;
+        this.pageLoads = pageLoads;
 
-        queue = new PriorityQueue<>(pageComparator);
-        pageLoads = 0;
+        scorer = new WordProximityScorer(query);
         random = new Random();
-        domainFrequency = new DomainFrequency();
+    }
 
-        // TODO find a way to do this properly
-        fuzzyScoreComparator = (FuzzyScoreComparator) pageComparator;
-        fuzzyScoreComparator.setDomainFrequencies(domainFrequency);
+    @Override
+    public void run() {
+        while (crawlNextPage());
     }
 
     private PageNode loadNextPage() {
@@ -43,7 +55,7 @@ public abstract class QueryCrawler {
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
         System.out.printf("Relative domain visit frequency: %.3f%n", domainFrequency.getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
-        pageLoads++;
+        pageLoads.incrementAndGet();
 
         // increment domain name visit count
         domainFrequency.recordVisit(nextPage.getUrl());
@@ -51,7 +63,14 @@ public abstract class QueryCrawler {
     }
 
     public boolean crawlNextPage() {
-        if (queue.isEmpty() || pageLoads >= maxPageLoads) {
+        if (queue.isEmpty() || pageLoads.get() >= maxPageLoads) {
+            if (queue.isEmpty()) {
+                System.out.println("Crawler stopping: queue is empty");
+            }
+            else {
+                System.out.println("Crawler stopping: max page loads hit");
+            }
+
             return false;
         }
 
@@ -63,21 +82,13 @@ public abstract class QueryCrawler {
         System.out.printf("Relevance: %.2f%n", nodeRelevancy);
         System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
-        double fuzzyScore = fuzzyScoreComparator.getScoreForPage(node);
-        System.out.printf("Fuzzy score: %.2f%n", fuzzyScore);
+        int numChildNodesExpanded = pageNodeEvaluator.numChildExpandHeuristic(node);
+        System.out.printf("Adding %d child URLs...%n", numChildNodesExpanded);
 
-        if (fuzzyScore > 5.5) {
-            List<String> nextLinks = node.getUnvisitedLinks(visited);
+        List<String> nextLinks = node.getUnvisitedLinks(visited);
 
-            // add a few random links from this page to the URL pool
-            int numLinksAdd = (int)Math.ceil(fuzzyScore / 7);
-            //if (numLinksAdd > 5) numLinksAdd = 5;
-
-            System.out.printf("Adding %d child URLs...%n", numLinksAdd);
-
-            for (int i = 0; i < numLinksAdd && nextLinks.size() > 0 && queue.size() < 250; i++) {
-                queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
-            }
+        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 500; i++) {
+            queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
         }
 
         System.out.println("Adding word scores...\n");
@@ -86,28 +97,7 @@ public abstract class QueryCrawler {
         return true;
     }
 
-    public Map<String, Integer> getCrawlScores() throws IOException {
-        System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
-
-        visited = new HashSet<>();
-        List<PageNode> resultPages =
-                Arrays.stream(new SearchEngineScraper().getResultLinks(query))
-                .map(PageNode::new)
-                .collect(Collectors.toList());
-        queue.addAll(resultPages);
-        //urlPool.add("https://en.wikipedia.org/wiki/2019%E2%80%9320_coronavirus_outbreak");
-
-        ignorer = new WordIgnorer("./res/ignorewords.txt", query);
-        scorer = new WordProximityScorer(query);
-
-        while (crawlNextPage());
-
-        System.out.println("Finished crawling.");
-
+    public Map<String, Integer> getCrawlScores() {
         return scorer.getWordScores();
-    }
-
-    public DomainFrequency getDomainFrequencies() {
-        return domainFrequency;
     }
 }
