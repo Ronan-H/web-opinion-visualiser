@@ -4,12 +4,12 @@ import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
+import ie.gmit.sw.comparator.FuzzyComparator;
+import ie.gmit.sw.comparator.PageNodeEvaluator;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class QueryCrawler implements Runnable{
     private String query;
@@ -20,19 +20,17 @@ public class QueryCrawler implements Runnable{
     private WordProximityScorer scorer;
     private PriorityBlockingQueue<PageNode> queue;
     private DomainFrequency domainFrequency;
+    private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
-
-    // TODO find a way to do this properly
-    private FuzzyScoreComparator fuzzyScoreComparator;
 
 
     public QueryCrawler(String query,
                         int maxPageLoads,
-                        PriorityBlockingQueue queue,
+                        PriorityBlockingQueue<PageNode> queue,
                         WordIgnorer ignorer,
                         DomainFrequency domainFrequency,
                         Set<String> visited,
-                        FuzzyScoreComparator fuzzyScoreComparator,
+                        PageNodeEvaluator pageNodeEvaluator,
                         AtomicInteger pageLoads) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
@@ -40,9 +38,8 @@ public class QueryCrawler implements Runnable{
         this.ignorer = ignorer;
         this.domainFrequency = domainFrequency;
         this.visited = visited;
+        this.pageNodeEvaluator = pageNodeEvaluator;
         this.pageLoads = pageLoads;
-        // TODO find a way to do this properly
-        this.fuzzyScoreComparator = fuzzyScoreComparator;
 
         scorer = new WordProximityScorer(query);
         random = new Random();
@@ -85,20 +82,13 @@ public class QueryCrawler implements Runnable{
         System.out.printf("Relevance: %.2f%n", nodeRelevancy);
         System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
-        double fuzzyScore = fuzzyScoreComparator.getScoreForPage(node);
-        System.out.printf("Fuzzy score: %.2f%n", fuzzyScore);
+        int numChildNodesExpanded = pageNodeEvaluator.numChildExpandHeuristic(node);
+        System.out.printf("Adding %d child URLs...%n", numChildNodesExpanded);
 
-        if (fuzzyScore > 5.5) {
-            List<String> nextLinks = node.getUnvisitedLinks(visited);
+        List<String> nextLinks = node.getUnvisitedLinks(visited);
 
-            // add a few random links from this page to the URL pool
-            int numLinksAdd = (int)Math.ceil(fuzzyScore / 7);
-
-            System.out.printf("Adding %d child URLs...%n", numLinksAdd);
-
-            for (int i = 0; i < numLinksAdd && nextLinks.size() > 0 && queue.size() < 250; i++) {
-                queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
-            }
+        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 500; i++) {
+            queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
         }
 
         System.out.println("Adding word scores...\n");
@@ -107,11 +97,7 @@ public class QueryCrawler implements Runnable{
         return true;
     }
 
-    public Map<String, Integer> getCrawlScores() throws IOException {
+    public Map<String, Integer> getCrawlScores() {
         return scorer.getWordScores();
-    }
-
-    public DomainFrequency getDomainFrequencies() {
-        return domainFrequency;
     }
 }

@@ -1,19 +1,19 @@
-package ie.gmit.sw.crawler;
+package ie.gmit.sw.comparator;
 
 import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import net.sourceforge.jFuzzyLogic.FIS;
 
 import java.util.Comparator;
+import java.util.List;
 
-public class FuzzyScoreComparator implements Comparator<PageNode> {
+public class FuzzyComparator extends PageNodeEvaluator {
     private FIS fis;
-    private String query;
     private DomainFrequency frequencies;
     private LIFOComparator lifoComparator;
 
-    public FuzzyScoreComparator(String query, DomainFrequency domainFrequency) {
-        this.query = query;
+    public FuzzyComparator(String query, DomainFrequency domainFrequency) {
+        super(query);
         frequencies = domainFrequency;
 
         // Load from 'FCL' file
@@ -25,7 +25,7 @@ public class FuzzyScoreComparator implements Comparator<PageNode> {
             System.exit(0);
         }
 
-        lifoComparator = new LIFOComparator();
+        lifoComparator = new LIFOComparator(query);
     }
 
     @Override
@@ -71,7 +71,15 @@ public class FuzzyScoreComparator implements Comparator<PageNode> {
         return score;
     }
 
-    public void setDomainFrequencies(DomainFrequency frequencies) {
-        this.frequencies = frequencies;
+    @Override
+    public int numChildExpandHeuristic(PageNode node) {
+        double fuzzyScore = getScoreForPage(node);
+
+        if (fuzzyScore < 5.1) {
+            return 0;
+        }
+
+        int numLinksAdd = (int)Math.ceil(fuzzyScore / 3);
+        return numLinksAdd;
     }
 }

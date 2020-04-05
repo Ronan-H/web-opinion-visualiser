@@ -1,8 +1,13 @@
-package ie.gmit.sw.test;
+package ie.gmit.sw;
 
-import ie.gmit.sw.*;
-import ie.gmit.sw.ai.cloud.*;
-import ie.gmit.sw.crawler.*;
+import ie.gmit.sw.ai.cloud.WeightedFont;
+import ie.gmit.sw.ai.cloud.WordFrequency;
+import ie.gmit.sw.comparator.FuzzyComparator;
+import ie.gmit.sw.comparator.LIFOComparator;
+import ie.gmit.sw.comparator.PageNodeEvaluator;
+import ie.gmit.sw.comparator.RandomComparator;
+import ie.gmit.sw.crawler.QueryCrawler;
+import ie.gmit.sw.crawler.SearchEngineScraper;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,15 +19,39 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class TestQueryCrawler {
-    public static void main(String[] args) throws IOException {
-        String query = "dead by daylight";
-        int numThreads = 25;
+public class QueryCloudGenerator {
+    private String query;
+    private int maxPageLoads;
+    private int numThreads;
+    private PageNodeEvaluator pageNodeEvaluator;
 
+    private DomainFrequency domainFrequency;
+
+    public QueryCloudGenerator(String query, int maxPageLoads, int numThreads, SearchAlgorithm searchAlgorithm) {
+        this.query = query;
+        this.maxPageLoads = maxPageLoads;
+        this.numThreads = numThreads;
+
+        domainFrequency = new DomainFrequency();
+
+        switch (searchAlgorithm) {
+            case BFS_FUZZY_HEURISTIC:
+                pageNodeEvaluator = new FuzzyComparator(query, domainFrequency);
+                break;
+            case DFS_RELEVANCE_HEURISTIC:
+                pageNodeEvaluator = new LIFOComparator(query);
+                break;
+            case RANDOM_RELEVANCE_HEURISTIC:
+                pageNodeEvaluator = new RandomComparator(query);
+                break;
+        }
+    }
+
+    public BufferedImage generateWordCloud() throws IOException {
         AtomicInteger pageLoads = new AtomicInteger(0);
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         DomainFrequency domainFrequency = new DomainFrequency();
-        PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, new FuzzyScoreComparator(query, domainFrequency));
+        PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, new FuzzyComparator(query, domainFrequency));
 
         Set<String> visited = ConcurrentHashMap.newKeySet();
         List<PageNode> resultPages =
@@ -36,7 +65,7 @@ public class TestQueryCrawler {
 
         // create crawlers
         for (int i = 0; i < crawlers.length; i++) {
-            crawlers[i] = new QueryCrawler(query, 500, queue, ignorer, domainFrequency, visited, new FuzzyScoreComparator(query, domainFrequency), pageLoads);
+            crawlers[i] = new QueryCrawler(query, 150, queue, ignorer, domainFrequency, visited, new FuzzyComparator(query, domainFrequency), pageLoads);
         }
 
         // start crawlers on new threads
@@ -72,13 +101,6 @@ public class TestQueryCrawler {
         WordFrequency[] words = new WeightedFont().getFontSizes(
                 new MapToFrequencyArray(combinedScores).convert(60));
 
-        // normalize in some way?
-        /*
-        for (int i = 0; i < words.length; i++) {
-            words[i].setFrequency(words[i].getFrequency() * (words.length - i));
-        }
-        */
-
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {
             System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
@@ -90,10 +112,6 @@ public class TestQueryCrawler {
             System.out.printf("Domain %d: %15s - Freq: %d%n", i, domainFreqs[i].getWord(), domainFreqs[i].getFrequency());
         }
 
-        String filePath = String.format("./clouds/%s.png", query);
-        System.out.printf("\nGenerating word cloud at %s...%n", filePath);
-        BufferedImage cloud = new WordCloudGenerator(words, 850, 850).generateWordCloud();
-        ImageIO.write(cloud, "PNG", new File(filePath));
-        System.out.println("Finished.");
+        return new WordCloudGenerator(words, 850, 850).generateWordCloud();
     }
 }

@@ -1,10 +1,12 @@
-package ie.gmit.sw.crawler;
+package ie.gmit.sw.comparator;
 
 import ie.gmit.sw.PageNode;
 
-import java.util.Comparator;
+public class LIFOComparator extends PageNodeEvaluator {
+    public LIFOComparator(String query) {
+        super(query);
+    }
 
-public class LIFOComparator implements Comparator<PageNode> {
     @Override
     public int compare(PageNode a, PageNode b) {
         PageNode aParent = a.getParent();

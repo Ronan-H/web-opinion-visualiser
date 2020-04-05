@@ -1,4 +1,4 @@
-package ie.gmit.sw.crawler;
+package ie.gmit.sw.comparator;
 
 import ie.gmit.sw.PageNode;
 
@@ -11,7 +11,7 @@ public class RelevanceComparator implements Comparator<PageNode> {
     public RelevanceComparator(String query) {
         this.query = query;
 
-        lifoComparator = new LIFOComparator();
+        lifoComparator = new LIFOComparator(query);
     }
 
     @Override
