@@ -80,7 +80,7 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
         node = loadNextPage();
         System.out.println("Polling page from the queue: " + node.getUrl());
         double nodeRelevancy = node.getRelevanceScore(query);
-        System.out.printf("Relevance: %.2f%n", nodeRelevancy);
+        System.out.printf("Relevance: %.4f%n", nodeRelevancy);
         System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
         int numChildNodesExpanded = pageNodeEvaluator.numChildExpandHeuristic(node);

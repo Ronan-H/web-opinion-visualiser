@@ -15,9 +15,9 @@ END_VAR
 
 // fuzzify input variable 'relevance'
 FUZZIFY relevance
-    TERM irrelevant := (0, 1) (1, 0);
-    TERM minor := trape 0.5 1.5 3.5 5.5;
-    TERM significant := (3, 0) (8, 1);
+    TERM irrelevant := (0, 1) (0.03, 0);
+    TERM minor := trape 0.01 0.06 0.2 0.26;
+    TERM significant := (0.1, 0) (0.5, 1) (1, 1);
 END_FUZZIFY
 
 // fuzzify input variable 'domain_usage'

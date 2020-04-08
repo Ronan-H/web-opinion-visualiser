@@ -96,37 +96,44 @@ public class PageNode {
         System.out.println("Getting relevance score for url " + url);
 
         TagWeights tagWeights = TagWeights.getInstance();
-        int scoreTotal = 0;
-        int totalOccurences = 0;
+        int queryScore = 0;
+        double totalScore = 0;
         Elements elems;
         String elemText;
         int tagScore;
-        int totalTextLength = 0;
 
         for (String scoringTag : tagWeights.getScoringTags()) {
             tagScore = tagWeights.getScoreFor(scoringTag);
             elems = pageDoc.select(scoringTag);
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
-                totalTextLength += elemText.length();
-                if (elemText.contains(query)) {
-                    // counting occurrences of a substring in a string: https://stackoverflow.com/a/770069
-                    int numOccurances = elemText.split(query, -1).length - 1;
-                    scoreTotal += tagScore * numOccurances;
-                    totalOccurences += numOccurances;
-                }
+                queryScore += numOccurencesInString(elemText, query) * tagScore;
+                totalScore += ((double) elemText.length() / query.length()) * tagScore;
             }
         }
 
-        if (totalTextLength > 0) {
-            relevanceScore = scoreTotal * ((double) (totalOccurences * query.length()) / totalTextLength);
+        if (totalScore > 0) {
+            relevanceScore = queryScore / totalScore;
         }
         else {
-            relevanceScore = -1;
+            relevanceScore = 0;
         }
 
         relevanceComputed = true;
         return relevanceScore;
+    }
+
+    public static int numOccurencesInString(String s, String query) {
+        int count = 0;
+
+        for (int i = 0; i <= s.length() - query.length(); i++) {
+            if (s.substring(i, i + query.length()).equals(query)) {
+                count++;
+                i += query.length();
+            }
+        }
+
+        return count;
     }
 
     public void addWordScores(String query, WordProximityScorer scorer, WordIgnorer ignorer) {
