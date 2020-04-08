@@ -9,20 +9,17 @@ import ie.gmit.sw.comparator.RandomComparator;
 import ie.gmit.sw.crawler.QueryCrawler;
 import ie.gmit.sw.crawler.SearchEngineScraper;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class QueryCloudGenerator {
     private String query;
     private int maxPageLoads;
-    private int numThreads;
+    private int numCrawlers;
     private PageNodeEvaluator pageNodeEvaluator;
 
     private DomainFrequency domainFrequency;
@@ -30,7 +27,7 @@ public class QueryCloudGenerator {
     public QueryCloudGenerator(String query, int maxPageLoads, int numThreads, SearchAlgorithm searchAlgorithm) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
-        this.numThreads = numThreads;
+        this.numCrawlers = numThreads;
 
         domainFrequency = new DomainFrequency();
 
@@ -47,7 +44,9 @@ public class QueryCloudGenerator {
         }
     }
 
-    public BufferedImage generateWordCloud() throws IOException {
+    public BufferedImage generateWordCloud() throws IOException, ExecutionException, InterruptedException {
+        System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
+
         AtomicInteger pageLoads = new AtomicInteger(0);
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         DomainFrequency domainFrequency = new DomainFrequency();
@@ -60,35 +59,20 @@ public class QueryCloudGenerator {
                         .collect(Collectors.toList());
         queue.addAll(resultPages);
 
-        QueryCrawler[] crawlers = new QueryCrawler[numThreads];
-        Thread[] threads = new Thread[numThreads];
-
-        // create crawlers
-        for (int i = 0; i < crawlers.length; i++) {
-            crawlers[i] = new QueryCrawler(query, 150, queue, ignorer, domainFrequency, visited, new FuzzyComparator(query, domainFrequency), pageLoads);
+        // create crawlers and submit to executor
+        ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);
+        List<Future<Map<String, Integer>>> futures = new ArrayList<>(numCrawlers);
+        for (int i = 0; i < numCrawlers; i++) {
+            futures.add(executor.submit(
+                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, new FuzzyComparator(query, domainFrequency), pageLoads)
+            ));
         }
 
-        // start crawlers on new threads
-        System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
-        for (int i = 0; i < crawlers.length; i++) {
-            threads[i] = new Thread(crawlers[i]);
-            threads[i].start();
-        }
-
-        // wait for all crawlers to finish
-        for (int i = 0; i < crawlers.length; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        // combine scores
         Map<String, Integer> combinedScores = new HashMap<>();
         int combinedScore;
-        for (int i = 0; i < crawlers.length; i++) {
-            Map<String, Integer> crawlScores = crawlers[i].getCrawlScores();
-            // combine scores
+        for (Future<Map<String, Integer>> future : futures) {
+            Map<String, Integer> crawlScores = future.get();
             for (String k : crawlScores.keySet()) {
                 if (!combinedScores.containsKey(k)) {
                     combinedScores.put(k, 0);
@@ -97,6 +81,8 @@ public class QueryCloudGenerator {
                 combinedScores.put(k, combinedScore);
             }
         }
+
+        executor.shutdown();
 
         WordFrequency[] words = new WeightedFont().getFontSizes(
                 new MapToFrequencyArray(combinedScores).convert(60));

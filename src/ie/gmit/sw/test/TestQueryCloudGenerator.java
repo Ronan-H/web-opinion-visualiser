@@ -6,6 +6,7 @@ import ie.gmit.sw.SearchAlgorithm;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class TestQueryCloudGenerator {
     public static void main(String[] args) throws IOException {
@@ -18,7 +19,11 @@ public class TestQueryCloudGenerator {
 
         String filePath = String.format("./clouds/%s.png", query);
         System.out.printf("\nGenerating word cloud at %s...%n", filePath);
-        ImageIO.write(cloudGenerator.generateWordCloud(), "PNG", new File(filePath));
+        try {
+            ImageIO.write(cloudGenerator.generateWordCloud(), "PNG", new File(filePath));
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("Finished.");
     }
 }

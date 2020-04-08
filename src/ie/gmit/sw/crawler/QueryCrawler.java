@@ -4,14 +4,14 @@ import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import ie.gmit.sw.WordIgnorer;
 import ie.gmit.sw.WordProximityScorer;
-import ie.gmit.sw.comparator.FuzzyComparator;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QueryCrawler implements Runnable{
+public class QueryCrawler implements Callable<Map<String, Integer>> {
     private String query;
     private int maxPageLoads;
     private Random random;
@@ -46,8 +46,9 @@ public class QueryCrawler implements Runnable{
     }
 
     @Override
-    public void run() {
+    public Map<String, Integer> call() {
         while (crawlNextPage());
+        return scorer.getWordScores();
     }
 
     private PageNode loadNextPage() {
