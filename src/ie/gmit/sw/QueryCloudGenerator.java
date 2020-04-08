@@ -64,7 +64,7 @@ public class QueryCloudGenerator {
         List<Future<Map<String, Integer>>> futures = new ArrayList<>(numCrawlers);
         for (int i = 0; i < numCrawlers; i++) {
             futures.add(executor.submit(
-                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, new FuzzyComparator(query, domainFrequency), pageLoads)
+                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads)
             ));
         }
 

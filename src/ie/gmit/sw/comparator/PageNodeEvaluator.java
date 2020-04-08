@@ -14,13 +14,10 @@ public abstract class PageNodeEvaluator implements Comparator<PageNode> {
     public int numChildExpandHeuristic(PageNode node) {
         double nodeRelevancy = node.getRelevanceScore(query);
 
-        if (nodeRelevancy < 1.0) {
+        if (nodeRelevancy <= 0) {
             return 0;
         }
 
-        int numLinksAdd = (int)Math.ceil(nodeRelevancy / 3);
-        if (numLinksAdd > 5) numLinksAdd = 5;
-
-        return numLinksAdd;
+        return (int)Math.ceil(nodeRelevancy * 10);
     }
 }
