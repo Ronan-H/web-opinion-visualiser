@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 public class TestQueryCloudGenerator {
     public static void main(String[] args) {
-        String query = "coronavirus";
+        String query = "speedcubing";
         int maxPageLoads = 100;
         int numThreads = 10;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;

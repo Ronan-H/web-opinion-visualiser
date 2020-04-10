@@ -92,12 +92,8 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
         }
 
         System.out.println("Adding word scores...\n");
-        node.addWordScores(query, tfidf, ignorer);
+        node.addWordScores(query, tfidf, scorer, ignorer);
 
         return true;
-    }
-
-    public Map<String, Integer> getCrawlScores() {
-        return scorer.getWordScores();
     }
 }

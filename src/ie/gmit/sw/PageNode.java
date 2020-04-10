@@ -136,7 +136,7 @@ public class PageNode {
         return count;
     }
 
-    public void addWordScores(String query, Tfidf tfidf, WordIgnorer ignorer) {
+    public void addWordScores(String query, Tfidf tfidf, WordProximityScorer scorer, WordIgnorer ignorer) {
         if (errored) return;
 
         Map<String, Integer> termScores = new HashMap<>();
@@ -151,15 +151,13 @@ public class PageNode {
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
                 if (elemText.contains(query)) {
-                    for (String word : elemText.split(" ")) {
-                        if (ignorer.isIgnored(word)) {
-                            continue;
-                        }
+                    Map<String, Integer> scores = scorer.addWordScores(elemText, ignorer, 1);
 
-                        if (!termScores.containsKey(word)) {
-                            termScores.put(word, 0);
+                    for (String k : scores.keySet()) {
+                        if (!termScores.containsKey(k)) {
+                            termScores.put(k, 0);
                         }
-                        termScores.put(word, termScores.get(word) + 1);
+                        termScores.put(k, termScores.get(k) + scores.get(k));
                     }
                 }
             }
