@@ -44,7 +44,7 @@ public class QueryCloudGenerator {
         }
     }
 
-    public BufferedImage generateWordCloud() throws IOException, ExecutionException, InterruptedException {
+    public BufferedImage generateWordCloud() throws IOException, InterruptedException {
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
         AtomicInteger pageLoads = new AtomicInteger(0);
@@ -61,31 +61,18 @@ public class QueryCloudGenerator {
 
         // create crawlers and submit to executor
         ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);
-        List<Future<Map<String, Integer>>> futures = new ArrayList<>(numCrawlers);
+        Tfidf tfidf = new Tfidf();
         for (int i = 0; i < numCrawlers; i++) {
-            futures.add(executor.submit(
-                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads)
-            ));
-        }
-
-        // combine scores
-        Map<String, Integer> combinedScores = new HashMap<>();
-        int combinedScore;
-        for (Future<Map<String, Integer>> future : futures) {
-            Map<String, Integer> crawlScores = future.get();
-            for (String k : crawlScores.keySet()) {
-                if (!combinedScores.containsKey(k)) {
-                    combinedScores.put(k, 0);
-                }
-                combinedScore = combinedScores.get(k) + crawlScores.get(k);
-                combinedScores.put(k, combinedScore);
-            }
+            executor.submit(
+                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfidf)
+            );
         }
 
         executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         WordFrequency[] words = new WeightedFont().getFontSizes(
-                new MapToFrequencyArray(combinedScores).convert(60));
+                new MapToFrequencyArray(tfidf.getTerms()).convert(60));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {

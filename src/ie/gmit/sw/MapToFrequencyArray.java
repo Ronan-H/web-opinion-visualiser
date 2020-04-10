@@ -4,6 +4,7 @@ import ie.gmit.sw.ai.cloud.WordFrequency;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MapToFrequencyArray {
@@ -11,6 +12,16 @@ public class MapToFrequencyArray {
 
     public MapToFrequencyArray(Map<String, Integer> wordScores) {
         this.wordScores = wordScores;
+    }
+
+    public MapToFrequencyArray(Map<String, Double> wordScores, boolean fp) {
+        Map<String, Integer> intScores = new HashMap<>();
+
+        for (String word : wordScores.keySet()) {
+            intScores.put(word, (int) Math.round(wordScores.get(word) * 100));
+        }
+
+        this.wordScores = intScores;
     }
 
     public WordFrequency[] convert(int sizeLimit) {

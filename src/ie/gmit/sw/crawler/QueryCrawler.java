@@ -1,9 +1,6 @@
 package ie.gmit.sw.crawler;
 
-import ie.gmit.sw.DomainFrequency;
-import ie.gmit.sw.PageNode;
-import ie.gmit.sw.WordIgnorer;
-import ie.gmit.sw.WordProximityScorer;
+import ie.gmit.sw.*;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 
 import java.util.*;
@@ -22,6 +19,7 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
     private DomainFrequency domainFrequency;
     private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
+    private Tfidf tfidf;
 
 
     public QueryCrawler(String query,
@@ -31,7 +29,7 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
                         DomainFrequency domainFrequency,
                         Set<String> visited,
                         PageNodeEvaluator pageNodeEvaluator,
-                        AtomicInteger pageLoads) {
+                        AtomicInteger pageLoads, Tfidf tfidf) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
         this.queue = queue;
@@ -42,13 +40,14 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
         this.pageLoads = pageLoads;
 
         scorer = new WordProximityScorer(query);
+        this.tfidf = tfidf;
         random = new Random();
     }
 
     @Override
     public Map<String, Integer> call() {
         while (crawlNextPage());
-        return scorer.getWordScores();
+        return tfidf.getTerms();
     }
 
     private PageNode loadNextPage() {
@@ -93,7 +92,7 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
         }
 
         System.out.println("Adding word scores...\n");
-        node.addWordScores(query, scorer, ignorer);
+        node.addWordScores(query, tfidf, ignorer);
 
         return true;
     }

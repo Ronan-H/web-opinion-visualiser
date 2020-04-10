@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 public class TestQueryCloudGenerator {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String query = "coronavirus";
         int maxPageLoads = 100;
         int numThreads = 10;
@@ -21,7 +21,9 @@ public class TestQueryCloudGenerator {
         System.out.printf("\nGenerating word cloud at %s...%n", filePath);
         try {
             ImageIO.write(cloudGenerator.generateWordCloud(), "PNG", new File(filePath));
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Finished.");
