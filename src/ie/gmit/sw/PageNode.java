@@ -163,7 +163,7 @@ public class PageNode {
             }
         }
 
-        tfidf.addPageScores(termScores);
+        tfidf.addPageScores(rootUrl, termScores);
     }
 
     public int getId() {
