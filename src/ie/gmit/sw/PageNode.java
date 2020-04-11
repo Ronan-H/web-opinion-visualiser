@@ -148,7 +148,7 @@ public class PageNode {
             elemText = elem.text().toLowerCase();
 
             while (elemText.contains(query)) {
-                Map<String, Integer> scores = scorer.addWordScores(elemText, ignorer, 1);
+                Map<String, Integer> scores = scorer.getWordScores(elemText, ignorer, 1);
 
                 for (String k : scores.keySet()) {
                     if (!termScores.containsKey(k)) {

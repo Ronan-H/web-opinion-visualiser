@@ -1,7 +1,7 @@
 package ie.gmit.sw;
 
 import ie.gmit.sw.ai.cloud.WeightedFont;
-import ie.gmit.sw.ai.cloud.WordFrequency;
+import ie.gmit.sw.ai.cloud.TermWeight;
 import ie.gmit.sw.comparator.FuzzyComparator;
 import ie.gmit.sw.comparator.LIFOComparator;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
@@ -71,18 +71,18 @@ public class QueryCloudGenerator {
         executor.shutdown();
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-        WordFrequency[] words = new WeightedFont().getFontSizes(
-                new MapToFrequencyArray(tfpdf.getWeights()).convert(50));
+        TermWeight[] words = new WeightedFont().getFontSizes(
+                new MapToWeightingArray(tfpdf.getWeights()).convert(50));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {
-            System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
+            System.out.printf("Word %d: %15s - Score: %.3f%n", i, words[i].getTerm(), words[i].getWeight());
         }
 
         System.out.println("\n-- Domain frequencies --");
-        WordFrequency[] domainFreqs = new MapToFrequencyArray(domainFrequency.getVisitMap()).convert(25);
+        TermWeight[] domainFreqs = new MapToWeightingArray(domainFrequency.getVisitMap()).convert(25);
         for (int i = domainFreqs.length - 1; i >= 0; i--) {
-            System.out.printf("Domain %d: %15s - Freq: %d%n", i, domainFreqs[i].getWord(), domainFreqs[i].getFrequency());
+            System.out.printf("Domain %d: %15s - Freq: %d%n", i, domainFreqs[i].getTerm(), domainFreqs[i].getWeight());
         }
 
         return new WordCloudGenerator(words, 850, 850).generateWordCloud();

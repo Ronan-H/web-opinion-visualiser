@@ -4,11 +4,10 @@ import ie.gmit.sw.*;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QueryCrawler implements Callable<Map<String, Integer>> {
+public class QueryCrawler implements Runnable {
     private String query;
     private int maxPageLoads;
     private Random random;
@@ -20,7 +19,6 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
     private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
     private Tfpdf tfpdf;
-
 
     public QueryCrawler(String query,
                         int maxPageLoads,
@@ -45,9 +43,8 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
     }
 
     @Override
-    public Map<String, Integer> call() {
+    public void run() {
         while (crawlNextPage());
-        return tfpdf.getWeights();
     }
 
     private PageNode loadNextPage() {

@@ -11,11 +11,11 @@ public class WordProximityScorer {
         this.query = query;
     }
 
-    public Map<String, Integer> addWordScores(String text, WordIgnorer ignorer) {
-        return addWordScores(text, ignorer, 1);
+    public Map<String, Integer> getWordScores(String text, WordIgnorer ignorer) {
+        return getWordScores(text, ignorer, 1);
     }
 
-    public Map<String, Integer> addWordScores(String text, WordIgnorer ignorer, int weighting) {
+    public Map<String, Integer> getWordScores(String text, WordIgnorer ignorer, int weighting) {
         Map<String, Integer> wordScores = new HashMap<>();
 
         int queryPos = text.indexOf(query);

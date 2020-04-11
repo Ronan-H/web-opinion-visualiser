@@ -80,5 +80,5 @@ servlet-api.jar
 G00342393.zip
 wcloud.war
 
-# ignore word cloud image output
+# ignore term cloud image output
 clouds/

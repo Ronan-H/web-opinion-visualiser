@@ -34,19 +34,19 @@ public class SpiralPlacer {
 				RenderingHints.VALUE_RENDER_QUALITY);
 	}
 
-	public void placeAll(WordFrequency[] words) {
-		for (WordFrequency wf : words) {
+	public void placeAll(TermWeight[] words) {
+		for (TermWeight wf : words) {
 			place(wf);
 		}
 		g.dispose();
 	}
 
-	private void place(WordFrequency wf) {
+	private void place(TermWeight wf) {
 		Font font = new Font("Verdana", Font.PLAIN, wf.getFontSize()); //Create a font with a size proportional to the word frequency
 		g.setFont(font); //Set the font of the graphics "brush"
 		
 		//Get the "size" of the word string as a rectangle
-		Rectangle2D bounds = g.getFontMetrics(font).getStringBounds(wf.getWord(), g);
+		Rectangle2D bounds = g.getFontMetrics(font).getStringBounds(wf.getTerm(), g);
 		int halfWordWidth = (int) Math.round(bounds.getWidth() / 2);
 		int halfWordHeight = (int) Math.round(bounds.getHeight() / 2);
 		int wordWidth = (int) Math.round(bounds.getWidth());
@@ -94,7 +94,7 @@ public class SpiralPlacer {
 		float dist = Math.min(Math.max(1.2f - (float) (d / (width / 8d)), 0.4f), 1f);
 		float hue =  l / 360f * (dist * 2) % 1f;
 		g.setColor(new Color(Color.HSBtoRGB(hue, 1, dist))); //Set the colour of the graphics "brush"
-		g.drawString(wf.getWord(), i - halfWordWidth, j + quarterWordHeight);//Draw the word on the graphics canvas=
+		g.drawString(wf.getTerm(), i - halfWordWidth, j + quarterWordHeight);//Draw the word on the graphics canvas=
 
 		placed.add(word); //Add the word to the list of placed words
 	}

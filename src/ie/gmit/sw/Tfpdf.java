@@ -9,7 +9,15 @@ public class Tfpdf {
         domainPageScores = new HashMap<>();
     }
 
-    public synchronized Map<String, Integer> getWeights() {
+    public synchronized void addPageScores(String domain, Map<String, Integer> scores) {
+        if (!domainPageScores.containsKey(domain)) {
+            domainPageScores.put(domain, new ArrayList<>());
+        }
+
+        domainPageScores.get(domain).add(scores);
+    }
+
+    public synchronized Map<String, Double> getWeights() {
         Map<String, Double> allTermScores = new HashMap<>();
         Set<String> termsUsed = new HashSet<>();
 
@@ -26,14 +34,7 @@ public class Tfpdf {
             }
         }
 
-        Map<String, Integer> intScores = new HashMap<>();
-
-        for (String word : allTermScores.keySet()) {
-            intScores.put(word,
-                    (int) Math.round(allTermScores.get(word) * 10000));
-        }
-
-        return intScores;
+        return allTermScores;
     }
 
     public double getTfpdfWeight(String term) {
@@ -91,13 +92,5 @@ public class Tfpdf {
         }
 
         return fjc / Math.sqrt(sum);
-    }
-
-    public synchronized void addPageScores(String domain, Map<String, Integer> scores) {
-        if (!domainPageScores.containsKey(domain)) {
-            domainPageScores.put(domain, new ArrayList<>());
-        }
-
-        domainPageScores.get(domain).add(scores);
     }
 }
