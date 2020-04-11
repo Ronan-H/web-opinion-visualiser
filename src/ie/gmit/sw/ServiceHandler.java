@@ -11,9 +11,6 @@ import javax.imageio.ImageIO;
 
 import java.util.Base64;
 
-import ie.gmit.sw.ai.cloud.WeightedFont;
-import ie.gmit.sw.ai.cloud.WordFrequency;
-
 /*
  * -------------------------------------------------------------------------------------------------------------------
  * PLEASE READ THE FOLLOWING CAREFULLY. MOST OF THE "ISSUES" STUDENTS HAVE WITH DEPLOYMENT ARISE FROM NOT READING

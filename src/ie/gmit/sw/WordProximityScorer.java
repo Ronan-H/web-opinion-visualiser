@@ -3,26 +3,21 @@ package ie.gmit.sw;
 import java.util.*;
 
 public class WordProximityScorer {
-    private static final Integer[] beforeScoring = {2, 1, 1, 1, 1};
-    private static final Integer[] afterScoring = {3, 2, 1, 1, 1, 1, 1, 1};
-    private Map<String, Integer> wordScores;
+    private static final Integer[] beforeScoring = {3, 2, 2, 2, 1};
+    private static final Integer[] afterScoring = {3, 3, 2, 2, 2, 2, 1, 1};
     private String query;
 
     public WordProximityScorer(String query) {
         this.query = query;
-
-        this.wordScores = new HashMap<>();
     }
 
-    public Map<String, Integer> getWordScores() {
-        return wordScores;
+    public Map<String, Integer> getWordScores(String text, WordIgnorer ignorer) {
+        return getWordScores(text, ignorer, 1);
     }
 
-    public void addWordScores(String text, WordIgnorer ignorer) {
-        addWordScores(text, ignorer, 1);
-    }
+    public Map<String, Integer> getWordScores(String text, WordIgnorer ignorer, int weighting) {
+        Map<String, Integer> wordScores = new HashMap<>();
 
-    public void addWordScores(String text, WordIgnorer ignorer, int weighting) {
         int queryPos = text.indexOf(query);
         String beforeText = text.substring(0, queryPos).trim();
         String[] beforeParts = (beforeText.equals("") ? new String[0] : beforeText.split(" "));
@@ -52,5 +47,7 @@ public class WordProximityScorer {
             }
             wordScores.put(word, wordScores.get(word) + (scoreQueue.poll() * weighting));
         }
+
+        return wordScores;
     }
 }

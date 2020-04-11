@@ -6,13 +6,12 @@ import ie.gmit.sw.SearchAlgorithm;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 public class TestQueryCloudGenerator {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String query = "coronavirus";
-        int maxPageLoads = 100;
-        int numThreads = 10;
+        int maxPageLoads = 500;
+        int numThreads = 25;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;
 
         QueryCloudGenerator cloudGenerator = new QueryCloudGenerator(query, maxPageLoads, numThreads, searchAlgorithm);
@@ -21,7 +20,7 @@ public class TestQueryCloudGenerator {
         System.out.printf("\nGenerating word cloud at %s...%n", filePath);
         try {
             ImageIO.write(cloudGenerator.generateWordCloud(), "PNG", new File(filePath));
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
         System.out.println("Finished.");

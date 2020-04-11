@@ -136,24 +136,31 @@ public class PageNode {
         return count;
     }
 
-    public void addWordScores(String query, WordProximityScorer scorer, WordIgnorer ignorer) {
+    public void addWordScores(String query, TfpdfCalculator tfpdfCalculator, WordProximityScorer scorer, WordIgnorer ignorer) {
         if (errored) return;
 
-        TagWeights tagWeights = TagWeights.getInstance();
+        Map<String, Integer> termScores = new HashMap<>();
         Elements elems;
         String elemText;
-        int tagScore;
 
-        for (String scoringTag : tagWeights.getScoringTags()) {
-            tagScore = tagWeights.getScoreFor(scoringTag);
-            elems = pageDoc.select(scoringTag);
-            for (Element elem : elems) {
-                elemText = elem.text().toLowerCase();
-                if (elemText.contains(query)) {
-                    scorer.addWordScores(elemText, ignorer, (int)Math.ceil(tagScore / 2.0));
+        elems = pageDoc.select("p");
+        for (Element elem : elems) {
+            elemText = elem.text().toLowerCase();
+
+            while (elemText.contains(query)) {
+                Map<String, Integer> scores = scorer.getWordScores(elemText, ignorer, 1);
+
+                for (String k : scores.keySet()) {
+                    if (!termScores.containsKey(k)) {
+                        termScores.put(k, 0);
+                    }
+                    termScores.put(k, termScores.get(k) + scores.get(k));
                 }
+                elemText = elemText.replaceFirst(query, "");
             }
         }
+
+        tfpdfCalculator.addPageScores(rootUrl, termScores);
     }
 
     public int getId() {

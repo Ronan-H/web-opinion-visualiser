@@ -11,12 +11,12 @@ public class TestWordProximityScorer {
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         WordProximityScorer scorer = new WordProximityScorer(query);
-        scorer.addWordScores(text, ignorer);
 
-        Map<String, Integer> scores = scorer.getWordScores();
+        Map<String, Integer> scores = scorer.getWordScores(text, ignorer);
         for (String word : scores.keySet()) {
             long score = scores.get(word);
             System.out.printf("%s: %d%n", word, score);
         }
+
     }
 }

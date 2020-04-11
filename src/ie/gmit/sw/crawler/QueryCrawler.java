@@ -1,17 +1,13 @@
 package ie.gmit.sw.crawler;
 
-import ie.gmit.sw.DomainFrequency;
-import ie.gmit.sw.PageNode;
-import ie.gmit.sw.WordIgnorer;
-import ie.gmit.sw.WordProximityScorer;
+import ie.gmit.sw.*;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QueryCrawler implements Callable<Map<String, Integer>> {
+public class QueryCrawler implements Runnable {
     private String query;
     private int maxPageLoads;
     private Random random;
@@ -22,7 +18,7 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
     private DomainFrequency domainFrequency;
     private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
-
+    private TfpdfCalculator tfpdfCalculator;
 
     public QueryCrawler(String query,
                         int maxPageLoads,
@@ -31,7 +27,7 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
                         DomainFrequency domainFrequency,
                         Set<String> visited,
                         PageNodeEvaluator pageNodeEvaluator,
-                        AtomicInteger pageLoads) {
+                        AtomicInteger pageLoads, TfpdfCalculator tfpdfCalculator) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
         this.queue = queue;
@@ -42,13 +38,13 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
         this.pageLoads = pageLoads;
 
         scorer = new WordProximityScorer(query);
+        this.tfpdfCalculator = tfpdfCalculator;
         random = new Random();
     }
 
     @Override
-    public Map<String, Integer> call() {
+    public void run() {
         while (crawlNextPage());
-        return scorer.getWordScores();
     }
 
     private PageNode loadNextPage() {
@@ -93,12 +89,8 @@ public class QueryCrawler implements Callable<Map<String, Integer>> {
         }
 
         System.out.println("Adding word scores...\n");
-        node.addWordScores(query, scorer, ignorer);
+        node.addWordScores(query, tfpdfCalculator, scorer, ignorer);
 
         return true;
-    }
-
-    public Map<String, Integer> getCrawlScores() {
-        return scorer.getWordScores();
     }
 }

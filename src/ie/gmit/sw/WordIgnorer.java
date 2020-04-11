@@ -49,7 +49,7 @@ public class WordIgnorer {
 
     public boolean isIgnored(String word) {
         return word.length() > 12
-                || word.length() < 3
+                || word.length() < 4
                 || word.contains(query)
                 || query.contains(word)
                 || ignoredSet.contains(word)

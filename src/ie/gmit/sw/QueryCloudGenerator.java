@@ -1,7 +1,7 @@
 package ie.gmit.sw;
 
 import ie.gmit.sw.ai.cloud.WeightedFont;
-import ie.gmit.sw.ai.cloud.WordFrequency;
+import ie.gmit.sw.ai.cloud.TermWeight;
 import ie.gmit.sw.comparator.FuzzyComparator;
 import ie.gmit.sw.comparator.LIFOComparator;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
@@ -44,7 +44,7 @@ public class QueryCloudGenerator {
         }
     }
 
-    public BufferedImage generateWordCloud() throws IOException, ExecutionException, InterruptedException {
+    public BufferedImage generateWordCloud() throws IOException, InterruptedException {
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
         AtomicInteger pageLoads = new AtomicInteger(0);
@@ -61,41 +61,30 @@ public class QueryCloudGenerator {
 
         // create crawlers and submit to executor
         ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);
-        List<Future<Map<String, Integer>>> futures = new ArrayList<>(numCrawlers);
+        TfpdfCalculator tfpdfCalculator = new TfpdfCalculator();
         for (int i = 0; i < numCrawlers; i++) {
-            futures.add(executor.submit(
-                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads)
-            ));
-        }
-
-        // combine scores
-        Map<String, Integer> combinedScores = new HashMap<>();
-        int combinedScore;
-        for (Future<Map<String, Integer>> future : futures) {
-            Map<String, Integer> crawlScores = future.get();
-            for (String k : crawlScores.keySet()) {
-                if (!combinedScores.containsKey(k)) {
-                    combinedScores.put(k, 0);
-                }
-                combinedScore = combinedScores.get(k) + crawlScores.get(k);
-                combinedScores.put(k, combinedScore);
-            }
+            executor.submit(
+                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfpdfCalculator)
+            );
         }
 
         executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-        WordFrequency[] words = new WeightedFont().getFontSizes(
-                new MapToFrequencyArray(combinedScores).convert(60));
+        TermWeight[] words = new WeightedFont().getFontSizes(
+                new MapToWeightingArray(tfpdfCalculator.getWeights()).convert(60));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {
-            System.out.printf("Word %d: %15s - Score: %d%n", i, words[i].getWord(), words[i].getFrequency());
+            System.out.printf("Word %d: %15s - Score: %.3f%n", i, words[i].getTerm(), words[i].getWeight());
         }
 
+        // TODO: this is kind of abusing the purpose of the MaptoWeightingArray class...
+        // TODO: domain freqs should really be integer
         System.out.println("\n-- Domain frequencies --");
-        WordFrequency[] domainFreqs = new MapToFrequencyArray(domainFrequency.getVisitMap()).convert(25);
+        TermWeight[] domainFreqs = new MapToWeightingArray(domainFrequency.getVisitMap()).convert(25);
         for (int i = domainFreqs.length - 1; i >= 0; i--) {
-            System.out.printf("Domain %d: %15s - Freq: %d%n", i, domainFreqs[i].getWord(), domainFreqs[i].getFrequency());
+            System.out.printf("Domain %d: %15s - Freq: %.0f%n", i, domainFreqs[i].getTerm(), domainFreqs[i].getWeight());
         }
 
         return new WordCloudGenerator(words, 850, 850).generateWordCloud();
