@@ -55,7 +55,6 @@ public class Tfpdf {
 
         for (String domain : domainPageScores.keySet()) {
             double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
-            System.out.printf("Tfpdf single domain score for %s: %.3f%n", term, val);
             sum += val;
         }
 

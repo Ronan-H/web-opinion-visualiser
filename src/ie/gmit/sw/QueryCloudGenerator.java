@@ -72,7 +72,7 @@ public class QueryCloudGenerator {
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         WordFrequency[] words = new WeightedFont().getFontSizes(
-                new MapToFrequencyArray(tfpdf.getWeights()).convert(60));
+                new MapToFrequencyArray(tfpdf.getWeights()).convert(50));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {

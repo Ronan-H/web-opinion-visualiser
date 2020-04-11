@@ -140,26 +140,23 @@ public class PageNode {
         if (errored) return;
 
         Map<String, Integer> termScores = new HashMap<>();
-        TagWeights tagWeights = TagWeights.getInstance();
         Elements elems;
         String elemText;
-        int tagScore;
 
-        for (String scoringTag : tagWeights.getScoringTags()) {
-            tagScore = tagWeights.getScoreFor(scoringTag);
-            elems = pageDoc.select(scoringTag);
-            for (Element elem : elems) {
-                elemText = elem.text().toLowerCase();
-                if (elemText.contains(query)) {
-                    Map<String, Integer> scores = scorer.addWordScores(elemText, ignorer, 1);
+        elems = pageDoc.select("p");
+        for (Element elem : elems) {
+            elemText = elem.text().toLowerCase();
 
-                    for (String k : scores.keySet()) {
-                        if (!termScores.containsKey(k)) {
-                            termScores.put(k, 0);
-                        }
-                        termScores.put(k, termScores.get(k) + scores.get(k));
+            while (elemText.contains(query)) {
+                Map<String, Integer> scores = scorer.addWordScores(elemText, ignorer, 1);
+
+                for (String k : scores.keySet()) {
+                    if (!termScores.containsKey(k)) {
+                        termScores.put(k, 0);
                     }
+                    termScores.put(k, termScores.get(k) + scores.get(k));
                 }
+                elemText = elemText.replaceFirst(query, "");
             }
         }
 
