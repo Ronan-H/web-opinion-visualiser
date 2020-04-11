@@ -4,9 +4,6 @@ import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import net.sourceforge.jFuzzyLogic.FIS;
 
-import java.util.Comparator;
-import java.util.List;
-
 public class FuzzyComparator extends PageNodeEvaluator {
     private FIS fis;
     private DomainFrequency frequencies;
@@ -79,7 +76,6 @@ public class FuzzyComparator extends PageNodeEvaluator {
             return 0;
         }
 
-        int numLinksAdd = (int)Math.ceil(fuzzyScore / 3);
-        return numLinksAdd;
+        return (int)Math.ceil(fuzzyScore / 3);
     }
 }

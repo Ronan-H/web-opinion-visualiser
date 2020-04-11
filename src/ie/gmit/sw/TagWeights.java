@@ -2,6 +2,7 @@ package ie.gmit.sw;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class TagWeights {
     private static TagWeights tagWeights;

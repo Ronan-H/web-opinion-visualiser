@@ -38,7 +38,7 @@ public class PageNode {
     public void load() {
         try {
             System.out.println("Connecting to URL: " + url);
-            pageDoc = Jsoup.connect(url).timeout(2 * 1000).get();
+            pageDoc = Jsoup.connect(url).timeout(5 * 1000).get();
         } catch (Exception e) {
             errored = true;
         }
@@ -64,7 +64,8 @@ public class PageNode {
 
             if (href.startsWith("http") // http/https link
             && !visited.contains(root) // unvisited
-            && !URLBlacklist.getInstance().isUrlBlacklisted(href)) { // not blacklisted
+            && !URLBlacklist.getInstance().isUrlBlacklisted(href) // not blacklisted
+            && link.parent().tagName().equals("p") || link.parent().parent().tagName().equals("p")) { // in a paragraph
                 // doesn't end with a common media file extension
                 for (String end : IGNORE_ENDS) {
                     if (href.endsWith(end)) {
