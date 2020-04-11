@@ -1,7 +1,7 @@
 package ie.gmit.sw.ai.cloud;
 
 public class WeightedFont {
-	private static final double MAX_FONT_SIZE = 55.00d;
+	private static final double MAX_FONT_SIZE = 50.00d;
 	private static final double MIN_FONT_SIZE = 20.00d;
 	
 	public TermWeight[] getFontSizes(TermWeight[] words) {

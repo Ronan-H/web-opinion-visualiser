@@ -61,10 +61,10 @@ public class QueryCloudGenerator {
 
         // create crawlers and submit to executor
         ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);
-        Tfpdf tfpdf = new Tfpdf();
+        TfpdfCalculator tfpdfCalculator = new TfpdfCalculator();
         for (int i = 0; i < numCrawlers; i++) {
             executor.submit(
-                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfpdf)
+                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfpdfCalculator)
             );
         }
 
@@ -72,17 +72,19 @@ public class QueryCloudGenerator {
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         TermWeight[] words = new WeightedFont().getFontSizes(
-                new MapToWeightingArray(tfpdf.getWeights()).convert(50));
+                new MapToWeightingArray(tfpdfCalculator.getWeights()).convert(60));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {
             System.out.printf("Word %d: %15s - Score: %.3f%n", i, words[i].getTerm(), words[i].getWeight());
         }
 
+        // TODO: this is kind of abusing the purpose of the MaptoWeightingArray class...
+        // TODO: domain freqs should really be integer
         System.out.println("\n-- Domain frequencies --");
         TermWeight[] domainFreqs = new MapToWeightingArray(domainFrequency.getVisitMap()).convert(25);
         for (int i = domainFreqs.length - 1; i >= 0; i--) {
-            System.out.printf("Domain %d: %15s - Freq: %d%n", i, domainFreqs[i].getTerm(), domainFreqs[i].getWeight());
+            System.out.printf("Domain %d: %15s - Freq: %.0f%n", i, domainFreqs[i].getTerm(), domainFreqs[i].getWeight());
         }
 
         return new WordCloudGenerator(words, 850, 850).generateWordCloud();

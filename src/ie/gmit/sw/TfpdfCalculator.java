@@ -2,10 +2,10 @@ package ie.gmit.sw;
 
 import java.util.*;
 
-public class Tfpdf {
+public class TfpdfCalculator {
     private Map<String, List<Map<String, Integer>>> domainPageScores;
 
-    public Tfpdf() {
+    public TfpdfCalculator() {
         domainPageScores = new HashMap<>();
     }
 
@@ -58,8 +58,6 @@ public class Tfpdf {
             double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
             sum += val;
         }
-
-        System.out.printf("Tfpdf for %s: %.3f%n", term, sum);
 
         return sum;
     }

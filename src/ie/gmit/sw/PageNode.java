@@ -136,7 +136,7 @@ public class PageNode {
         return count;
     }
 
-    public void addWordScores(String query, Tfpdf tfpdf, WordProximityScorer scorer, WordIgnorer ignorer) {
+    public void addWordScores(String query, TfpdfCalculator tfpdfCalculator, WordProximityScorer scorer, WordIgnorer ignorer) {
         if (errored) return;
 
         Map<String, Integer> termScores = new HashMap<>();
@@ -160,7 +160,7 @@ public class PageNode {
             }
         }
 
-        tfpdf.addPageScores(rootUrl, termScores);
+        tfpdfCalculator.addPageScores(rootUrl, termScores);
     }
 
     public int getId() {

@@ -18,7 +18,7 @@ public class QueryCrawler implements Runnable {
     private DomainFrequency domainFrequency;
     private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
-    private Tfpdf tfpdf;
+    private TfpdfCalculator tfpdfCalculator;
 
     public QueryCrawler(String query,
                         int maxPageLoads,
@@ -27,7 +27,7 @@ public class QueryCrawler implements Runnable {
                         DomainFrequency domainFrequency,
                         Set<String> visited,
                         PageNodeEvaluator pageNodeEvaluator,
-                        AtomicInteger pageLoads, Tfpdf tfpdf) {
+                        AtomicInteger pageLoads, TfpdfCalculator tfpdfCalculator) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
         this.queue = queue;
@@ -38,7 +38,7 @@ public class QueryCrawler implements Runnable {
         this.pageLoads = pageLoads;
 
         scorer = new WordProximityScorer(query);
-        this.tfpdf = tfpdf;
+        this.tfpdfCalculator = tfpdfCalculator;
         random = new Random();
     }
 
@@ -89,7 +89,7 @@ public class QueryCrawler implements Runnable {
         }
 
         System.out.println("Adding word scores...\n");
-        node.addWordScores(query, tfpdf, scorer, ignorer);
+        node.addWordScores(query, tfpdfCalculator, scorer, ignorer);
 
         return true;
     }
