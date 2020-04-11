@@ -5,13 +5,10 @@ import java.util.*;
 public class WordProximityScorer {
     private static final Integer[] beforeScoring = {1, 1};
     private static final Integer[] afterScoring = {1, 1, 1};
-    //private Map<String, Integer> wordScores;
     private String query;
 
     public WordProximityScorer(String query) {
         this.query = query;
-
-        //this.wordScores = new HashMap<>();
     }
 
     public Map<String, Integer> addWordScores(String text, WordIgnorer ignorer) {

@@ -61,10 +61,10 @@ public class QueryCloudGenerator {
 
         // create crawlers and submit to executor
         ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);
-        Tfidf tfidf = new Tfidf();
+        Tfpdf tfpdf = new Tfpdf();
         for (int i = 0; i < numCrawlers; i++) {
             executor.submit(
-                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfidf)
+                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfpdf)
             );
         }
 
@@ -72,7 +72,7 @@ public class QueryCloudGenerator {
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         WordFrequency[] words = new WeightedFont().getFontSizes(
-                new MapToFrequencyArray(tfidf.getTerms()).convert(60));
+                new MapToFrequencyArray(tfpdf.getWeights()).convert(60));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {
