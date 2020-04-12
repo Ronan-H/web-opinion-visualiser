@@ -37,21 +37,19 @@ public class TfpdfCalculator {
         return allTermScores;
     }
 
-    public double getTfpdfWeight(String term) {
+    private double getTfpdfWeight(String term) {
         double sum = 0;
-
-        int nc = 0;
         int njc = 0;
-        for (String domain : domainPageScores.keySet()) {
-            List<Map<String, Integer>> domainScores = domainPageScores.get(domain);
+        int nc = 0;
 
-            for (Map<String, Integer> pageScores : domainScores) {
+        for (String domain : domainPageScores.keySet()) {
+            for (Map<String, Integer> pageScores : domainPageScores.get(domain)) {
                 if (pageScores.containsKey(term)) {
                     njc++;
                 }
-            }
 
-            nc += domainScores.size();
+                nc += pageScores.size();
+            }
 
             double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
             sum += val;
@@ -60,24 +58,21 @@ public class TfpdfCalculator {
         return sum;
     }
 
-    public double getFjc(String term, String domain) {
-        List<Map<String, Integer>> domainScores = domainPageScores.get(domain);
+    private double getFjc(String term, String domain) {
         double freq = 0;
 
-        for (Map<String, Integer> pageScores : domainScores) {
+        for (Map<String, Integer> pageScores : domainPageScores.get(domain)) {
             freq += pageScores.getOrDefault(term, 0);
         }
 
         return freq;
     }
 
-    public double getNormalizedFjc(String term, String domain) {
+    private double getNormalizedFjc(String term, String domain) {
         double fjc = getFjc(term, domain);
-        List<Map<String, Integer>> domainScores = domainPageScores.get(domain);
-
         double sum = 0;
 
-        for (Map<String, Integer> pageScores : domainScores) {
+        for (Map<String, Integer> pageScores : domainPageScores.get(domain)) {
             for (String t : pageScores.keySet()) {
                 sum += Math.pow(pageScores.get(t), 2);
             }

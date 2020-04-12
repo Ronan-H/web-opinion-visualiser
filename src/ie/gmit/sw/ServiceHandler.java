@@ -53,9 +53,10 @@ public class ServiceHandler extends HttpServlet {
 		//Initialise some request variables with the submitted form info. These are local to this method and thread safe...
 		String searchAlgName = req.getParameter("searchAlg"); //Change options to whatever you think adds value to your assignment...
 		String query = req.getParameter("query");
+		int maxPageLoads = Integer.parseInt(req.getParameter("maxPageLoads"));
+		int numThreads = Integer.parseInt(req.getParameter("numThreads"));
 
 		SearchAlgorithm searchAlg = SearchAlgorithm.values()[Character.getNumericValue(searchAlgName.charAt(0)) - 1];
-		System.out.println("USING ALG: " + searchAlg.name());
 
 		out.print("<html><head><title>Artificial Intelligence Assignment</title>");		
 		out.print("<link rel=\"stylesheet\" href=\"includes/style.css\">");
@@ -72,9 +73,6 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<b>jsoup-1.12.1.jar</b> have already been added to the project.");	
 			
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
-
-		int maxPageLoads = 250;
-		int numThreads = 25;
 
 		QueryCloudGenerator generator = new QueryCloudGenerator(query, maxPageLoads, numThreads, searchAlg);
 		BufferedImage cloud = generator.generateWordCloud();

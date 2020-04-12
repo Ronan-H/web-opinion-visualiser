@@ -26,7 +26,7 @@ public class FuzzyComparator extends PageNodeEvaluator {
     }
 
     @Override
-    public int compare(PageNode a, PageNode b) {
+    public synchronized int compare(PageNode a, PageNode b) {
         PageNode aParent = a.getParent();
         PageNode bParent = b.getParent();
 
@@ -49,7 +49,7 @@ public class FuzzyComparator extends PageNodeEvaluator {
         return -Double.compare(aScore, bScore);
     }
 
-    public double getScoreForPage(PageNode node) {
+    private synchronized double getScoreForPage(PageNode node) {
         if (node.getParent() == null) {
             // root node; assume search results are highly relevant
             return 28;

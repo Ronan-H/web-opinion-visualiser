@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class QueryCrawler implements Runnable {
     private String query;
-    private int maxPageLoads;
     private Random random;
     private Set<String> visited;
     private WordIgnorer ignorer;
@@ -21,15 +20,14 @@ public class QueryCrawler implements Runnable {
     private TfpdfCalculator tfpdfCalculator;
 
     public QueryCrawler(String query,
-                        int maxPageLoads,
                         PriorityBlockingQueue<PageNode> queue,
                         WordIgnorer ignorer,
                         DomainFrequency domainFrequency,
                         Set<String> visited,
                         PageNodeEvaluator pageNodeEvaluator,
-                        AtomicInteger pageLoads, TfpdfCalculator tfpdfCalculator) {
+                        AtomicInteger pageLoads,
+                        TfpdfCalculator tfpdfCalculator) {
         this.query = query;
-        this.maxPageLoads = maxPageLoads;
         this.queue = queue;
         this.ignorer = ignorer;
         this.domainFrequency = domainFrequency;
@@ -52,7 +50,6 @@ public class QueryCrawler implements Runnable {
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
         System.out.printf("Relative domain visit frequency: %.3f%n", domainFrequency.getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
-        pageLoads.incrementAndGet();
 
         // increment domain name visit count
         domainFrequency.recordVisit(nextPage.getUrl());
@@ -60,16 +57,17 @@ public class QueryCrawler implements Runnable {
     }
 
     public boolean crawlNextPage() {
-        if (queue.isEmpty() || pageLoads.get() >= maxPageLoads) {
-            if (queue.isEmpty()) {
-                System.out.println("Crawler stopping: queue is empty");
-            }
-            else {
-                System.out.println("Crawler stopping: max page loads hit");
-            }
-
+        if (queue.isEmpty()) {
+            System.out.println("Crawler stopping: queue is empty");
             return false;
         }
+
+        if (pageLoads.decrementAndGet() < 0) {
+            System.out.println("Crawler stopping: max page loads hit");
+            return false;
+        }
+
+        System.out.println("Page loads remaining: " + pageLoads.get());
 
         PageNode node;
 

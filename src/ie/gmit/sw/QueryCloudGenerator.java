@@ -47,7 +47,7 @@ public class QueryCloudGenerator {
     public BufferedImage generateWordCloud() throws IOException {
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
-        AtomicInteger pageLoads = new AtomicInteger(0);
+        AtomicInteger pageLoadsLeft = new AtomicInteger(maxPageLoads);
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         DomainFrequency domainFrequency = new DomainFrequency();
         PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, new FuzzyComparator(query, domainFrequency));
@@ -64,7 +64,7 @@ public class QueryCloudGenerator {
         TfpdfCalculator tfpdfCalculator = new TfpdfCalculator();
         for (int i = 0; i < numCrawlers; i++) {
             executor.submit(
-                    new QueryCrawler(query, maxPageLoads, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoads, tfpdfCalculator)
+                    new QueryCrawler(query, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoadsLeft, tfpdfCalculator)
             );
         }
 
