@@ -32,10 +32,6 @@ public class WordIgnorer {
         wordPattern = Pattern.compile("[a-z]+(-[a-z])*");
     }
 
-    public WordIgnorer() {
-        ignoredSet = new HashSet<>();
-    }
-
     public String[] getUsefulWords(String[] input) {
         List<String> usefulWords = new ArrayList<>(input.length);
         for (String word : input) {

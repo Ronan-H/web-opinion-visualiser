@@ -51,8 +51,10 @@ public class TfpdfCalculator {
                 nc += pageScores.size();
             }
 
-            double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
-            sum += val;
+            if (nc > 0) {
+                double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
+                sum += val;
+            }
         }
 
         return sum;

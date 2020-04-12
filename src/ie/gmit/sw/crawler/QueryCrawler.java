@@ -5,6 +5,7 @@ import ie.gmit.sw.comparator.PageNodeEvaluator;
 
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class QueryCrawler implements Runnable {
@@ -46,7 +47,17 @@ public class QueryCrawler implements Runnable {
     }
 
     private PageNode loadNextPage() {
-        PageNode nextPage = queue.poll();
+        PageNode nextPage;
+        try {
+            nextPage = queue.poll(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            return null;
+        }
+
+        if (nextPage == null) {
+            return null;
+        }
+
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
         System.out.printf("Relative domain visit frequency: %.3f%n", domainFrequency.getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
@@ -57,11 +68,6 @@ public class QueryCrawler implements Runnable {
     }
 
     public boolean crawlNextPage() {
-        if (queue.isEmpty()) {
-            System.out.println("Crawler stopping: queue is empty");
-            return false;
-        }
-
         if (pageLoads.decrementAndGet() < 0) {
             System.out.println("Crawler stopping: max page loads hit");
             return false;
@@ -69,9 +75,13 @@ public class QueryCrawler implements Runnable {
 
         System.out.println("Page loads remaining: " + pageLoads.get());
 
-        PageNode node;
+        PageNode node = loadNextPage();
 
-        node = loadNextPage();
+        if (node == null) {
+            System.out.println("Crawler stopping: queue is empty");
+            return false;
+        }
+
         System.out.println("Polling page from the queue: " + node.getUrl());
         double nodeRelevancy = node.getRelevanceScore(query);
         System.out.printf("Relevance: %.4f%n", nodeRelevancy);
