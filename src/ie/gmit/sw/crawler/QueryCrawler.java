@@ -84,7 +84,7 @@ public class QueryCrawler implements Runnable {
 
         List<String> nextLinks = node.getUnvisitedLinks(visited);
 
-        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 500; i++) {
+        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 1000; i++) {
             queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
         }
 

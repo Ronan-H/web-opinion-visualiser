@@ -52,9 +52,7 @@ public class TfpdfCalculator {
             }
 
             nc += domainScores.size();
-        }
 
-        for (String domain : domainPageScores.keySet()) {
             double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
             sum += val;
         }

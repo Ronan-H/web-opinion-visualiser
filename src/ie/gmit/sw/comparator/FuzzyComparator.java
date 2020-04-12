@@ -76,6 +76,6 @@ public class FuzzyComparator extends PageNodeEvaluator {
             return 0;
         }
 
-        return (int)Math.ceil(fuzzyScore / 3);
+        return (int)Math.ceil(fuzzyScore / 4);
     }
 }
