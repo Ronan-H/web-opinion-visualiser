@@ -50,9 +50,12 @@ public class ServiceHandler extends HttpServlet {
 		resp.setContentType("text/html"); //Output the MIME type
 		PrintWriter out = resp.getWriter(); //Write out text. We can write out binary too and change the MIME type...
 		
-		//Initialise some request varuables with the submitted form info. These are local to this method and thread safe...
-		String option = req.getParameter("cmbOptions"); //Change options to whatever you think adds value to your assignment...
+		//Initialise some request variables with the submitted form info. These are local to this method and thread safe...
+		String searchAlgName = req.getParameter("searchAlg"); //Change options to whatever you think adds value to your assignment...
 		String query = req.getParameter("query");
+
+		SearchAlgorithm searchAlg = SearchAlgorithm.values()[Character.getNumericValue(searchAlgName.charAt(0)) - 1];
+		System.out.println("USING ALG: " + searchAlg.name());
 
 		out.print("<html><head><title>Artificial Intelligence Assignment</title>");		
 		out.print("<link rel=\"stylesheet\" href=\"includes/style.css\">");
@@ -70,18 +73,13 @@ public class ServiceHandler extends HttpServlet {
 			
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
 
-		// TODO fix using crawler in tomcat
-		/*
-		WordFrequency[] words = new WeightedFont().getFontSizes(
-								new MapToFrequencyArray(
-								new HeuristicBFSCrawler(query, 20).getCrawlScores()).convert(65));
+		int maxPageLoads = 250;
+		int numThreads = 25;
 
-		BufferedImage cloud = new WordCloudGenerator(words, 850, 700).generateWordCloud();
-
+		QueryCloudGenerator generator = new QueryCloudGenerator(query, maxPageLoads, numThreads, searchAlg);
+		BufferedImage cloud = generator.generateWordCloud();
 		out.print("<img src=\"data:image/png;base64," + encodeToString(cloud) + "\" alt=\"Word Cloud\">");
-		*/
-		
-		
+
 		out.print("</fieldset>");	
 		out.print("<P>Maybe output some search stats here, e.g. max search depth, effective branching factor.....<p>");		
 		out.print("<a href=\"./\">Return to Start Page</a>");

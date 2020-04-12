@@ -20,7 +20,7 @@ public class TestQueryCloudGenerator {
         System.out.printf("\nGenerating word cloud at %s...%n", filePath);
         try {
             ImageIO.write(cloudGenerator.generateWordCloud(), "PNG", new File(filePath));
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Finished.");

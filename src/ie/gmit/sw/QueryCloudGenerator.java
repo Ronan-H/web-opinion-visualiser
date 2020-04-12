@@ -44,7 +44,7 @@ public class QueryCloudGenerator {
         }
     }
 
-    public BufferedImage generateWordCloud() throws IOException, InterruptedException {
+    public BufferedImage generateWordCloud() throws IOException {
         System.out.printf("Starting web crawl for query \"%s\"...%n%n", query);
 
         AtomicInteger pageLoads = new AtomicInteger(0);
@@ -69,7 +69,11 @@ public class QueryCloudGenerator {
         }
 
         executor.shutdown();
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         TermWeight[] words = new WeightedFont().getFontSizes(
                 new MapToWeightingArray(tfpdfCalculator.getWeights()).convert(60));
