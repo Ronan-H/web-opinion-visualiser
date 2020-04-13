@@ -38,8 +38,6 @@ public class TfpdfCalculator {
     }
 
     private double getTfpdfWeight(String term) {
-        double termDomainNormalization = Math.exp(getTermDomainNormalization(term) + 2) - 7;
-
         double sum = 0;
         int njc = 0;
         int nc = 0;
@@ -54,7 +52,7 @@ public class TfpdfCalculator {
             }
 
             if (nc > 0) {
-                double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc) * termDomainNormalization;
+                double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
                 sum += val;
             }
         }
@@ -87,23 +85,5 @@ public class TfpdfCalculator {
         }
 
         return fjc / Math.sqrt(sum);
-    }
-
-    private double getTermDomainNormalization(String term) {
-        int domainsHaveTerm = 0;
-
-        for (String domain : domainPageScores.keySet()) {
-            List<Map<String, Integer>> domainScores = domainPageScores.get(domain);
-
-            for (Map<String, Integer> pageScores : domainScores) {
-                if (pageScores.containsKey(term)) {
-                    domainsHaveTerm++;
-                    if (domainsHaveTerm > 1) System.out.println(term + ": " + domainsHaveTerm);
-                    break;
-                }
-            }
-        }
-
-        return (double) domainsHaveTerm / domainPageScores.size();
     }
 }
