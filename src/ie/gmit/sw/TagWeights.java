@@ -20,19 +20,19 @@ public class TagWeights {
     private TagWeights() {
         WEIGHTS = new HashMap<>();
 
-        WEIGHTS.put("p", 1);
+        WEIGHTS.put("p", 2);
 
-        WEIGHTS.put("li", 2);
-        WEIGHTS.put("ul", 2);
+        WEIGHTS.put("li", 3);
+        WEIGHTS.put("ul", 3);
 
-        WEIGHTS.put("h6", 3);
+        WEIGHTS.put("h6", 4);
         WEIGHTS.put("h5", 4);
-        WEIGHTS.put("h4", 4);
+        WEIGHTS.put("h4", 5);
         WEIGHTS.put("h3", 5);
-        WEIGHTS.put("h2", 6);
-        WEIGHTS.put("h1", 7);
+        WEIGHTS.put("h2", 5);
+        WEIGHTS.put("h1", 6);
 
-        WEIGHTS.put("title", 10);
+        WEIGHTS.put("title", 8);
 
         SCORING_TAGS = WEIGHTS.keySet().toArray(new String[0]);
     }

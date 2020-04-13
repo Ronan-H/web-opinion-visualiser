@@ -38,30 +38,28 @@ public class TfpdfCalculator {
     }
 
     private double getTfpdfWeight(String term) {
-        double sum = 0;
         int njc = 0;
-        int nc = 0;
+        int nc = domainPageScores.size();
 
         for (String domain : domainPageScores.keySet()) {
             for (Map<String, Integer> pageScores : domainPageScores.get(domain)) {
                 if (pageScores.containsKey(term)) {
                     njc++;
+                    break;
                 }
-
-                nc += pageScores.size();
             }
+        }
 
-            if (nc > 0) {
-                double val = getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
-                sum += val;
-            }
+        double sum = 0;
+        for (String domain : domainPageScores.keySet()) {
+            sum += getNormalizedFjc(term, domain) * Math.exp((double) njc / nc);
         }
 
         return sum;
     }
 
-    private double getFjc(String term, String domain) {
-        double freq = 0;
+    private int getFjc(String term, String domain) {
+        int freq = 0;
 
         for (Map<String, Integer> pageScores : domainPageScores.get(domain)) {
             freq += pageScores.getOrDefault(term, 0);
@@ -72,11 +70,11 @@ public class TfpdfCalculator {
 
     private double getNormalizedFjc(String term, String domain) {
         double fjc = getFjc(term, domain);
-        double sum = 0;
+        int sum = 0;
 
         for (Map<String, Integer> pageScores : domainPageScores.get(domain)) {
-            for (String t : pageScores.keySet()) {
-                sum += Math.pow(pageScores.get(t), 2);
+            for (int f : pageScores.values()) {
+                sum += Math.pow(f, 2);
             }
         }
 

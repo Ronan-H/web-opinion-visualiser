@@ -36,7 +36,7 @@ public class QueryCrawler implements Runnable {
         this.pageNodeEvaluator = pageNodeEvaluator;
         this.pageLoads = pageLoads;
 
-        scorer = new WordProximityScorer(query);
+        scorer = new WordProximityScorer(query, ignorer);
         this.tfpdfCalculator = tfpdfCalculator;
         random = new Random();
     }
@@ -49,7 +49,7 @@ public class QueryCrawler implements Runnable {
     private PageNode loadNextPage() {
         PageNode nextPage;
         try {
-            nextPage = queue.poll(2, TimeUnit.SECONDS);
+            nextPage = queue.poll(3, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             return null;
         }
@@ -97,7 +97,7 @@ public class QueryCrawler implements Runnable {
         }
 
         System.out.println("Adding word scores...\n");
-        node.addWordScores(query, tfpdfCalculator, scorer, ignorer);
+        node.addWordScores(query, tfpdfCalculator, scorer);
 
         return true;
     }

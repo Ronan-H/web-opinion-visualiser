@@ -38,7 +38,7 @@ public class PageNode {
     public void load() {
         try {
             System.out.println("Connecting to URL: " + url);
-            pageDoc = Jsoup.connect(url).timeout(5 * 1000).get();
+            pageDoc = Jsoup.connect(url).timeout(2500).get();
         } catch (Exception e) {
             errored = true;
         }
@@ -137,7 +137,7 @@ public class PageNode {
         return count;
     }
 
-    public void addWordScores(String query, TfpdfCalculator tfpdfCalculator, WordProximityScorer scorer, WordIgnorer ignorer) {
+    public void addWordScores(String query, TfpdfCalculator tfpdfCalculator, WordProximityScorer scorer) {
         if (errored) return;
 
         Map<String, Integer> termScores = new HashMap<>();
@@ -149,7 +149,7 @@ public class PageNode {
             elemText = elem.text().toLowerCase();
 
             while (elemText.contains(query)) {
-                Map<String, Integer> scores = scorer.getWordScores(elemText, ignorer, 1);
+                Map<String, Integer> scores = scorer.getWordScores(elemText);
 
                 for (String k : scores.keySet()) {
                     if (!termScores.containsKey(k)) {

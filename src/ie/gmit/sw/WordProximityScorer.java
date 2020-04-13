@@ -3,19 +3,17 @@ package ie.gmit.sw;
 import java.util.*;
 
 public class WordProximityScorer {
-    private static final Integer[] beforeScoring = {2, 1};
-    private static final Integer[] afterScoring = {3, 3, 2, 2, 2, 1, 1, 1, 1};
+    private static final int maxScoreBefore = 3;
+    private static final int maxScoreAfter = 9;
     private String query;
+    private WordIgnorer ignorer;
 
-    public WordProximityScorer(String query) {
+    public WordProximityScorer(String query, WordIgnorer ignorer) {
         this.query = query;
+        this.ignorer = ignorer;
     }
 
-    public Map<String, Integer> getWordScores(String text, WordIgnorer ignorer) {
-        return getWordScores(text, ignorer, 1);
-    }
-
-    public Map<String, Integer> getWordScores(String text, WordIgnorer ignorer, int weighting) {
+    public Map<String, Integer> getWordScores(String text) {
         Map<String, Integer> wordScores = new HashMap<>();
 
         int queryPos = text.indexOf(query);
@@ -24,30 +22,23 @@ public class WordProximityScorer {
         String afterText = text.substring(queryPos + query.length()).trim();
         String[] afterParts = (afterText.equals("") ? new String[0] : afterText.split(" "));
 
-        Deque<Integer> scoreQueue = new ArrayDeque<>(Arrays.asList(beforeScoring));
-        for (int i = 0; i < beforeParts.length && !scoreQueue.isEmpty(); i++) {
-            String word = beforeParts[beforeParts.length - i  - 1];
-            if (ignorer.isIgnored(word)) {
-                continue;
-            }
-            if (!wordScores.containsKey(word)) {
-                wordScores.put(word, 0);
-            }
-            wordScores.put(word, wordScores.get(word) + (scoreQueue.poll() * weighting));
+        for (int i = 0; i < Math.min(beforeParts.length, maxScoreBefore); i++) {
+            scoreWord(wordScores, beforeParts[beforeParts.length - i  - 1]);
         }
 
-        scoreQueue = new ArrayDeque<>(Arrays.asList(afterScoring));
-        for (int i = 0; i < afterParts.length && !scoreQueue.isEmpty(); i++) {
-            String word = afterParts[i];
-            if (ignorer.isIgnored(word)) {
-                continue;
-            }
-            if (!wordScores.containsKey(word)) {
-                wordScores.put(word, 0);
-            }
-            wordScores.put(word, wordScores.get(word) + (scoreQueue.poll() * weighting));
+        for (int i = 0; i < Math.min(afterParts.length, maxScoreAfter); i++) {
+            scoreWord(wordScores, afterParts[i]);
         }
 
         return wordScores;
+    }
+
+    private void scoreWord(Map<String, Integer> wordScores, String word) {
+        if (!ignorer.isIgnored(word)) {
+            if (!wordScores.containsKey(word)) {
+                wordScores.put(word, 0);
+            }
+            wordScores.put(word, wordScores.get(word) + 1);
+        }
     }
 }
