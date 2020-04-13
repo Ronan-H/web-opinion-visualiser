@@ -64,8 +64,8 @@ public class PageNode {
 
             if (href.startsWith("http") // http/https link
             && !visited.contains(root) // unvisited
-            && !URLBlacklist.getInstance().isUrlBlacklisted(href) // not blacklisted
-            && link.parent().tagName().equals("p") || link.parent().parent().tagName().equals("p")) { // in a paragraph
+            && !URLBlacklist.getInstance().isUrlBlacklisted(href)) { // not blacklisted
+            //&& link.parent().tagName().equals("p") || link.parent().parent().tagName().equals("p")) { // in a paragraph
                 // doesn't end with a common media file extension
                 for (String end : IGNORE_ENDS) {
                     if (href.endsWith(end)) {

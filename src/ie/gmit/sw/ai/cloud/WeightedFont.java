@@ -1,9 +1,31 @@
 package ie.gmit.sw.ai.cloud;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class WeightedFont {
-	private static final double MAX_FONT_SIZE = 45.00d;
-	private static final double MIN_FONT_SIZE = 25.00d;
-	
+	private static final Map<Integer, Double[]> fontSizesForNumWords;
+
+	static {
+		fontSizesForNumWords = new HashMap<>();
+		fontSizesForNumWords.put(20, new Double[]{35d, 55d});
+		fontSizesForNumWords.put(60, new Double[]{25d, 45d});
+		fontSizesForNumWords.put(80, new Double[]{20d, 40d});
+	}
+
+	private double maxFontSize;
+	private double minFontSize;
+
+	public WeightedFont(double minFontSize, double maxFontSize) {
+		this.minFontSize = minFontSize;
+		this.maxFontSize = maxFontSize;
+	}
+
+	public WeightedFont(int numCloudWords) {
+		this(fontSizesForNumWords.get(numCloudWords)[0],
+			 fontSizesForNumWords.get(numCloudWords)[1]);
+	}
+
 	public TermWeight[] getFontSizes(TermWeight[] words) {
 		//Get the max and min frequencies and scale these to a natural log scale to smooth out the range  
 		double max = Math.log(words[0].getWeight());
@@ -17,8 +39,8 @@ public class WeightedFont {
 	}
 	
 	//Compute the initial font size for the word 
-	public double getScaledFontSize(double value, double min, double max){
+	private double getScaledFontSize(double value, double min, double max){
 		double normalized = (value - min) / (max - min);
-		return MIN_FONT_SIZE + ((MAX_FONT_SIZE - MIN_FONT_SIZE) * normalized);
+		return minFontSize + ((maxFontSize - minFontSize) * normalized);
 	}
 }

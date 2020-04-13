@@ -37,7 +37,7 @@ public class ServiceHandler extends HttpServlet {
 	private String ignoreWords = null;
 	private File f;
 	
-	public void init() throws ServletException {
+	public void init() {
 		ServletContext ctx = getServletContext(); //Get a handle on the application context
 		
 		//Reads the value from the <context-param> in web.xml
@@ -46,7 +46,7 @@ public class ServiceHandler extends HttpServlet {
 		// TODO make use of this ^
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/html"); //Output the MIME type
 		PrintWriter out = resp.getWriter(); //Write out text. We can write out binary too and change the MIME type...
 		
@@ -55,6 +55,7 @@ public class ServiceHandler extends HttpServlet {
 		String query = req.getParameter("query");
 		int maxPageLoads = Integer.parseInt(req.getParameter("maxPageLoads"));
 		int numThreads = Integer.parseInt(req.getParameter("numThreads"));
+		int numCloudWords = Integer.parseInt(req.getParameter("numCloudWords"));
 
 		SearchAlgorithm searchAlg = SearchAlgorithm.values()[Character.getNumericValue(searchAlgName.charAt(0)) - 1];
 
@@ -74,7 +75,7 @@ public class ServiceHandler extends HttpServlet {
 			
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
 
-		QueryCloudGenerator generator = new QueryCloudGenerator(query, maxPageLoads, numThreads, searchAlg);
+		QueryCloudGenerator generator = new QueryCloudGenerator(query, maxPageLoads, numThreads, numCloudWords, searchAlg);
 		BufferedImage cloud = generator.generateWordCloud();
 		out.print("<img src=\"data:image/png;base64," + encodeToString(cloud) + "\" alt=\"Word Cloud\">");
 
@@ -85,7 +86,7 @@ public class ServiceHandler extends HttpServlet {
 		out.print("</html>");	
 	}
 
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		doGet(req, resp);
  	}
 	

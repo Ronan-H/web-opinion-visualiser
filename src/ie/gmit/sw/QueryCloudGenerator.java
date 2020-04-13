@@ -20,14 +20,16 @@ public class QueryCloudGenerator {
     private String query;
     private int maxPageLoads;
     private int numCrawlers;
+    private int numCloudWords;
     private PageNodeEvaluator pageNodeEvaluator;
 
     private DomainFrequency domainFrequency;
 
-    public QueryCloudGenerator(String query, int maxPageLoads, int numThreads, SearchAlgorithm searchAlgorithm) {
+    public QueryCloudGenerator(String query, int maxPageLoads, int numThreads, int numCloudWords, SearchAlgorithm searchAlgorithm) {
         this.query = query;
         this.maxPageLoads = maxPageLoads;
         this.numCrawlers = numThreads;
+        this.numCloudWords = numCloudWords;
 
         domainFrequency = new DomainFrequency();
 
@@ -75,8 +77,8 @@ public class QueryCloudGenerator {
             e.printStackTrace();
         }
 
-        TermWeight[] words = new WeightedFont().getFontSizes(
-                new MapToWeightingArray(tfpdfCalculator.getWeights()).convert(60));
+        TermWeight[] words = new WeightedFont(numCloudWords).getFontSizes(
+                new MapToWeightingArray(tfpdfCalculator.getWeights()).convert(numCloudWords));
 
         System.out.println("\n-- Word frequencies --");
         for (int i = words.length - 1; i >= 0; i--) {

@@ -63,9 +63,7 @@ public class FuzzyComparator extends PageNodeEvaluator {
         // Evaluate
         fis.evaluate();
 
-        double score = fis.getVariable("score").getLatestDefuzzifiedValue();
-        //System.out.printf("Fuzzy score for URL %s: %.3f%n", node.getParent().getUrl(), score);
-        return score;
+        return fis.getVariable("score").getLatestDefuzzifiedValue();
     }
 
     @Override
@@ -76,6 +74,6 @@ public class FuzzyComparator extends PageNodeEvaluator {
             return 0;
         }
 
-        return (int)Math.ceil(fuzzyScore / 4);
+        return (int)Math.ceil((fuzzyScore - 5) / 5);
     }
 }

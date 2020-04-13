@@ -3,8 +3,8 @@ package ie.gmit.sw;
 import java.util.*;
 
 public class WordProximityScorer {
-    private static final Integer[] beforeScoring = {1, 1, 1, 1};
-    private static final Integer[] afterScoring = {1, 1, 1, 1, 1, 1};
+    private static final Integer[] beforeScoring = {2, 2, 1, 1, 1};
+    private static final Integer[] afterScoring = {3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1};
     private String query;
 
     public WordProximityScorer(String query) {
