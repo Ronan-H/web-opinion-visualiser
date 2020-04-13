@@ -10,9 +10,9 @@ import java.io.IOException;
 public class TestQueryCloudGenerator {
     public static void main(String[] args) {
         String query = "coronavirus";
-        int maxPageLoads = 20;
-        int numThreads = 5;
-        int numCloudWords = 20;
+        int maxPageLoads = 250;
+        int numThreads = 10;
+        int numCloudWords = 80;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;
 
         QueryCloudGenerator cloudGenerator = new QueryCloudGenerator(query, maxPageLoads, numThreads, numCloudWords, searchAlgorithm);

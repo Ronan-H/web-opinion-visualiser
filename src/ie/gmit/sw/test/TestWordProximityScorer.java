@@ -6,8 +6,8 @@ import java.util.Map;
 
 public class TestWordProximityScorer {
     public static void main(String[] args) {
-        String text = "the syntax of java is similar to c and c++";
-        String query = "java";
+        String text = "Most people who catch coronavirus will experience mild symptoms. They should make a full recovery without needing to go to hospital.";
+        String query = "coronavirus";
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
         WordProximityScorer scorer = new WordProximityScorer(query);
