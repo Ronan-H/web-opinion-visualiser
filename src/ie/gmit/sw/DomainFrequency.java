@@ -36,7 +36,7 @@ public class DomainFrequency {
         }
 
         // return relative frequency (value between 0 and 1)
-        return (double) domainVisits.get(domain) / totalVisits;
+        return (double) domainVisits.get(domain) / (totalVisits + 10);
     }
 
     public int getDomainVisits(String domain) {

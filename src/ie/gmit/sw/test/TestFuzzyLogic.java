@@ -21,9 +21,9 @@ public class TestFuzzyLogic {
         JFuzzyChart.get().chart(fb);
 
         // Set inputs
-        fis.setVariable("relevance", 0);
-        fis.setVariable("domain_usage", 0);
-        fis.setVariable("depth", 0);
+        fis.setVariable("relevance", 0.1);
+        fis.setVariable("domain_usage", 0.2);
+        fis.setVariable("depth", 5);
 
         // Evaluate
         fis.evaluate();

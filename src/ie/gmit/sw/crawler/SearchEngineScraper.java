@@ -8,10 +8,10 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 public class SearchEngineScraper {
-    public String[] getResultLinks(String query) throws IOException {
+    public String[] getResultLinks(String query, int topN) throws IOException {
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
-        String[] resultLinks = new String[res.size()];
+        String[] resultLinks = new String[Math.min(res.size(), topN)];
         int resultCounter = 0;
 
         for (Element r : res){
@@ -21,6 +21,10 @@ public class SearchEngineScraper {
             System.out.println("Title:\t" + title.text());
 
             resultLinks[resultCounter++] = url;
+
+            if (resultCounter >= topN) {
+                break;
+            }
         }
 
         return resultLinks;

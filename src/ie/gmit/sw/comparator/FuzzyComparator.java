@@ -7,7 +7,6 @@ import net.sourceforge.jFuzzyLogic.FIS;
 public class FuzzyComparator extends PageNodeEvaluator {
     private FIS fis;
     private DomainFrequency frequencies;
-    private LIFOComparator lifoComparator;
 
     public FuzzyComparator(String query, DomainFrequency domainFrequency) {
         super(query);
@@ -21,8 +20,6 @@ public class FuzzyComparator extends PageNodeEvaluator {
             System.err.printf("Can't load file: '%s'%n", fileName);
             System.exit(0);
         }
-
-        lifoComparator = new LIFOComparator(query);
     }
 
     @Override
@@ -32,7 +29,10 @@ public class FuzzyComparator extends PageNodeEvaluator {
 
         // ensure root pages go to the front of the queue
         if (aParent == null && bParent == null) {
-            return -lifoComparator.compare(a, b);
+            return Integer.compare(
+                    a.getId(),
+                    b.getId()
+            );
         }
 
         if (aParent == null) {
@@ -52,11 +52,12 @@ public class FuzzyComparator extends PageNodeEvaluator {
     private synchronized double getScoreForPage(PageNode node) {
         if (node.getParent() == null) {
             // root node; assume search results are highly relevant
-            return 28;
+            return 20;
         }
 
         // Set inputs
-        fis.setVariable("relevance", node.getParent().getRelevanceScore(query));
+        PageNode relevanceRef = node.isLoaded() ? node : node.getParent();
+        fis.setVariable("relevance", relevanceRef.getRelevanceScore(query));
         fis.setVariable("domain_usage", frequencies.getRelativeDomainFrequency(node.getUrl()));
         fis.setVariable("depth", node.getDepth());
 
@@ -74,6 +75,6 @@ public class FuzzyComparator extends PageNodeEvaluator {
             return 0;
         }
 
-        return (int)Math.ceil((fuzzyScore - 5) / 5);
+        return (int)Math.ceil((fuzzyScore - 5) / 2);
     }
 }

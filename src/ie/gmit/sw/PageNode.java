@@ -27,7 +27,10 @@ public class PageNode {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.getDepth() + 1;
         this.rootUrl = getURLRoot(url);
-        id = idCounter++;
+
+        synchronized (this) {
+            id = idCounter++;
+        }
     }
 
     public PageNode(String url) {
@@ -37,7 +40,6 @@ public class PageNode {
 
     public void load() {
         try {
-            System.out.println("Connecting to URL: " + url);
             pageDoc = Jsoup.connect(url).timeout(2500).get();
         } catch (Exception e) {
             errored = true;
@@ -48,6 +50,10 @@ public class PageNode {
         }
 
         isLoaded = true;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
     }
 
     public List<String> getUnvisitedLinks(Set<String> visited) {
@@ -93,8 +99,6 @@ public class PageNode {
     public double getRelevanceScore(String query) {
         if (errored) return -1;
         if (relevanceComputed) return relevanceScore;
-
-        System.out.println("Getting relevance score for url " + url);
 
         TagWeights tagWeights = TagWeights.getInstance();
         int queryScore = 0;

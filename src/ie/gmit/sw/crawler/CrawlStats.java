@@ -3,15 +3,19 @@ package ie.gmit.sw.crawler;
 import ie.gmit.sw.DomainFrequency;
 
 import java.util.Formatter;
+import java.util.PriorityQueue;
 
 public class CrawlStats {
     private DomainFrequency domainFrequency;
     private int pageLoads;
     private int numPagesHaveQuery;
     private int maxDepth;
+    private PriorityQueue<LogEntry> asyncLog;
+    private String asString;
 
     public CrawlStats(DomainFrequency domainFrequency) {
         this.domainFrequency = domainFrequency;
+        asyncLog = new PriorityQueue<>();
     }
 
     public DomainFrequency getDomainFrequency() {
@@ -36,8 +40,20 @@ public class CrawlStats {
         numPagesHaveQuery++;
     }
 
+    public synchronized void logEntry(LogEntry entry) {
+        asyncLog.add(entry);
+    }
+
+    public synchronized void logEntry(String entry) {
+        asyncLog.add(new LogEntry(entry, Integer.MAX_VALUE));
+    }
+
     @Override
     public synchronized String toString() {
+        if (asString != null) {
+            return asString;
+        }
+
         Formatter builder = new Formatter();
 
         builder.format("<h2>Top domains</h2>%n");
@@ -56,6 +72,14 @@ public class CrawlStats {
         builder.format("<li>Max search depth: <b>%d</b></li>%n", maxDepth);
         builder.format("</ul>%n");
 
-        return builder.toString();
+        builder.format("<h2>Full crawl log</h2>%n");
+        builder.format("<textarea rows=\"25\" cols=\"100\" wrap=\"soft\" style=\"overflow: scroll\">%n");
+        while (!asyncLog.isEmpty()) {
+            builder.format("%s%n", asyncLog.poll().getEntry());
+        }
+        builder.format("</textarea></br>");
+
+        asString = builder.toString();
+        return asString;
     }
 }

@@ -12,13 +12,13 @@ public class QueryCrawler implements Runnable {
     private String query;
     private Random random;
     private Set<String> visited;
-    private WordIgnorer ignorer;
     private WordProximityScorer scorer;
     private PriorityBlockingQueue<PageNode> queue;
     private CrawlStats crawlStats;
     private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
     private TfpdfCalculator tfpdfCalculator;
+    private Formatter log;
 
     public QueryCrawler(String query,
                         PriorityBlockingQueue<PageNode> queue,
@@ -30,7 +30,6 @@ public class QueryCrawler implements Runnable {
                         AtomicInteger pageLoads) {
         this.query = query;
         this.queue = queue;
-        this.ignorer = ignorer;
         this.crawlStats = crawlStats;
         this.visited = visited;
         this.pageNodeEvaluator = pageNodeEvaluator;
@@ -48,6 +47,7 @@ public class QueryCrawler implements Runnable {
 
     private PageNode loadNextPage() {
         PageNode nextPage;
+        log.format("Polling page URL from the queue...%n");
         try {
             nextPage = queue.poll(3, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -58,8 +58,10 @@ public class QueryCrawler implements Runnable {
             return null;
         }
 
-        System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
-        System.out.printf("Relative domain visit frequency: %.3f%n",
+        log.format("Loading page:      %s%n", nextPage.getUrl());
+        log.format("   ...from parent: %s%n",
+                nextPage.getParent() == null ? "<search result>" : nextPage.getParent().getUrl());
+        log.format("Relative domain visit frequency: %.3f%n",
                 crawlStats.getDomainFrequency().getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
         crawlStats.incPageLoads();
@@ -71,42 +73,41 @@ public class QueryCrawler implements Runnable {
 
     public boolean crawlNextPage() {
         if (pageLoads.decrementAndGet() < 0) {
-            System.out.println("Crawler stopping: max page loads hit");
+            crawlStats.logEntry("Crawler stopping: max page loads hit");
             return false;
         }
 
-        System.out.println("Page loads remaining: " + pageLoads.get());
+        log = new Formatter();
 
         PageNode node = loadNextPage();
 
         if (node == null) {
-            System.out.println("Crawler stopping: queue is empty");
+            crawlStats.logEntry("Crawler stopping: queue is empty");
             return false;
         }
 
         crawlStats.recordDepth(node.getDepth());
-
-        System.out.println("Polling page from the queue: " + node.getUrl());
         double nodeRelevancy = node.getRelevanceScore(query);
 
         if (nodeRelevancy > 0) {
             crawlStats.incPageHaveQuery();
         }
 
-        System.out.printf("Relevance: %.4f%n", nodeRelevancy);
-        System.out.printf("Depth: %d%n", node.getDepth());
+        log.format("Relevance: %.4f%n", nodeRelevancy);
+        log.format("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());
         int numChildNodesExpanded = pageNodeEvaluator.numChildExpandHeuristic(node);
-        System.out.printf("Adding %d child URLs...%n", numChildNodesExpanded);
+        log.format("Adding %d child URLs...%n", numChildNodesExpanded);
 
         List<String> nextLinks = node.getUnvisitedLinks(visited);
 
-        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 1000; i++) {
+        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 2500; i++) {
             queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
         }
 
-        System.out.println("Adding word scores...\n");
         node.addWordScores(query, tfpdfCalculator, scorer);
+
+        crawlStats.logEntry(new LogEntry(log.toString(), node.getId()));
 
         return true;
     }

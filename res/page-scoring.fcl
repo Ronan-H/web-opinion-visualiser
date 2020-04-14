@@ -15,21 +15,20 @@ END_VAR
 
 // fuzzify input variable 'relevance'
 FUZZIFY relevance
-    TERM irrelevant := (0, 1) (0.03, 0);
-    TERM minor := trape 0.01 0.06 0.2 0.26;
-    TERM significant := (0.1, 0) (0.5, 1) (1, 1);
+    TERM irrelevant := (0, 1) (0.005, 0);
+    TERM minor := trape 0.001 0.02 0.06 0.08;
+    TERM significant := (0.03, 0) (0.1, 1);
 END_FUZZIFY
 
 // fuzzify input variable 'domain_usage'
 FUZZIFY domain_usage
-    TERM low := sigm -30 0.15;
-    TERM overused := sigm 30 0.2;
+    TERM low := sigm -40 0.2;
+    TERM overused := sigm 40 0.3;
 END_FUZZIFY
 
 // fuzzify input variable 'depth'
 FUZZIFY depth
-    TERM shallow := (0, 1) (5, 1) (10, 0);
-    TERM deep := (4, 0) (20, 1);
+    TERM deep := (5, 0) (25, 1);
 END_FUZZIFY
 
 // defuzzify
@@ -52,13 +51,13 @@ RULEBLOCK No1
     // Use 'max' accumulation method
     ACCU : MAX;
 
-    RULE 1 : IF relevance IS irrelevant OR domain_usage IS overused OR depth IS deep
+    RULE 1 : IF relevance IS irrelevant OR domain_usage IS overused
                 THEN score IS poor;
 
     RULE 2 : IF relevance IS minor AND domain_usage IS NOT overused
                 THEN score IS reasonable;
 
-    RULE 3 : IF relevance IS significant AND domain_usage IS low AND depth IS shallow
+    RULE 3 : IF relevance IS significant AND domain_usage IS low AND depth IS NOT deep
                 THEN score IS excellent;
 
 

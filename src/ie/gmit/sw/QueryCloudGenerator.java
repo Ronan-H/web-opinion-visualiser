@@ -3,7 +3,7 @@ package ie.gmit.sw;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.TermWeight;
 import ie.gmit.sw.comparator.FuzzyComparator;
-import ie.gmit.sw.comparator.LIFOComparator;
+import ie.gmit.sw.comparator.DFSComparator;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 import ie.gmit.sw.comparator.RandomComparator;
 import ie.gmit.sw.crawler.CrawlStats;
@@ -28,7 +28,7 @@ public class QueryCloudGenerator {
     private DomainFrequency domainFrequency;
 
     public QueryCloudGenerator(String query, int maxPageLoads, int numThreads, int numCloudWords, SearchAlgorithm searchAlgorithm) {
-        this.query = query;
+        this.query = query.toLowerCase();
         this.maxPageLoads = maxPageLoads;
         this.numCrawlers = numThreads;
         this.numCloudWords = numCloudWords;
@@ -37,13 +37,13 @@ public class QueryCloudGenerator {
 
         switch (searchAlgorithm) {
             case BFS_FUZZY_HEURISTIC:
-                pageNodeEvaluator = new FuzzyComparator(query, domainFrequency);
+                pageNodeEvaluator = new FuzzyComparator(this.query, domainFrequency);
                 break;
             case DFS_RELEVANCE_HEURISTIC:
-                pageNodeEvaluator = new LIFOComparator(query);
+                pageNodeEvaluator = new DFSComparator(this.query);
                 break;
             case RANDOM_RELEVANCE_HEURISTIC:
-                pageNodeEvaluator = new RandomComparator(query);
+                pageNodeEvaluator = new RandomComparator(this.query);
                 break;
         }
     }
@@ -53,11 +53,11 @@ public class QueryCloudGenerator {
 
         AtomicInteger pageLoadsLeft = new AtomicInteger(maxPageLoads);
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
-        PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, new FuzzyComparator(query, domainFrequency));
+        PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, pageNodeEvaluator);
 
         Set<String> visited = ConcurrentHashMap.newKeySet();
         List<PageNode> resultPages =
-                Arrays.stream(new SearchEngineScraper().getResultLinks(query))
+                Arrays.stream(new SearchEngineScraper().getResultLinks(query, 5))
                         .map(PageNode::new)
                         .collect(Collectors.toList());
         queue.addAll(resultPages);
@@ -86,6 +86,7 @@ public class QueryCloudGenerator {
         for (int i = words.length - 1; i >= 0; i--) {
             System.out.printf("Word %d: %15s - Score: %.3f%n", i, words[i].getTerm(), words[i].getWeight());
         }
+        System.out.println();
 
         System.out.println(crawlStats.toString());
 
