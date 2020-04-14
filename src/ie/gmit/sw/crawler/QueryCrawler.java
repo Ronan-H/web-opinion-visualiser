@@ -15,7 +15,7 @@ public class QueryCrawler implements Runnable {
     private WordIgnorer ignorer;
     private WordProximityScorer scorer;
     private PriorityBlockingQueue<PageNode> queue;
-    private DomainFrequency domainFrequency;
+    private CrawlStats crawlStats;
     private PageNodeEvaluator pageNodeEvaluator;
     private AtomicInteger pageLoads;
     private TfpdfCalculator tfpdfCalculator;
@@ -23,15 +23,15 @@ public class QueryCrawler implements Runnable {
     public QueryCrawler(String query,
                         PriorityBlockingQueue<PageNode> queue,
                         WordIgnorer ignorer,
-                        DomainFrequency domainFrequency,
+                        CrawlStats crawlStats,
                         Set<String> visited,
                         PageNodeEvaluator pageNodeEvaluator,
-                        AtomicInteger pageLoads,
-                        TfpdfCalculator tfpdfCalculator) {
+                        TfpdfCalculator tfpdfCalculator,
+                        AtomicInteger pageLoads) {
         this.query = query;
         this.queue = queue;
         this.ignorer = ignorer;
-        this.domainFrequency = domainFrequency;
+        this.crawlStats = crawlStats;
         this.visited = visited;
         this.pageNodeEvaluator = pageNodeEvaluator;
         this.pageLoads = pageLoads;
@@ -59,11 +59,13 @@ public class QueryCrawler implements Runnable {
         }
 
         System.out.printf("Loading page: %s%n%n", nextPage.getUrl());
-        System.out.printf("Relative domain visit frequency: %.3f%n", domainFrequency.getRelativeDomainFrequency(nextPage.getUrl()));
+        System.out.printf("Relative domain visit frequency: %.3f%n",
+                crawlStats.getDomainFrequency().getRelativeDomainFrequency(nextPage.getUrl()));
         nextPage.load();
+        crawlStats.incPageLoads();
 
         // increment domain name visit count
-        domainFrequency.recordVisit(nextPage.getUrl());
+        crawlStats.recordDomainVisit(nextPage.getUrl());
         return nextPage;
     }
 
@@ -82,8 +84,15 @@ public class QueryCrawler implements Runnable {
             return false;
         }
 
+        crawlStats.recordDepth(node.getDepth());
+
         System.out.println("Polling page from the queue: " + node.getUrl());
         double nodeRelevancy = node.getRelevanceScore(query);
+
+        if (nodeRelevancy > 0) {
+            crawlStats.incPageHaveQuery();
+        }
+
         System.out.printf("Relevance: %.4f%n", nodeRelevancy);
         System.out.printf("Depth: %d%n", node.getDepth());
         visited.add(node.getRootUrl());

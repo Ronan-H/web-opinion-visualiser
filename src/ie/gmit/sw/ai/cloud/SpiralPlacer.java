@@ -6,7 +6,6 @@ import java.awt.image.*;
 import java.util.*;
 
 public class SpiralPlacer {
-	private Random rand = new Random(); //Random int generator for colours	
 	private Graphics2D g; //The "canvas" to draw the word cloud on
 	private BufferedImage img; //Rasterises the "canvas" to a PNG
 	private java.util.List<Rectangle> placed = new ArrayList<>(); //The list of placed words
@@ -15,7 +14,6 @@ public class SpiralPlacer {
 	private int height; //Image height
 	private Rectangle imageRect;
 	private int turn = 5; //The weight of the turn in the spiral
-
 
 	public SpiralPlacer(int w, int h) {
 		this.width = w;

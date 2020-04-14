@@ -77,10 +77,11 @@ public class ServiceHandler extends HttpServlet {
 
 		QueryCloudGenerator generator = new QueryCloudGenerator(query, maxPageLoads, numThreads, numCloudWords, searchAlg);
 		BufferedImage cloud = generator.generateWordCloud();
+
 		out.print("<img src=\"data:image/png;base64," + encodeToString(cloud) + "\" alt=\"Word Cloud\">");
 
-		out.print("</fieldset>");	
-		out.print("<P>Maybe output some search stats here, e.g. max search depth, effective branching factor.....<p>");		
+		out.print("</fieldset>");
+		out.print(generator.getCrawlStats());
 		out.print("<a href=\"./\">Return to Start Page</a>");
 		out.print("</body>");	
 		out.print("</html>");	

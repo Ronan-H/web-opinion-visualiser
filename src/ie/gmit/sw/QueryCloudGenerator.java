@@ -6,6 +6,7 @@ import ie.gmit.sw.comparator.FuzzyComparator;
 import ie.gmit.sw.comparator.LIFOComparator;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 import ie.gmit.sw.comparator.RandomComparator;
+import ie.gmit.sw.crawler.CrawlStats;
 import ie.gmit.sw.crawler.QueryCrawler;
 import ie.gmit.sw.crawler.SearchEngineScraper;
 
@@ -22,6 +23,7 @@ public class QueryCloudGenerator {
     private int numCrawlers;
     private int numCloudWords;
     private PageNodeEvaluator pageNodeEvaluator;
+    private CrawlStats crawlStats;
 
     private DomainFrequency domainFrequency;
 
@@ -51,7 +53,6 @@ public class QueryCloudGenerator {
 
         AtomicInteger pageLoadsLeft = new AtomicInteger(maxPageLoads);
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
-        DomainFrequency domainFrequency = new DomainFrequency();
         PriorityBlockingQueue<PageNode> queue = new PriorityBlockingQueue<>(100, new FuzzyComparator(query, domainFrequency));
 
         Set<String> visited = ConcurrentHashMap.newKeySet();
@@ -64,9 +65,10 @@ public class QueryCloudGenerator {
         // create crawlers and submit to executor
         ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);
         TfpdfCalculator tfpdfCalculator = new TfpdfCalculator();
+        crawlStats = new CrawlStats(domainFrequency);
         for (int i = 0; i < numCrawlers; i++) {
             executor.submit(
-                    new QueryCrawler(query, queue, ignorer, domainFrequency, visited, pageNodeEvaluator, pageLoadsLeft, tfpdfCalculator)
+                    new QueryCrawler(query, queue, ignorer, crawlStats, visited, pageNodeEvaluator, tfpdfCalculator, pageLoadsLeft)
             );
         }
 
@@ -85,14 +87,12 @@ public class QueryCloudGenerator {
             System.out.printf("Word %d: %15s - Score: %.3f%n", i, words[i].getTerm(), words[i].getWeight());
         }
 
-        // TODO: this is kind of abusing the purpose of the MaptoWeightingArray class...
-        // TODO: domain freqs should really be integer
-        System.out.println("\n-- Domain frequencies --");
-        TermWeight[] domainFreqs = new MapToWeightingArray(domainFrequency.getVisitMap()).convert(25);
-        for (int i = domainFreqs.length - 1; i >= 0; i--) {
-            System.out.printf("Domain %d: %15s - Freq: %.0f%n", i, domainFreqs[i].getTerm(), domainFreqs[i].getWeight());
-        }
+        System.out.println(crawlStats.toString());
 
         return new WordCloudGenerator(words, 850, 850).generateWordCloud();
+    }
+
+    public CrawlStats getCrawlStats() {
+        return crawlStats;
     }
 }

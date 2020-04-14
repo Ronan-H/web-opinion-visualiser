@@ -10,12 +10,15 @@ import java.io.IOException;
 public class TestQueryCloudGenerator {
     public static void main(String[] args) {
         String query = "covid-19";
-        int maxPageLoads = 250;
+        int maxPageLoads = 25;
         int numThreads = 10;
         int numCloudWords = 60;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;
 
         QueryCloudGenerator cloudGenerator = new QueryCloudGenerator(query, maxPageLoads, numThreads, numCloudWords, searchAlgorithm);
+
+        File cloudsDir = new File ("./clouds/");
+        cloudsDir.mkdir();
 
         String filePath = String.format("./clouds/%s.png", query);
         System.out.printf("\nGenerating word cloud at %s...%n", filePath);
