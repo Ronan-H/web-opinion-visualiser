@@ -57,7 +57,7 @@ public class QueryCloudGenerator {
 
         Set<String> visited = ConcurrentHashMap.newKeySet();
         List<PageNode> resultPages =
-                Arrays.stream(new SearchEngineScraper().getResultLinks(query, 5))
+                Arrays.stream(new SearchEngineScraper().getResultLinks(query, 10))
                         .map(PageNode::new)
                         .collect(Collectors.toList());
         queue.addAll(resultPages);

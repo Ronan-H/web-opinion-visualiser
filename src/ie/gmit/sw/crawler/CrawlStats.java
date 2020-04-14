@@ -5,6 +5,7 @@ import ie.gmit.sw.DomainFrequency;
 import java.util.Formatter;
 import java.util.PriorityQueue;
 
+// statistics for a search crawl
 public class CrawlStats {
     private DomainFrequency domainFrequency;
     private int pageLoads;
@@ -22,10 +23,12 @@ public class CrawlStats {
         return domainFrequency;
     }
 
+    // record a visit to a domain (delegate method)
     public void recordDomainVisit(String domain) {
         domainFrequency.recordVisit(domain);
     }
 
+    // record a search depth (overwrites max depth if bigger)
     public synchronized void recordDepth(int depth) {
         if (depth > maxDepth) {
             maxDepth = depth;
@@ -40,6 +43,7 @@ public class CrawlStats {
         numPagesHaveQuery++;
     }
 
+    // asynchronous search crawl log methods
     public synchronized void logEntry(LogEntry entry) {
         asyncLog.add(entry);
     }
@@ -50,12 +54,14 @@ public class CrawlStats {
 
     @Override
     public synchronized String toString() {
+        // try to return a cached toString value
         if (asString != null) {
             return asString;
         }
 
         Formatter builder = new Formatter();
 
+        // generate top domain list HTML
         builder.format("<h2>Top domains</h2>%n");
         builder.format("<ol>%n");
         String[] topDomains = domainFrequency.getTopN(10);
@@ -64,6 +70,7 @@ public class CrawlStats {
         }
         builder.format("</ol>%n");
 
+        // misc. stats
         double queryPagePercent = (double) numPagesHaveQuery / pageLoads * 100;
         builder.format("<h2>Other stats</h2>%n");
         builder.format("<ul>%n");
@@ -72,6 +79,7 @@ public class CrawlStats {
         builder.format("<li>Max search depth: <b>%d</b></li>%n", maxDepth);
         builder.format("</ul>%n");
 
+        // show full log of page crawls
         builder.format("<h2>Full crawl log</h2>%n");
         builder.format("<textarea rows=\"25\" cols=\"100\" wrap=\"soft\" style=\"overflow: scroll\">%n");
         while (!asyncLog.isEmpty()) {

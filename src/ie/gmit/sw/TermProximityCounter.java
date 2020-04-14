@@ -2,18 +2,18 @@ package ie.gmit.sw;
 
 import java.util.*;
 
-public class WordProximityScorer {
+public class TermProximityCounter {
     private static final int maxScoreBefore = 3;
     private static final int maxScoreAfter = 9;
     private String query;
     private WordIgnorer ignorer;
 
-    public WordProximityScorer(String query, WordIgnorer ignorer) {
+    public TermProximityCounter(String query, WordIgnorer ignorer) {
         this.query = query;
         this.ignorer = ignorer;
     }
 
-    public Map<String, Integer> getWordScores(String text) {
+    public Map<String, Integer> getTermCounts(String text) {
         Map<String, Integer> wordScores = new HashMap<>();
 
         int queryPos = text.indexOf(query);

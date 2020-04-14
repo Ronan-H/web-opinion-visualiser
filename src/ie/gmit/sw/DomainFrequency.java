@@ -1,7 +1,5 @@
 package ie.gmit.sw;
 
-import ie.gmit.sw.ai.cloud.TermWeight;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -9,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+// used to record the visit counts to each domain name
 public class DomainFrequency {
     private Map<String, Integer> domainVisits;
     private int totalVisits;
@@ -18,6 +17,7 @@ public class DomainFrequency {
         totalVisits = 0;
     }
 
+    // record a visit to a domain
     public synchronized void recordVisit(String url) {
         String domain = getDomainName(url);
         if (!domainVisits.containsKey(domain)) {
@@ -27,6 +27,7 @@ public class DomainFrequency {
         totalVisits++;
     }
 
+    // relative/normalized domain visit frequency
     public synchronized double getRelativeDomainFrequency(String url) {
         String domain = getDomainName(url);
 
@@ -36,7 +37,7 @@ public class DomainFrequency {
         }
 
         // return relative frequency (value between 0 and 1)
-        return (double) domainVisits.get(domain) / (totalVisits + 10);
+        return (double) domainVisits.get(domain) / (totalVisits + 3);
     }
 
     public int getDomainVisits(String domain) {

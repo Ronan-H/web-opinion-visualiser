@@ -1,5 +1,6 @@
 package ie.gmit.sw.crawler;
 
+// asynchronous search crawl log entry
 public class LogEntry implements Comparable<LogEntry> {
     private String entry;
     private int pageId;

@@ -9,7 +9,7 @@ public class TfpdfCalculator {
         domainPageScores = new HashMap<>();
     }
 
-    public synchronized void addPageScores(String domain, Map<String, Integer> scores) {
+    public synchronized void addTermCounts(String domain, Map<String, Integer> scores) {
         if (!domainPageScores.containsKey(domain)) {
             domainPageScores.put(domain, new ArrayList<>());
         }

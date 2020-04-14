@@ -13,7 +13,7 @@
 					<legend><h3>Specify Details</h3></legend>
 
 					<p>
-						<b>Search heuristic: </b>
+						<b>Search algorithm: </b>
 						<select name="searchAlg">
 							<option selected>1. Breadth first search & Fuzzy logic heuristic</option>
 							<option>2. Depth first search & Relevance heuristic</option>

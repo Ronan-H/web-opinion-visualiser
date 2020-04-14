@@ -10,9 +10,9 @@ public class TestWordProximityScorer {
         String query = "coronavirus";
 
         WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
-        WordProximityScorer scorer = new WordProximityScorer(query, ignorer);
+        TermProximityCounter scorer = new TermProximityCounter(query, ignorer);
 
-        Map<String, Integer> scores = scorer.getWordScores(text);
+        Map<String, Integer> scores = scorer.getTermCounts(text);
         for (String word : scores.keySet()) {
             long score = scores.get(word);
             System.out.printf("%s: %d%n", word, score);

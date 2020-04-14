@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WeightedFont {
+	// min/max font size presets
 	private static final Map<Integer, Double[]> fontSizesForNumWords;
-
 	static {
 		fontSizesForNumWords = new HashMap<>();
 		fontSizesForNumWords.put(20, new Double[]{35d, 55d});
@@ -22,6 +22,7 @@ public class WeightedFont {
 	}
 
 	public WeightedFont(int numCloudWords) {
+		// use a font size preset
 		this(fontSizesForNumWords.get(numCloudWords)[0],
 			 fontSizesForNumWords.get(numCloudWords)[1]);
 	}
@@ -33,7 +34,7 @@ public class WeightedFont {
 
 		for (TermWeight wf : words) {
 			//Use a log scale and word frequency to compute the font size for the word
-			wf.setFontSize((int)getScaledFontSize(Math.log(wf.getWeight()), min, max));
+			wf.setFontSize((int)Math.round(getScaledFontSize(Math.log(wf.getWeight()), min, max)));
 		}
 		return words;
 	}

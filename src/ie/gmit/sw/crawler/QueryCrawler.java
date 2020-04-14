@@ -12,7 +12,7 @@ public class QueryCrawler implements Runnable {
     private String query;
     private Random random;
     private Set<String> visited;
-    private WordProximityScorer scorer;
+    private TermProximityCounter scorer;
     private PriorityBlockingQueue<PageNode> queue;
     private CrawlStats crawlStats;
     private PageNodeEvaluator pageNodeEvaluator;
@@ -35,7 +35,7 @@ public class QueryCrawler implements Runnable {
         this.pageNodeEvaluator = pageNodeEvaluator;
         this.pageLoads = pageLoads;
 
-        scorer = new WordProximityScorer(query, ignorer);
+        scorer = new TermProximityCounter(query, ignorer);
         this.tfpdfCalculator = tfpdfCalculator;
         random = new Random();
     }
@@ -46,6 +46,19 @@ public class QueryCrawler implements Runnable {
     }
 
     private PageNode loadNextPage() {
+        /*
+        // rebuild queue (some elements may be out of order because of the changing domain frequency
+        synchronized (queue) {
+            Deque<PageNode> temp = new ArrayDeque<>(queue.size());
+            while (!queue.isEmpty()) {
+                temp.offer(queue.poll());
+            }
+            while (!temp.isEmpty()) {
+                queue.add(temp.poll());
+            }
+        }
+        */
+
         PageNode nextPage;
         log.format("Polling page URL from the queue...%n");
         try {
@@ -109,7 +122,7 @@ public class QueryCrawler implements Runnable {
             queue.poll();
         }
 
-        node.addWordScores(query, tfpdfCalculator, scorer);
+        node.addTermWeights(query, tfpdfCalculator, scorer);
 
         crawlStats.logEntry(new LogEntry(log.toString(), node.getId()));
 

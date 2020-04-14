@@ -23,7 +23,7 @@ END_FUZZIFY
 // fuzzify input variable 'domain_usage'
 FUZZIFY domain_usage
     TERM low := sigm -40 0.2;
-    TERM overused := sigm 40 0.3;
+    TERM overused := sigm 40 0.2;
 END_FUZZIFY
 
 // fuzzify input variable 'depth'

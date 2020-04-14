@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.*;
 
 public class PageNode {
@@ -28,6 +29,7 @@ public class PageNode {
         this.depth = parent == null ? 0 : parent.getDepth() + 1;
         this.rootUrl = getURLRoot(url);
 
+        // set page ID
         synchronized (this) {
             id = idCounter++;
         }
@@ -37,15 +39,12 @@ public class PageNode {
         this(url, null);
     }
 
-
+    // load page, i.e. download it using JSoup
     public void load() {
         try {
             pageDoc = Jsoup.connect(url).timeout(2500).get();
-        } catch (Exception e) {
-            errored = true;
-        }
-
-        if (pageDoc == null) {
+        } catch (IOException e) {
+            // something went wrong
             errored = true;
         }
 
@@ -56,12 +55,15 @@ public class PageNode {
         return isLoaded;
     }
 
+    // get a list of links from this page that haven't been visited elsewhere yet
     public List<String> getUnvisitedLinks(Set<String> visited) {
         List<String> unvisited = new ArrayList<>();
         if (errored) {
+            // no links to go to if there was an error loading this page
             return unvisited;
         }
 
+        // select all links on the page
         Elements links = pageDoc.select("a");
         linkLoop:
         for (Element link : links) {
@@ -71,7 +73,6 @@ public class PageNode {
             if (href.startsWith("http") // http/https link
             && !visited.contains(root) // unvisited
             && !URLBlacklist.getInstance().isUrlBlacklisted(href)) { // not blacklisted
-            //&& link.parent().tagName().equals("p") || link.parent().parent().tagName().equals("p")) { // in a paragraph
                 // doesn't end with a common media file extension
                 for (String end : IGNORE_ENDS) {
                     if (href.endsWith(end)) {
@@ -79,48 +80,48 @@ public class PageNode {
                     }
                 }
 
+                // add link to list
                 unvisited.add(href);
             }
         }
 
         return unvisited;
-/*
-        return pageDoc.select("a")
-                .stream()
-                .map(e -> e.absUrl("href"))
-                .map(String::toLowerCase)
-                .filter(u -> u.startsWith("http"))
-                .filter(u -> !visited.contains(u))
-                .filter(u -> !URLBlacklist.getInstance().isUrlBlacklisted(u))
-                .collect(Collectors.toList());
-*/
     }
 
+    // page relevancy score based on the query,
+    // where 0 means the query is not on the page at all,
+    // and 1 means the page's text consisted entirely of the query
     public double getRelevanceScore(String query) {
-        if (errored) return -1;
-        if (relevanceComputed) return relevanceScore;
+        if (errored) return -1; // Relevance n/a
+        if (relevanceComputed) return relevanceScore; // return cached relevance value
 
         TagWeights tagWeights = TagWeights.getInstance();
         int queryScore = 0;
         double totalScore = 0;
         Elements elems;
         String elemText;
-        int tagScore;
+        int tagWeight;
 
+        // for each HTML tag being considered
         for (String scoringTag : tagWeights.getScoringTags()) {
-            tagScore = tagWeights.getScoreFor(scoringTag);
+            // get tag weighting
+            tagWeight = tagWeights.getScoreFor(scoringTag);
+            // find all elements for that tag
             elems = pageDoc.select(scoringTag);
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
-                queryScore += numOccurencesInString(elemText, query) * tagScore;
-                totalScore += ((double) elemText.length() / query.length()) * tagScore;
+                // add up query score and total term score
+                queryScore += numOccurencesInString(elemText, query) * tagWeight;
+                totalScore += ((double) elemText.length() / query.length()) * tagWeight;
             }
         }
 
         if (totalScore > 0) {
+            // return relative query relevance score
             relevanceScore = queryScore / totalScore;
         }
         else {
+            // no text (avoiding division by 0)
             relevanceScore = 0;
         }
 
@@ -128,50 +129,65 @@ public class PageNode {
         return relevanceScore;
     }
 
-    public static int numOccurencesInString(String s, String query) {
+    // get the count of a substring in a string
+    public static int numOccurencesInString(String s, String substr) {
         int count = 0;
 
-        for (int i = 0; i <= s.length() - query.length(); i++) {
-            if (s.substring(i, i + query.length()).equals(query)) {
+        for (int i = 0; i <= s.length() - substr.length(); i++) {
+            if (s.substring(i, i + substr.length()).equals(substr)) {
                 count++;
-                i += query.length();
+                i += substr.length();
             }
         }
 
         return count;
     }
 
-    public void addWordScores(String query, TfpdfCalculator tfpdfCalculator, WordProximityScorer scorer) {
-        if (errored) return;
+    // add this page's term weights to the tfpdf calculator
+    public void addTermWeights(String query, TfpdfCalculator tfpdfCalculator, TermProximityCounter counter) {
+        if (errored) return; // nothing to do for an errored page
 
         Map<String, Integer> termScores = new HashMap<>();
         Elements elems;
         String elemText;
 
-        elems = pageDoc.select("p");
-        for (Element elem : elems) {
-            elemText = elem.text().toLowerCase();
+        // for each HTML tag being considered// for each H
+        for (String tag : TagWeights.getInstance().getScoringTags()) {
+            // find all elements of that tag
+            elems = pageDoc.select(tag);
+            // ƒor each element...
+            for (Element elem : elems) {
+                elemText = elem.text().toLowerCase();
 
-            while (elemText.contains(query)) {
-                Map<String, Integer> scores = scorer.getWordScores(elemText);
+                // keep scoring words around the first query string found, and removing that query string
+                // (there may be more than one in a given element)
+                while (elemText.contains(query)) {
+                    // get number of occurrences of each word in proximity
+                    Map<String, Integer> counts = counter.getTermCounts(elemText);
 
-                for (String k : scores.keySet()) {
-                    if (!termScores.containsKey(k)) {
-                        termScores.put(k, 0);
+                    // add each term occurrence to a map
+                    for (String k : counts.keySet()) {
+                        if (!termScores.containsKey(k)) {
+                            termScores.put(k, 0);
+                        }
+                        termScores.put(k, termScores.get(k) + counts.get(k));
                     }
-                    termScores.put(k, termScores.get(k) + scores.get(k));
+
+                    // remove the occurrence of the query just used
+                    elemText = elemText.replaceFirst(query, "");
                 }
-                elemText = elemText.replaceFirst(query, "");
             }
         }
 
-        tfpdfCalculator.addPageScores(rootUrl, termScores);
+        // add term counts to calculator
+        tfpdfCalculator.addTermCounts(rootUrl, termScores);
     }
 
     public int getId() {
         return id;
     }
 
+    // find "root" of URL; stops links to elements on the same page from being considered different pages
     private static String getURLRoot(String url) {
         String[] urlParts = url.split("#");
         return (urlParts.length == 0 ? url : urlParts[0]);

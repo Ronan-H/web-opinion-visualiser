@@ -7,9 +7,13 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
+// scrapes search results from a search engine
 public class SearchEngineScraper {
     public String[] getResultLinks(String query, int topN) throws IOException {
+        // connect to search on DDG
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
+
+        // aggregate results (only using the top N)
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
         String[] resultLinks = new String[Math.min(res.size(), topN)];
         int resultCounter = 0;
@@ -17,8 +21,6 @@ public class SearchEngineScraper {
         for (Element r : res){
             Element title = r.getElementsByClass("links_main").first().getElementsByTag("a").first();
             String url = title.attr("href").toLowerCase();
-            System.out.println("URL:\t" + url);
-            System.out.println("Title:\t" + title.text());
 
             resultLinks[resultCounter++] = url;
 

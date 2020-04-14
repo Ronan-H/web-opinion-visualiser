@@ -24,6 +24,7 @@ public class SpiralPlacer {
 		g.fillRect(0, 0, width, height);
 		imageRect = new Rectangle(width, height);
 
+		// enable antialiasing
 		g.setRenderingHint(
 				RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -45,12 +46,13 @@ public class SpiralPlacer {
 		
 		//Get the "size" of the word string as a rectangle
 		Rectangle2D bounds = g.getFontMetrics(font).getStringBounds(wf.getTerm(), g);
-		int halfWordWidth = (int) Math.round(bounds.getWidth() / 2);
-		int halfWordHeight = (int) Math.round(bounds.getHeight() / 2);
 		int wordWidth = (int) Math.round(bounds.getWidth());
 		int wordHeight = (int) Math.round(bounds.getHeight());
+		int halfWordWidth = (int) Math.round(bounds.getWidth() / 2);
+		int halfWordHeight = (int) Math.round(bounds.getHeight() / 2);
 		int quarterWordHeight = (int) Math.round(bounds.getHeight() / 4);
 
+		// extra space around each word
 		int wordBorder = 3;
 		int doubleWordborder = wordBorder * 2;
 
@@ -75,11 +77,6 @@ public class SpiralPlacer {
 			i = x;
 			j = y;
 
-			if (Math.abs(x) > width * 2) {
-				// failed to place this worth within the bounds of the image
-				return;
-			}
-
 			//Start with the word placed at the centre of the spiral
 			word = new Rectangle(i - halfWordWidth - wordBorder,
 								 j - halfWordHeight - wordBorder,
@@ -92,7 +89,7 @@ public class SpiralPlacer {
 		float dist = Math.min(Math.max(1.2f - (float) (d / (width / 8d)), 0.4f), 1f);
 		float hue =  l / 360f * (dist * 2) % 1f;
 		g.setColor(new Color(Color.HSBtoRGB(hue, 1, dist))); //Set the colour of the graphics "brush"
-		g.drawString(wf.getTerm(), i - halfWordWidth, j + quarterWordHeight);//Draw the word on the graphics canvas=
+		g.drawString(wf.getTerm(), i - halfWordWidth, j + quarterWordHeight);//Draw the word on the graphics canvas
 
 		placed.add(word); //Add the word to the list of placed words
 	}

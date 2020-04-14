@@ -4,6 +4,7 @@ import ie.gmit.sw.DomainFrequency;
 import ie.gmit.sw.PageNode;
 import net.sourceforge.jFuzzyLogic.FIS;
 
+// fuzzy logic comparator; higher scoring pages using the fuzzy control logic go to the front of the queue
 public class FuzzyComparator extends PageNodeEvaluator {
     private FIS fis;
     private DomainFrequency frequencies;
@@ -63,20 +64,20 @@ public class FuzzyComparator extends PageNodeEvaluator {
 
         // Evaluate
         fis.evaluate();
-
         return fis.getVariable("score").getLatestDefuzzifiedValue();
     }
 
-    /*
     @Override
     public int numChildExpandHeuristic(PageNode node) {
+        // compute fuzzy score
         double fuzzyScore = getScoreForPage(node);
 
-        if (fuzzyScore < 5.1) {
+        if (node.getRelevanceScore(query) <= 0) {
+            // no query strings on this page, don't expand any child nodes
             return 0;
         }
 
+        // expand more child nodes if the fuzzy score is high
         return (int)Math.ceil((fuzzyScore - 5) / 2);
     }
-    */
 }
