@@ -18,6 +18,6 @@ public abstract class PageNodeEvaluator implements Comparator<PageNode> {
             return 0;
         }
 
-        return Math.min((int)Math.ceil(nodeRelevancy * 100), 5);
+        return Math.min((int)Math.ceil(nodeRelevancy * 200), 10);
     }
 }

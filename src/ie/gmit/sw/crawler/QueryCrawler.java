@@ -101,8 +101,12 @@ public class QueryCrawler implements Runnable {
 
         List<String> nextLinks = node.getUnvisitedLinks(visited);
 
-        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0 && queue.size() < 2500; i++) {
+        for (int i = 0; i < numChildNodesExpanded && nextLinks.size() > 0; i++) {
             queue.add(new PageNode(nextLinks.remove(random.nextInt(nextLinks.size())), node));
+        }
+
+        while (queue.size() > 1000) {
+            queue.poll();
         }
 
         node.addWordScores(query, tfpdfCalculator, scorer);

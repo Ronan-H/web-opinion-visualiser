@@ -67,6 +67,7 @@ public class FuzzyComparator extends PageNodeEvaluator {
         return fis.getVariable("score").getLatestDefuzzifiedValue();
     }
 
+    /*
     @Override
     public int numChildExpandHeuristic(PageNode node) {
         double fuzzyScore = getScoreForPage(node);
@@ -77,4 +78,5 @@ public class FuzzyComparator extends PageNodeEvaluator {
 
         return (int)Math.ceil((fuzzyScore - 5) / 2);
     }
+    */
 }
