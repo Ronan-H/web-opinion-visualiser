@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public class TestQueryCloudGenerator {
     public static void main(String[] args) {
-        String query = "covid-19";
+        String query = "coronavirus";
         int maxPageLoads = 250;
         int numThreads = 25;
-        int numCloudWords = 60;
+        int numCloudWords = 80;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;
         File ignoredWords = new File("./res/ignorewords.txt");
         File fclFile = new File("./res/page-scoring.fcl");

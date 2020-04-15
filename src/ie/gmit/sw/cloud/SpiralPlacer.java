@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.*;
+import java.util.List;
 
 public class SpiralPlacer {
 	private Graphics2D g; //The "canvas" to draw the word cloud on
@@ -33,9 +34,9 @@ public class SpiralPlacer {
 				RenderingHints.VALUE_RENDER_QUALITY);
 	}
 
-	public void placeAll(TermWeight[] words) {
-		for (TermWeight wf : words) {
-			place(wf);
+	public void placeAll(TermWeight[] terms) {
+		for (TermWeight termWeight : terms) {
+			place(termWeight);
 		}
 		g.dispose();
 	}
