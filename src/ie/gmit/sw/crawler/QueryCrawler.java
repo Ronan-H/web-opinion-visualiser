@@ -48,19 +48,6 @@ public class QueryCrawler implements Runnable {
     }
 
     private PageNode loadNextPage() {
-        /*
-        // rebuild queue (some elements may be out of order because of the changing domain frequency
-        synchronized (queue) {
-            Deque<PageNode> temp = new ArrayDeque<>(queue.size());
-            while (!queue.isEmpty()) {
-                temp.offer(queue.poll());
-            }
-            while (!temp.isEmpty()) {
-                queue.add(temp.poll());
-            }
-        }
-        */
-
         PageNode nextPage;
         log.format("Polling page URL from the queue...%n");
         try {
