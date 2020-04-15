@@ -10,14 +10,16 @@
      2020 Assignment - A Web Opinion Visualiser
   </description>
 
-
   <!-- A context is a variable with application wide scope-->
   <context-param>
     <param-name>IGNORE_WORDS_FILE_LOCATION</param-name>
     <param-value>res/ignorewords.txt</param-value>
   </context-param>
 
-
+  <context-param>
+    <param-name>FCL_FILE_LOCATION</param-name>
+    <param-value>res/page-scoring.fcl</param-value>
+  </context-param>
 
   <!-- A servlet class must be bound to a name -->
   <servlet>

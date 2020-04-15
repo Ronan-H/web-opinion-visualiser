@@ -36,7 +36,8 @@ public class QueryCloudGenerator {
                                int numThreads,
                                int numCloudWords,
                                SearchAlgorithm searchAlgorithm,
-                               File ignoredTerms) {
+                               File ignoredTerms,
+                               File fclFile) {
         this.query = query.toLowerCase();
         this.maxPageLoads = maxPageLoads;
         this.numCrawlers = numThreads;
@@ -48,7 +49,7 @@ public class QueryCloudGenerator {
         // choose a PageNode comparator based on the search algorithm selected
         switch (searchAlgorithm) {
             case BFS_FUZZY_HEURISTIC:
-                pageNodeEvaluator = new FuzzyComparator(this.query, domainFrequency);
+                pageNodeEvaluator = new FuzzyComparator(fclFile, this.query, domainFrequency);
                 break;
             case DFS_RELEVANCE_HEURISTIC:
                 pageNodeEvaluator = new DFSComparator(this.query);

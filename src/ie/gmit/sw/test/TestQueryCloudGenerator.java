@@ -15,9 +15,10 @@ public class TestQueryCloudGenerator {
         int numCloudWords = 60;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;
         File ignoredWords = new File("./res/ignorewords.txt");
+        File fclFile = new File("./res/page-scoring.fcl");
 
         QueryCloudGenerator cloudGenerator = new QueryCloudGenerator(
-                query, maxPageLoads, numThreads, numCloudWords, searchAlgorithm, ignoredWords
+                query, maxPageLoads, numThreads, numCloudWords, searchAlgorithm, ignoredWords, fclFile
         );
 
         File cloudsDir = new File ("./clouds/");

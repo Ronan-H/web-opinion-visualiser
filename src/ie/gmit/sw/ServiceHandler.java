@@ -15,13 +15,22 @@ import java.util.Base64;
 
 public class ServiceHandler extends HttpServlet {
 	private File ignoredWords;
+	private File fclFile;
 	
 	public void init() {
 		ServletContext ctx = getServletContext(); //Get a handle on the application context
 		
 		//Reads the value from the <context-param> in web.xml
-		String ignoredWordsPath = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("IGNORE_WORDS_FILE_LOCATION");
-		ignoredWords = new File(ignoredWordsPath); //A file wrapper around the ignore words...
+		//String ignoredWordsPath = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("IGNORE_WORDS_FILE_LOCATION");
+		ignoredWords = new File(
+				getServletContext().getRealPath(File.separator),
+				ctx.getInitParameter("IGNORE_WORDS_FILE_LOCATION")
+		);
+
+		fclFile = new File(
+				getServletContext().getRealPath(File.separator),
+				ctx.getInitParameter("FCL_FILE_LOCATION")
+		);
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -48,7 +57,7 @@ public class ServiceHandler extends HttpServlet {
 
 		// initialise the query cloud generator, using the selected search parameters
 		QueryCloudGenerator generator = new QueryCloudGenerator(
-				query, maxPageLoads, numThreads, numCloudWords, searchAlg, ignoredWords
+				query, maxPageLoads, numThreads, numCloudWords, searchAlg, ignoredWords, fclFile
 		);
 		// crawl the web and generate a word cloud for words relating to the query
 		BufferedImage cloud = generator.generateWordCloud();

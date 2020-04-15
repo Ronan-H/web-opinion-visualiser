@@ -4,21 +4,29 @@ import ie.gmit.sw.crawler.DomainFrequency;
 import ie.gmit.sw.crawler.PageNode;
 import net.sourceforge.jFuzzyLogic.FIS;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 // fuzzy logic comparator; higher scoring pages using the fuzzy control logic go to the front of the queue
 public class FuzzyComparator extends PageNodeEvaluator {
     private FIS fis;
     private DomainFrequency frequencies;
 
-    public FuzzyComparator(String query, DomainFrequency domainFrequency) {
+    public FuzzyComparator(File fclFile, String query, DomainFrequency domainFrequency) {
         super(query);
         frequencies = domainFrequency;
 
         // Load from 'FCL' file
-        String fileName = "./res/page-scoring.fcl";
-        fis = FIS.load(fileName,false);
+        boolean fileError = false;
+        try {
+            fis = FIS.load(new FileInputStream(fclFile), false);
+        } catch (FileNotFoundException e) {
+            fileError = true;
+        }
         // Error while loading?
-        if(fis == null) {
-            System.err.printf("Can't load file: '%s'%n", fileName);
+        if(fis == null || fileError) {
+            System.err.printf("Can't load file: '%s'%n", fclFile.getAbsolutePath());
             System.exit(0);
         }
     }
