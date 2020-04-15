@@ -2,7 +2,7 @@ package ie.gmit.sw.cloud;
 
 import java.awt.image.BufferedImage;
 
-// generates a word cloud based on a list of terms weightings
+// generates a word cloud based on a list of term weightings
 public class WordCloudGenerator {
     private TermWeight[] words;
     private int width;
@@ -15,7 +15,7 @@ public class WordCloudGenerator {
     }
 
     public BufferedImage generateWordCloud() {
-        // place all terms on the cloud
+        // place all term on the cloud
         SpiralPlacer placer = new SpiralPlacer(width, height);
         placer.placeAll(words);
 

@@ -1,6 +1,6 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.terms.TermIgnorer;
+import ie.gmit.sw.term.TermIgnorer;
 
 import java.io.File;
 

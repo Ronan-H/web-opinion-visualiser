@@ -1,4 +1,4 @@
-package ie.gmit.sw.terms;
+package ie.gmit.sw.term;
 
 import java.util.*;
 
@@ -27,12 +27,12 @@ public class TermProximityCounter {
         String[] beforeParts = (beforeText.equals("") ? new String[0] : beforeText.split(" "));
         String[] afterParts = (afterText.equals("") ? new String[0] : afterText.split(" "));
 
-        // count terms occurrences before the query
+        // count term occurrences before the query
         for (int i = 0; i < Math.min(beforeParts.length, maxCountBefore); i++) {
             countTerms(wordScores, beforeParts[beforeParts.length - i  - 1]);
         }
 
-        // count terms occurrences after the query
+        // count term occurrences after the query
         for (int i = 0; i < Math.min(afterParts.length, maxCountAfter); i++) {
             countTerms(wordScores, afterParts[i]);
         }

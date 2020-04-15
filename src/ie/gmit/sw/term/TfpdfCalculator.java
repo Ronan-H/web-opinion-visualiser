@@ -1,4 +1,4 @@
-package ie.gmit.sw.terms;
+package ie.gmit.sw.term;
 
 import java.util.*;
 
@@ -7,7 +7,7 @@ import java.util.*;
 public class TfpdfCalculator {
     // domain name -> (map of terms -> num occurrences)
     private Map<String, Map<String, Integer>> domainCountsMap;
-    // domain name -> (map of terms -> number of pages containing that terms)
+    // domain name -> (map of terms -> number of pages containing that term)
     private Map<String, Map<String, Integer>> pageCountsMap;
     // domain name -> number of pages on that domain
     private Map<String, Integer> numDomainPages;
@@ -18,7 +18,7 @@ public class TfpdfCalculator {
         numDomainPages = new HashMap<>();
     }
 
-    // add terms occurrence counter for a page
+    // add term occurrence counter for a page
     public synchronized void addTermCounts(String domain, Map<String, Integer> counts) {
         if (!domainCountsMap.containsKey(domain)) {
             // initialise domain maps/counts
@@ -27,7 +27,7 @@ public class TfpdfCalculator {
             numDomainPages.put(domain, 0);
         }
 
-        // merge terms counts
+        // merge term counts
         Map<String, Integer> domainCounts = domainCountsMap.get(domain);
         Map<String, Integer> pageCounts = pageCountsMap.get(domain);
         for (String term : counts.keySet()) {
@@ -39,7 +39,7 @@ public class TfpdfCalculator {
         numDomainPages.put(domain, numDomainPages.get(domain) + 1);
     }
 
-    // compute terms weights, according to the tf*pdf implementation
+    // compute term weights, according to the tf*pdf implementation
     public synchronized Map<String, Double> getWeights() {
         Map<String, Double> allTermScores = new HashMap<>();
         Set<String> termsUsed = new HashSet<>();
@@ -57,11 +57,11 @@ public class TfpdfCalculator {
         return allTermScores;
     }
 
-    // get tf*pdf weighting for a single terms
+    // get tf*pdf weighting for a single term
     private double getTfpdfWeight(String term) {
         double sum = 0;
         for (String domain : domainCountsMap.keySet()) {
-            // njc: number of "documents" (pages) in "channel" (domain) c where the terms j occurs
+            // njc: number of "documents" (pages) in "channel" (domain) c where the term j occurs
             int njc = pageCountsMap.get(domain).getOrDefault(term, 0);
             // Nc: total number of "documents" (pages) in "channel" (domain) c
             int nc = numDomainPages.get(domain);
@@ -73,7 +73,7 @@ public class TfpdfCalculator {
         return sum;
     }
 
-    // frequency of terms j in "channel" (domain) c
+    // frequency of term j in "channel" (domain) c
     private int getFjc(String term, String domain) {
         return domainCountsMap.get(domain).getOrDefault(term, 0);
     }
@@ -82,7 +82,7 @@ public class TfpdfCalculator {
     private double getNormalizedFjc(String term, String domain) {
         double fjc = getFjc(term, domain);
 
-        // sum of squares of terms occurrences
+        // sum of squares of term occurrences
         int sum = domainCountsMap.get(domain)
                 .values()
                 .stream()

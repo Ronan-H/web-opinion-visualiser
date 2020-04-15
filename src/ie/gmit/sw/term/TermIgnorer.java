@@ -1,4 +1,4 @@
-package ie.gmit.sw.terms;
+package ie.gmit.sw.term;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-// decides if a terms should be ignored, based on a number of criteria
+// decides if a term should be ignored, based on a number of criteria
 public class TermIgnorer {
     private Set<String> ignoredSet;
     private String query;
@@ -48,7 +48,7 @@ public class TermIgnorer {
         return usefulTerms.toArray(new String[0]);
     }
 
-    // returns true if a given terms should be ignored
+    // returns true if a given term should be ignored
     public boolean isIgnored(String term) {
         // ignore terms that...
         return term.length() > 12 // ...are too long
