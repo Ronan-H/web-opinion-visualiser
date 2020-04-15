@@ -62,7 +62,7 @@ public class QueryCrawler implements Runnable {
         PageNode nextPage;
         log.format("Polling page URL from the queue...%n");
         try {
-            nextPage = queue.poll(3, TimeUnit.SECONDS);
+            nextPage = queue.poll(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             return null;
         }
