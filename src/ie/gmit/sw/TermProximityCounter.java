@@ -2,43 +2,51 @@ package ie.gmit.sw;
 
 import java.util.*;
 
+// counts up occurrences of terms that are near the search query
 public class TermProximityCounter {
-    private static final int maxScoreBefore = 3;
-    private static final int maxScoreAfter = 9;
+    // maximum number of words to count before and after the query
+    private static final int maxCountBefore = 3;
+    private static final int maxCountAfter = 7;
     private String query;
-    private WordIgnorer ignorer;
+    private TermIgnorer ignorer;
 
-    public TermProximityCounter(String query, WordIgnorer ignorer) {
+    public TermProximityCounter(String query, TermIgnorer ignorer) {
         this.query = query;
         this.ignorer = ignorer;
     }
 
+    // get occurrence count mapping of terms around the query
     public Map<String, Integer> getTermCounts(String text) {
         Map<String, Integer> wordScores = new HashMap<>();
 
+        // split text before and after the query
         int queryPos = text.indexOf(query);
         String beforeText = text.substring(0, queryPos).trim();
-        String[] beforeParts = (beforeText.equals("") ? new String[0] : beforeText.split(" "));
         String afterText = text.substring(queryPos + query.length()).trim();
+        // make arrays of individual terms found before and after
+        String[] beforeParts = (beforeText.equals("") ? new String[0] : beforeText.split(" "));
         String[] afterParts = (afterText.equals("") ? new String[0] : afterText.split(" "));
 
-        for (int i = 0; i < Math.min(beforeParts.length, maxScoreBefore); i++) {
-            scoreWord(wordScores, beforeParts[beforeParts.length - i  - 1]);
+        // count term occurrences before the query
+        for (int i = 0; i < Math.min(beforeParts.length, maxCountBefore); i++) {
+            countTerms(wordScores, beforeParts[beforeParts.length - i  - 1]);
         }
 
-        for (int i = 0; i < Math.min(afterParts.length, maxScoreAfter); i++) {
-            scoreWord(wordScores, afterParts[i]);
+        // count term occurrences after the query
+        for (int i = 0; i < Math.min(afterParts.length, maxCountAfter); i++) {
+            countTerms(wordScores, afterParts[i]);
         }
 
         return wordScores;
     }
 
-    private void scoreWord(Map<String, Integer> wordScores, String word) {
-        if (!ignorer.isIgnored(word)) {
-            if (!wordScores.containsKey(word)) {
-                wordScores.put(word, 0);
+    private void countTerms(Map<String, Integer> termCounts, String term) {
+        // exclude terms that should be ignored
+        if (!ignorer.isIgnored(term)) {
+            if (!termCounts.containsKey(term)) {
+                termCounts.put(term, 0);
             }
-            wordScores.put(word, wordScores.get(word) + 1);
+            termCounts.put(term, termCounts.get(term) + 1);
         }
     }
 }

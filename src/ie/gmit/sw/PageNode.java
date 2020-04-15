@@ -21,6 +21,7 @@ public class PageNode {
     private boolean errored;
     private double relevanceScore;
     private boolean relevanceComputed;
+    private TagWeights tagWeights;
     private static final String[] IGNORE_ENDS = {".jpg", ".jpeg", ".png", ".gif", ".mp3", ".mp4", ".pdf"};
 
     public PageNode(String url, PageNode parent) {
@@ -33,6 +34,8 @@ public class PageNode {
         synchronized (this) {
             id = idCounter++;
         }
+
+        tagWeights = TagWeights.getInstance();
     }
 
     public PageNode(String url) {
@@ -95,7 +98,6 @@ public class PageNode {
         if (errored) return -1; // Relevance n/a
         if (relevanceComputed) return relevanceScore; // return cached relevance value
 
-        TagWeights tagWeights = TagWeights.getInstance();
         int queryScore = 0;
         double totalScore = 0;
         Elements elems;
@@ -152,7 +154,7 @@ public class PageNode {
         String elemText;
 
         // for each HTML tag being considered// for each H
-        for (String tag : TagWeights.getInstance().getScoringTags()) {
+        for (String tag : tagWeights.getScoringTags()) {
             // find all elements of that tag
             elems = pageDoc.select(tag);
             // ƒor each element...

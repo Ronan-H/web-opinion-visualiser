@@ -22,7 +22,7 @@ public class QueryCrawler implements Runnable {
 
     public QueryCrawler(String query,
                         PriorityBlockingQueue<PageNode> queue,
-                        WordIgnorer ignorer,
+                        TermIgnorer ignorer,
                         CrawlStats crawlStats,
                         Set<String> visited,
                         PageNodeEvaluator pageNodeEvaluator,

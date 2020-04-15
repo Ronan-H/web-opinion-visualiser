@@ -85,7 +85,7 @@ public class CrawlStats {
         while (!asyncLog.isEmpty()) {
             builder.format("%s%n", asyncLog.poll().getEntry());
         }
-        builder.format("</textarea></br>");
+        builder.format("</textarea>");
 
         asString = builder.toString();
         return asString;

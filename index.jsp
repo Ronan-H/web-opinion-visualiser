@@ -10,7 +10,7 @@
 
 			<form bgcolor="white" method="POST" action="doProcess">
 				<fieldset>
-					<legend><h3>Specify Details</h3></legend>
+					<legend><h3>Search Parameters</h3></legend>
 
 					<p>
 						<b>Search algorithm: </b>

@@ -2,6 +2,7 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.*;
 
+import java.io.File;
 import java.util.Map;
 
 public class TestWordProximityScorer {
@@ -9,7 +10,8 @@ public class TestWordProximityScorer {
         String text = "Most people who catch coronavirus will experience mild symptoms. They should make a full recovery without needing to go to hospital.";
         String query = "coronavirus";
 
-        WordIgnorer ignorer = new WordIgnorer("./res/ignorewords.txt", query);
+        File ignoredWords = new File("./res/ignorewords.txt");
+        TermIgnorer ignorer = new TermIgnorer(ignoredWords, query);
         TermProximityCounter scorer = new TermProximityCounter(query, ignorer);
 
         Map<String, Integer> scores = scorer.getTermCounts(text);
