@@ -1,34 +1,36 @@
-// lock definition
+// SEE README FOR MORE DETAILS ABOUT THIS IMPLEMENTATION
+
+// block definition
 FUNCTION_BLOCK page_scoring
 
-// define input variables
+// input variables
 VAR_INPUT
     relevance : REAL;
     domain_usage : REAL;
     depth : REAL;
 END_VAR
 
-// define output variable
+// output variable
 VAR_OUTPUT
     score : REAL;
 END_VAR
 
 // fuzzify input variable 'relevance'
 FUZZIFY relevance
-    TERM irrelevant := (0, 1) (0.005, 0);
-    TERM minor := trape 0.001 0.02 0.06 0.08;
-    TERM significant := (0.03, 0) (0.1, 1);
+    TERM irrelevant := (0, 1) (0.005, 0); // very few occupancies of the query
+    TERM minor := trape 0.001 0.02 0.06 0.08; // reasonable number of query occurrences
+    TERM significant := (0.03, 0) (0.1, 1); // query is extremely prominant on this page
 END_FUZZIFY
 
 // fuzzify input variable 'domain_usage'
 FUZZIFY domain_usage
-    TERM low := sigm -40 0.2;
-    TERM overused := sigm 40 0.2;
+    TERM low := sigm -40 0.2; // low domain name usage compared to other domains
+    TERM overused := sigm 40 0.2; // domain usage is too high; too many hits on this domain
 END_FUZZIFY
 
 // fuzzify input variable 'depth'
 FUZZIFY depth
-    TERM deep := (5, 0) (25, 1);
+    TERM deep := (5, 0) (25, 1); // page depth considered "deep" on a linear scale from 5 to 25 (low depth doesn't matter)
 END_FUZZIFY
 
 // defuzzify
@@ -51,12 +53,15 @@ RULEBLOCK No1
     // Use 'max' accumulation method
     ACCU : MAX;
 
+    // "poor" score: low page relevance or domain is overused
     RULE 1 : IF relevance IS irrelevant OR domain_usage IS overused
                 THEN score IS poor;
 
+    // "reasonable" score: reasonable page relevance and domain isn't overused
     RULE 2 : IF relevance IS minor AND domain_usage IS NOT overused
                 THEN score IS reasonable;
 
+    // "excellent" score: high relevance, low domain usage, and shallow in the search (not "down a rabbit hole")
     RULE 3 : IF relevance IS significant AND domain_usage IS low AND depth IS NOT deep
                 THEN score IS excellent;
 
