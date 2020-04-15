@@ -1,6 +1,6 @@
 package ie.gmit.sw.comparator;
 
-import ie.gmit.sw.PageNode;
+import ie.gmit.sw.crawler.PageNode;
 
 // page comparator for depth first search; "deeper" nodes go to the front of the queue
 public class DFSComparator extends PageNodeEvaluator {

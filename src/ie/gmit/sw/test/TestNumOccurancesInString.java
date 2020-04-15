@@ -1,6 +1,6 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.PageNode;
+import ie.gmit.sw.crawler.PageNode;
 
 public class TestNumOccurancesInString {
     public static void main(String[] args) {

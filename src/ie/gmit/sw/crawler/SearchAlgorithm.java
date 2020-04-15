@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
 public enum SearchAlgorithm {
     // Breadth first search & Fuzzy logic heuristic

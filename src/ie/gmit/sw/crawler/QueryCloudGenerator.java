@@ -1,14 +1,15 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
-import ie.gmit.sw.ai.cloud.WeightedFont;
-import ie.gmit.sw.ai.cloud.TermWeight;
+import ie.gmit.sw.cloud.MapToWeightingArray;
+import ie.gmit.sw.cloud.WeightedFont;
+import ie.gmit.sw.cloud.TermWeight;
+import ie.gmit.sw.cloud.WordCloudGenerator;
 import ie.gmit.sw.comparator.FuzzyComparator;
 import ie.gmit.sw.comparator.DFSComparator;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
 import ie.gmit.sw.comparator.RandomComparator;
-import ie.gmit.sw.crawler.CrawlStats;
-import ie.gmit.sw.crawler.QueryCrawler;
-import ie.gmit.sw.crawler.SearchEngineScraper;
+import ie.gmit.sw.terms.TermIgnorer;
+import ie.gmit.sw.terms.TfpdfCalculator;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -95,7 +96,7 @@ public class QueryCloudGenerator {
         TermWeight[] terms = new WeightedFont(numCloudWords).getFontSizes(
                 new MapToWeightingArray(tfpdfCalculator.getWeights()).convert(numCloudWords));
 
-        // print term frequencies
+        // print terms frequencies
         System.out.println("\n-- Term frequencies --");
         for (int i = terms.length - 1; i >= 0; i--) {
             System.out.printf("Term %d: %15s - Score: %.3f%n", i, terms[i].getTerm(), terms[i].getWeight());
@@ -105,7 +106,7 @@ public class QueryCloudGenerator {
         // print crawl stats, the stats shown on the servlet page under the word cloud
         System.out.println(crawlStats.toString());
 
-        // generate word cloud image based on term occurrences
+        // generate word cloud image based on terms occurrences
         return new WordCloudGenerator(terms, 850, 850).generateWordCloud();
     }
 

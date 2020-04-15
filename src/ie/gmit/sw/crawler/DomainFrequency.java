@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
 import java.net.URI;
 import java.net.URISyntaxException;

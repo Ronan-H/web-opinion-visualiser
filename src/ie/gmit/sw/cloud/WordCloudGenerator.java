@@ -1,26 +1,21 @@
-package ie.gmit.sw;
-
-import ie.gmit.sw.ai.cloud.SpiralPlacer;
-import ie.gmit.sw.ai.cloud.TermWeight;
+package ie.gmit.sw.cloud;
 
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Comparator;
 
+// generates a word cloud based on a list of terms weightings
 public class WordCloudGenerator {
     private TermWeight[] words;
     private int width;
     private int height;
 
-    public WordCloudGenerator(TermWeight[] words, int width, int height) {
-        this.words = words;
+    public WordCloudGenerator(TermWeight[] terms, int width, int height) {
+        this.words = terms;
         this.width = width;
         this.height = height;
     }
 
     public BufferedImage generateWordCloud() {
-        Arrays.sort(words, Comparator.comparing(TermWeight::getWeight, Comparator.reverseOrder()));
-
+        // place all terms on the cloud
         SpiralPlacer placer = new SpiralPlacer(width, height);
         placer.placeAll(words);
 

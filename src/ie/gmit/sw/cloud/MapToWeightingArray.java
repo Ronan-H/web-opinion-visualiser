@@ -1,6 +1,4 @@
-package ie.gmit.sw;
-
-import ie.gmit.sw.ai.cloud.TermWeight;
+package ie.gmit.sw.cloud;
 
 import java.util.Arrays;
 import java.util.Comparator;

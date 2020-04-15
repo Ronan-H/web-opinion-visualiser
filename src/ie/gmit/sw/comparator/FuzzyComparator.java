@@ -1,7 +1,7 @@
 package ie.gmit.sw.comparator;
 
-import ie.gmit.sw.DomainFrequency;
-import ie.gmit.sw.PageNode;
+import ie.gmit.sw.crawler.DomainFrequency;
+import ie.gmit.sw.crawler.PageNode;
 import net.sourceforge.jFuzzyLogic.FIS;
 
 // fuzzy logic comparator; higher scoring pages using the fuzzy control logic go to the front of the queue

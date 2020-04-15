@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.cloud;
+package ie.gmit.sw.cloud;
 
 public class TermWeight {
 	private String term;

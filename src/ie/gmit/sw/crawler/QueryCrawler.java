@@ -1,7 +1,9 @@
 package ie.gmit.sw.crawler;
 
-import ie.gmit.sw.*;
 import ie.gmit.sw.comparator.PageNodeEvaluator;
+import ie.gmit.sw.terms.TermIgnorer;
+import ie.gmit.sw.terms.TermProximityCounter;
+import ie.gmit.sw.terms.TfpdfCalculator;
 
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;

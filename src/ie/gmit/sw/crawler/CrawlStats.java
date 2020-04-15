@@ -1,7 +1,5 @@
 package ie.gmit.sw.crawler;
 
-import ie.gmit.sw.DomainFrequency;
-
 import java.util.Formatter;
 import java.util.PriorityQueue;
 

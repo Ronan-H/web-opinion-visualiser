@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.cloud;
+package ie.gmit.sw.cloud;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.DomainFrequency;
+import ie.gmit.sw.crawler.DomainFrequency;
 
 public class TestGetDomainName {
     public static void main(String[] args) {

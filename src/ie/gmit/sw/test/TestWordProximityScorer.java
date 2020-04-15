@@ -1,6 +1,7 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.*;
+import ie.gmit.sw.terms.TermIgnorer;
+import ie.gmit.sw.terms.TermProximityCounter;
 
 import java.io.File;
 import java.util.Map;

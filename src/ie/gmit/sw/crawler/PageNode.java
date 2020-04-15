@@ -1,5 +1,7 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
+import ie.gmit.sw.terms.TermProximityCounter;
+import ie.gmit.sw.terms.TfpdfCalculator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -112,7 +114,7 @@ public class PageNode {
             elems = pageDoc.select(scoringTag);
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
-                // add up query score and total term score
+                // add up query score and total terms score
                 queryScore += numOccurencesInString(elemText, query) * tagWeight;
                 totalScore += ((double) elemText.length() / query.length()) * tagWeight;
             }
@@ -145,7 +147,7 @@ public class PageNode {
         return count;
     }
 
-    // add this page's term weights to the tfpdf calculator
+    // add this page's terms weights to the tfpdf calculator
     public void addTermWeights(String query, TfpdfCalculator tfpdfCalculator, TermProximityCounter counter) {
         if (errored) return; // nothing to do for an errored page
 
@@ -167,7 +169,7 @@ public class PageNode {
                     // get number of occurrences of each word in proximity
                     Map<String, Integer> counts = counter.getTermCounts(elemText);
 
-                    // add each term occurrence to a map
+                    // add each terms occurrence to a map
                     for (String k : counts.keySet()) {
                         if (!termScores.containsKey(k)) {
                             termScores.put(k, 0);
@@ -181,7 +183,7 @@ public class PageNode {
             }
         }
 
-        // add term counts to calculator
+        // add terms counts to calculator
         tfpdfCalculator.addTermCounts(rootUrl, termScores);
     }
 

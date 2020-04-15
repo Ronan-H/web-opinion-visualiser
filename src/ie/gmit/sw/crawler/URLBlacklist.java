@@ -1,6 +1,8 @@
-package ie.gmit.sw;
+package ie.gmit.sw.crawler;
 
+// simple URL blacklist
 public class URLBlacklist {
+    // singleton design pattern
     private static URLBlacklist urlBlacklist;
 
     public static URLBlacklist getInstance() {
@@ -13,16 +15,19 @@ public class URLBlacklist {
 
     private String[] blacklist;
     private URLBlacklist() {
+        // list of terms to ignore in URLs
         blacklist = new String[]
         {
                 "facebook.com",
                 "youtube.com",
                 "linkedin.com",
                 "tripadvisor",
-                "booking.com"
+                "booking.com",
+                ".ru",
         };
     }
 
+    // returns true if the given URL contains any of the blacklisted terms
     public boolean isUrlBlacklisted(String url) {
         for (String s : blacklist) {
             if (url.contains(s)) {

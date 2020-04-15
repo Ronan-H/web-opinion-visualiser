@@ -1,7 +1,7 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.QueryCloudGenerator;
-import ie.gmit.sw.SearchAlgorithm;
+import ie.gmit.sw.crawler.QueryCloudGenerator;
+import ie.gmit.sw.crawler.SearchAlgorithm;
 
 import javax.imageio.ImageIO;
 import java.io.File;

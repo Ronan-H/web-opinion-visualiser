@@ -1,5 +1,8 @@
 package ie.gmit.sw;
 
+import ie.gmit.sw.crawler.QueryCloudGenerator;
+import ie.gmit.sw.crawler.SearchAlgorithm;
+
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;

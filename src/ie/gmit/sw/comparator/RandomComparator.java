@@ -1,6 +1,6 @@
 package ie.gmit.sw.comparator;
 
-import ie.gmit.sw.PageNode;
+import ie.gmit.sw.crawler.PageNode;
 
 import java.util.Random;
 
