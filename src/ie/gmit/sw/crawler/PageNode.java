@@ -70,6 +70,7 @@ public class PageNode {
 
         // select all links on the page
         Elements links = pageDoc.select("a");
+        URLFilter urlFilter = URLFilter.getInstance();
         linkLoop:
         for (Element link : links) {
             String href = link.absUrl("href").toLowerCase();
@@ -77,7 +78,7 @@ public class PageNode {
 
             if (href.startsWith("http") // http/https link
             && !visited.contains(root) // unvisited
-            && !URLBlacklist.getInstance().isUrlBlacklisted(href)) { // not blacklisted
+            && urlFilter.isURLAllowed(href)) { // URL is whitelisted and NOT blacklisted
                 // doesn't end with a common media file extension
                 for (String end : IGNORE_ENDS) {
                     if (href.endsWith(end)) {
@@ -115,7 +116,7 @@ public class PageNode {
             for (Element elem : elems) {
                 elemText = elem.text().toLowerCase();
                 // add up query score and total term score
-                queryScore += numOccurencesInString(elemText, query) * tagWeight;
+                queryScore += numOccurrencesInString(elemText, query) * tagWeight;
                 totalScore += ((double) elemText.length() / query.length()) * tagWeight;
             }
         }
@@ -134,7 +135,7 @@ public class PageNode {
     }
 
     // get the count of a substring in a string
-    public static int numOccurencesInString(String s, String substr) {
+    public static int numOccurrencesInString(String s, String substr) {
         int count = 0;
 
         for (int i = 0; i <= s.length() - substr.length(); i++) {

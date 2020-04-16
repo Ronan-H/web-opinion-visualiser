@@ -13,6 +13,7 @@ public abstract class PageNodeEvaluator implements Comparator<PageNode> {
         this.query = query;
     }
 
+    // heuristic number of children to expand form this node
     public int numChildExpandHeuristic(PageNode node) {
         double nodeRelevancy = node.getRelevanceScore(query);
 
@@ -22,5 +23,10 @@ public abstract class PageNodeEvaluator implements Comparator<PageNode> {
         }
 
         return Math.min((int)Math.ceil(nodeRelevancy * 100), 10);
+    }
+
+    // number of search results to use from DuckDuckGo
+    public int numSearchResultsToUse() {
+        return 10;
     }
 }

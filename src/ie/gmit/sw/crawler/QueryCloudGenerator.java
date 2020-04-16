@@ -70,9 +70,12 @@ public class QueryCloudGenerator {
         TfpdfCalculator tfpdfCalculator = new TfpdfCalculator();
         crawlStats = new CrawlStats(domainFrequency);
 
-        // complete a DuckDuckGo search for the query, and store result links as PageNodes
+        // perform a search for the query on DuckDuckGo
+        String[] searchResults = new SearchEngineScraper(query)
+                                    .getResultLinks(pageNodeEvaluator.numSearchResultsToUse());
+        // store search result links as PageNodes
         List<PageNode> resultPages =
-                Arrays.stream(new SearchEngineScraper().getResultLinks(query, 10))
+                Arrays.stream(searchResults)
                         .map(PageNode::new)
                         .collect(Collectors.toList());
         queue.addAll(resultPages);

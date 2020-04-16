@@ -9,7 +9,13 @@ import java.io.IOException;
 
 // scrapes search results from a search engine
 public class SearchEngineScraper {
-    public String[] getResultLinks(String query, int topN) throws IOException {
+    private String query;
+
+    public SearchEngineScraper(String query) {
+        this.query = query;
+    }
+
+    public String[] getResultLinks(int topN) throws IOException {
         // connect to search on DDG
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
 

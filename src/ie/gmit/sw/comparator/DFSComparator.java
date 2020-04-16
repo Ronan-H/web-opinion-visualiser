@@ -15,4 +15,10 @@ public class DFSComparator extends PageNodeEvaluator {
                 b.getDepth()
         );
     }
+
+    // limit DuckDuckGo search results to force a deeper search
+    @Override
+    public int numSearchResultsToUse() {
+        return 3;
+    }
 }

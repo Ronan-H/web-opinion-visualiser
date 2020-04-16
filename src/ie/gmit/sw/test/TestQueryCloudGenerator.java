@@ -7,13 +7,16 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
+// tests query cloud generation (saves the cloud to an image file)
 public class TestQueryCloudGenerator {
     public static void main(String[] args) {
+        // search parameters
         String query = "coronavirus";
         int maxPageLoads = 250;
         int numThreads = 25;
         int numCloudWords = 80;
         SearchAlgorithm searchAlgorithm = SearchAlgorithm.BFS_FUZZY_HEURISTIC;
+
         File ignoredWords = new File("./res/ignorewords.txt");
         File fclFile = new File("./res/page-scoring.fcl");
 
@@ -21,6 +24,7 @@ public class TestQueryCloudGenerator {
                 query, maxPageLoads, numThreads, numCloudWords, searchAlgorithm, ignoredWords, fclFile
         );
 
+        // save word cloud to file
         File cloudsDir = new File ("./clouds/");
         cloudsDir.mkdir();
 

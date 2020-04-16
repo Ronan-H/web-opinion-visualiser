@@ -6,7 +6,8 @@ import ie.gmit.sw.term.TermProximityCounter;
 import java.io.File;
 import java.util.Map;
 
-public class TestWordProximityScorer {
+// tests the class that counts terms within the proximity of the search query
+public class TestTermProximityCounter {
     public static void main(String[] args) {
         String text = "Most people who catch coronavirus will experience mild symptoms. They should make a full recovery without needing to go to hospital.";
         String query = "coronavirus";

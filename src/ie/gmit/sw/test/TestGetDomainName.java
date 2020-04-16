@@ -2,6 +2,7 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.crawler.DomainFrequency;
 
+// tests the conversion of a URL into just it's domain name
 public class TestGetDomainName {
     public static void main(String[] args) {
         String[] testUrls = {

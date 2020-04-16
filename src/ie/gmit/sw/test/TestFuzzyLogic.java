@@ -4,6 +4,8 @@ import net.sourceforge.jFuzzyLogic.*;
 import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
+
+// tests the fuzzy logic specified in res/page-scoring.fcl
 public class TestFuzzyLogic {
     // based on tipper example: http://jfuzzylogic.sourceforge.net/html/example_java.html
     public static void main(String[] args) {
@@ -21,9 +23,9 @@ public class TestFuzzyLogic {
         JFuzzyChart.get().chart(fb);
 
         // Set inputs
-        fis.setVariable("relevance", 0.1);
-        fis.setVariable("domain_usage", 0.2);
-        fis.setVariable("depth", 5);
+        fis.setVariable("relevance", 0.05);
+        fis.setVariable("domain_usage", 0.1);
+        fis.setVariable("depth", 3);
 
         // Evaluate
         fis.evaluate();
@@ -32,7 +34,6 @@ public class TestFuzzyLogic {
         Variable out = fis.getVariable("score");
         JFuzzyChart.get().chart(out, out.getDefuzzifier(), true);
         System.out.println("Score: " + out.getLatestDefuzzifiedValue());
-
 
         // Print ruleSet
         System.out.println(fis);
