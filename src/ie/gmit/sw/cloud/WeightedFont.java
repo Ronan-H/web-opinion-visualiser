@@ -8,7 +8,7 @@ public class WeightedFont {
 	private static final Map<Integer, Double[]> fontSizesForNumWords;
 	static {
 		fontSizesForNumWords = new HashMap<>();
-		fontSizesForNumWords.put(20, new Double[]{30d, 60d});
+		fontSizesForNumWords.put(20, new Double[]{40d, 70d});
 		fontSizesForNumWords.put(60, new Double[]{21d, 50d});
 		fontSizesForNumWords.put(80, new Double[]{10d, 50d});
 	}
