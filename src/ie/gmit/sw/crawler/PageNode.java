@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 
+// represents a web page, as part of a larger graph of pages
 public class PageNode {
     private static int idCounter = 0;
 
