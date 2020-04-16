@@ -32,7 +32,7 @@ public class FuzzyComparator extends PageNodeEvaluator {
     }
 
     @Override
-    public synchronized int compare(PageNode a, PageNode b) {
+    public int compare(PageNode a, PageNode b) {
         PageNode aParent = a.getParent();
         PageNode bParent = b.getParent();
 
@@ -58,6 +58,15 @@ public class FuzzyComparator extends PageNodeEvaluator {
         return -Double.compare(aScore, bScore);
     }
 
+    @Override
+    protected double childExpandFraction(PageNode node) {
+        // compute fuzzy score
+        double fuzzyScore = getScoreForPage(node);
+        // value between 0 and 1 where 1 is max possible fuzzy score
+        return (fuzzyScore - 5) / 30;
+    }
+
+    // fuzzy logic score for a page
     private synchronized double getScoreForPage(PageNode node) {
         // Set inputs
         PageNode relevanceRef = node.isLoaded() ? node : node.getParent();
@@ -68,24 +77,5 @@ public class FuzzyComparator extends PageNodeEvaluator {
         // Evaluate
         fis.evaluate();
         return fis.getVariable("score").getLatestDefuzzifiedValue();
-    }
-
-    @Override
-    public int numChildExpandHeuristic(PageNode node) {
-        // compute fuzzy score
-        double fuzzyScore = getScoreForPage(node);
-        int expandHeuristic = (int)Math.ceil((fuzzyScore - 5) / 3);
-
-        if (node.getParent() == null) {
-            // root node; assume search results are quite relevant, regardless of heuristic score
-            return Math.max(expandHeuristic, 3);
-        }
-        else if (node.getRelevanceScore(query) <= 0) {
-            // no query strings on this page, don't expand any child nodes
-            return 0;
-        }
-
-        // expand more child nodes if the fuzzy score is high
-        return expandHeuristic;
     }
 }

@@ -19,6 +19,6 @@ public class DFSComparator extends PageNodeEvaluator {
     // limit DuckDuckGo search results to force a deeper search
     @Override
     public int numSearchResultsToUse() {
-        return 3;
+        return 2;
     }
 }

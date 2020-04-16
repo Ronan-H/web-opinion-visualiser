@@ -4,10 +4,12 @@ ie.gmit.sw.
     cloud: classes relating to the generation of the word cloud.
     comparator: different comparators for use in a web crawl. When used in the shared PriorityQueue, causes the search to mimic different types of searches, I.e. BFS, DFS, and random walk.
     crawler: classes which perform the web crawl.
-		QueryCloudGenerator acts as a facade, allowing the generation of a word cloud based on a query in a single method call. 		QueryCrawler is the Runnable class which expands and crawls nodes taken from the shared PriorityQueue.
+		QueryCloudGenerator acts as a facade, allowing the generation of a word cloud based on a query in a single method call.
+		QueryCrawler is the Runnable class which expands and crawls nodes taken from the shared PriorityQueue.
 	term: classes which gather terms based on the query, and perform statistics on term occurances to decide term weightings.
 		TfpdfCalculator is my implementation of tf*pdf, a stastistic used to find "hot" terms in a document corpus.
-	test: not strictly part of my submission, but these were the test classes I used to isolate and test various areas of the project. Notably, TestQueryCloudGenerator can be used to generate and save a word cloud to a file based on a query, without the use of Tomcat.
+	test: not strictly part of my submission, but these were the test classes I used to isolate and test various areas of the project.
+		Notably, TestQueryCloudGenerator can be used to generate and save a word cloud to a file based on a query, without the use of Tomcat.
 
 
 == Fuzzy logic implementation ==
@@ -51,7 +53,7 @@ The search algorithms available are:
 
 
 == Stop conditions ==
-There are two reasons why a search might end:
+There are two main reasons why a search might end:
 	
 	1. Queue of pages to explore becomes empty
 	2. Maximum page load limit, specified by the user, has been reached

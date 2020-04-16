@@ -15,18 +15,32 @@ public abstract class PageNodeEvaluator implements Comparator<PageNode> {
 
     // heuristic number of children to expand form this node
     public int numChildExpandHeuristic(PageNode node) {
-        double nodeRelevancy = node.getRelevanceScore(query);
+        double expandFraction = childExpandFraction(node);
+        int numExpand = (int)Math.round(expandFraction * 15);
 
-        if (nodeRelevancy <= 0) {
+        if (node.getParent() == null) {
+            // root node; assume search results are quite relevant, regardless of heuristic score
+            return Math.max(numExpand, 5);
+        }
+
+        if (node.getRelevanceScore(query) <= 0) {
             // no query strings on this page, don't expand any child nodes
             return 0;
         }
 
-        return Math.min((int)Math.ceil(nodeRelevancy * 100), 10);
+        // expand a number of child nodes according to the childExpandFraction
+        return numExpand;
+    }
+
+    // fraction of the max number of child nodes to expand
+    // (subclasses can override this)
+    protected double childExpandFraction(PageNode node) {
+        // default: use page relevancy
+        return Math.min(node.getRelevanceScore(query) * 50, 1);
     }
 
     // number of search results to use from DuckDuckGo
     public int numSearchResultsToUse() {
-        return 10;
+        return 5;
     }
 }

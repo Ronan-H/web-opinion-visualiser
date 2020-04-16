@@ -48,7 +48,7 @@ public class PageNode {
         try {
             pageDoc = Jsoup.connect(url).timeout(2500).get();
         } catch (IOException e) {
-            // something went wrong
+            // something went wrong, connection probably timed out
             errored = true;
         }
 
