@@ -71,14 +71,20 @@ public class QueryCloudGenerator {
         crawlStats = new CrawlStats(domainFrequency);
 
         // perform a search for the query on DuckDuckGo
-        String[] searchResults = new SearchEngineScraper(query)
-                                    .getResultLinks(pageNodeEvaluator.numSearchResultsToUse());
-        // store search result links as PageNodes
+        String[] searchResults = new SearchEngineScraper(query).getResultLinks();
+
+        // store search result links as PageNodes, ignoring URLs that don't match the allowed criteria
+        URLFilter urlFilter = URLFilter.getInstance();
         List<PageNode> resultPages =
                 Arrays.stream(searchResults)
+                        .filter(urlFilter::isURLAllowed)
                         .map(PageNode::new)
                         .collect(Collectors.toList());
-        queue.addAll(resultPages);
+
+        // add search results to queue
+        for (int i = 0; i < Math.min(resultPages.size(), pageNodeEvaluator.numSearchResultsToUse()); i++) {
+            queue.add(resultPages.get(i));
+        }
 
         // create crawlers and submit to executor
         ExecutorService executor = Executors.newFixedThreadPool(numCrawlers);

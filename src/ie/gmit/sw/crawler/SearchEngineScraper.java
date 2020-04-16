@@ -15,13 +15,13 @@ public class SearchEngineScraper {
         this.query = query;
     }
 
-    public String[] getResultLinks(int topN) throws IOException {
+    public String[] getResultLinks() throws IOException {
         // connect to search on DDG
         Document doc = Jsoup.connect("https://duckduckgo.com/html/?q=" + query).get();
 
         // aggregate results (only using the top N)
         Elements res = doc.getElementById("links").getElementsByClass("results_links");
-        String[] resultLinks = new String[Math.min(res.size(), topN)];
+        String[] resultLinks = new String[res.size()];
         int resultCounter = 0;
 
         for (Element r : res){
@@ -29,10 +29,6 @@ public class SearchEngineScraper {
             String url = title.attr("href").toLowerCase();
 
             resultLinks[resultCounter++] = url;
-
-            if (resultCounter >= topN) {
-                break;
-            }
         }
 
         return resultLinks;

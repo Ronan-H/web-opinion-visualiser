@@ -24,7 +24,6 @@ public class PageNode {
     private double relevanceScore;
     private boolean relevanceComputed;
     private TagWeights tagWeights;
-    private static final String[] IGNORE_ENDS = {".jpg", ".jpeg", ".png", ".gif", ".mp3", ".mp4", ".pdf"};
 
     public PageNode(String url, PageNode parent) {
         this.url = url;
@@ -71,21 +70,12 @@ public class PageNode {
         // select all links on the page
         Elements links = pageDoc.select("a");
         URLFilter urlFilter = URLFilter.getInstance();
-        linkLoop:
         for (Element link : links) {
             String href = link.absUrl("href").toLowerCase();
             String root = getURLRoot(href);
 
-            if (href.startsWith("http") // http/https link
-            && !visited.contains(root) // unvisited
-            && urlFilter.isURLAllowed(href)) { // URL is whitelisted and NOT blacklisted
-                // doesn't end with a common media file extension
-                for (String end : IGNORE_ENDS) {
-                    if (href.endsWith(end)) {
-                        continue linkLoop;
-                    }
-                }
-
+            if (!visited.contains(root) // unvisited
+            && urlFilter.isURLAllowed(href)) { // URL matches allowed criteria
                 // add link to list
                 unvisited.add(href);
             }

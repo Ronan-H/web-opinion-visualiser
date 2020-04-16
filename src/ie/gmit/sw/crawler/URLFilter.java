@@ -14,8 +14,14 @@ public class URLFilter {
     }
 
     private String[] blacklist;
-    private String[] whitelist;
+    private String[] allowedDomainsExts;
+    private String[] ignoreEnds;
+    private String startWith;
+
     private URLFilter() {
+        // must start with http
+        startWith = "http";
+
         // list of terms that URLs must not contain
         blacklist = new String[]
         {
@@ -26,19 +32,41 @@ public class URLFilter {
                 "booking.com"
         };
 
-        // list of terms that URLs must contain
-        // (just domain extensions, to avoid non-english pages)
-        whitelist = new String[] {
+        // domain must be one of these extensions
+        // (to avoid crawling non-english pages)
+        allowedDomainsExts = new String[] {
                 ".com",
-                ".ie",
                 ".net",
+                ".org",
                 ".info",
-                ".gov"
+                ".gov",
+                ".uk",
+                ".us",
+                ".ie",
+                ".ca",
+                ".au",
+                ".nz"
+        };
+
+        // ignore URLs ending with (not interested in media files etc)
+        ignoreEnds = new String[] {
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif",
+                ".mp3",
+                ".mp4",
+                ".pdf"
         };
     }
 
-    // returns true if the URL contains all of the whitelisted terms and none of the blacklisted terms
+    // filters a URL based on certain criteria
     public boolean isURLAllowed(String url) {
+        // must start with http
+        if (!url.startsWith(startWith)) {
+            return false;
+        }
+
         // no blacklisted URLs
         for (String s : blacklist) {
             if (url.contains(s)) {
@@ -46,13 +74,30 @@ public class URLFilter {
             }
         }
 
-        // URL must contain all whitelist terms
-        for (String s : whitelist) {
-            if (!url.contains(s)) {
+        // domain extension must be allowed
+        if (!allowedDomainExtension(url)) {
+            return false;
+        }
+
+        // must not end in certain media extensions
+        for (String end : ignoreEnds) {
+            if (url.endsWith(end)) {
                 return false;
             }
         }
 
+        // matched all criteria
         return true;
+    }
+
+    private boolean allowedDomainExtension(String url) {
+        // domain must have one of the allowed extensions
+        for (String ext : allowedDomainsExts) {
+            if (url.contains(ext)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

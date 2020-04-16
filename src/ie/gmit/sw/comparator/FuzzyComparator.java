@@ -67,28 +67,25 @@ public class FuzzyComparator extends PageNodeEvaluator {
 
         // Evaluate
         fis.evaluate();
-        double fuzzyScore = fis.getVariable("score").getLatestDefuzzifiedValue();
-
-        if (node.getParent() == null) {
-            // root node; assume search results are quite relevant, regardless of heuristic score
-            return Math.max(fuzzyScore, 14);
-        }
-        else {
-            return fuzzyScore;
-        }
+        return fis.getVariable("score").getLatestDefuzzifiedValue();
     }
 
     @Override
     public int numChildExpandHeuristic(PageNode node) {
-        if (node.getRelevanceScore(query) <= 0) {
+        // compute fuzzy score
+        double fuzzyScore = getScoreForPage(node);
+        int expandHeuristic = (int)Math.ceil((fuzzyScore - 5) / 3);
+
+        if (node.getParent() == null) {
+            // root node; assume search results are quite relevant, regardless of heuristic score
+            return Math.max(expandHeuristic, 3);
+        }
+        else if (node.getRelevanceScore(query) <= 0) {
             // no query strings on this page, don't expand any child nodes
             return 0;
         }
 
-        // compute fuzzy score
-        double fuzzyScore = getScoreForPage(node);
-
         // expand more child nodes if the fuzzy score is high
-        return (int)Math.ceil((fuzzyScore - 5) / 3);
+        return expandHeuristic;
     }
 }
